@@ -10,6 +10,7 @@ import {
   Button,
 } from "react-native";
 import * as MediaLibrary from "expo-media-library";
+import BottomSheet, { BottomSheetMethods } from "@devvie/bottom-sheet";
 
 export default function PhotoCamera() {
   const [previewVisible, setPreviewVisible] = useState(false);
@@ -17,11 +18,13 @@ export default function PhotoCamera() {
   const [isRecording, setIsRecording] = useState(false);
   const [facing, setFacing] = useState("back");
   const [flash, setFlash] = useState("off");
-
-  const cameraRef = useRef();
+  const sheetRef = useRef(null);
+  const cameraRef = useRef()
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
-  const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
+  const [mediaLibraryPermission, requestMediaLibraryPermission] =
+    MediaLibrary.usePermissions();
   const { width } = useWindowDimensions();
+  const [modalShow, setModalShown] = useState(false);
   const height = Math.round((width * 16) / 9);
 
   useEffect(() => {
@@ -41,7 +44,9 @@ export default function PhotoCamera() {
   if (!cameraPermission.granted) {
     return (
       <View style={styles.container}>
-        <Text style={styles.message}>We need your permission to show the camera</Text>
+        <Text style={styles.message}>
+          We need your permission to show the camera
+        </Text>
         <Button onPress={requestCameraPermission} title="Grant Permission" />
       </View>
     );
@@ -73,7 +78,7 @@ export default function PhotoCamera() {
   async function recordMedia() {
     try {
       const { status } = await Camera.requestMicrophonePermissionsAsync();
-      if (status !== 'granted') {
+      if (status !== "granted") {
         console.warn("Microphone permission not granted");
         return;
       }
@@ -91,7 +96,6 @@ export default function PhotoCamera() {
           console.warn("Media library permission not granted");
         }
       }, 5000); // Adjust the recording duration as needed
-
     } catch (error) {
       console.warn(error);
     }
@@ -111,27 +115,21 @@ export default function PhotoCamera() {
         ref={cameraRef}
         autofocus="true"
       >
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Flip</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={capturePhoto}>
-            <Text style={styles.text}>Capture</Text>
-          </TouchableOpacity>
-          {isRecording ? (
-            <TouchableOpacity style={styles.button} onPress={stopRecording}>
-              <Text style={styles.text}>Stop Recording</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity style={styles.button} onPress={recordMedia}>
-              <Text style={styles.text}>Record</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-        <Pressable style={styles.captureBtn} onPress={capturePhoto}>
+        <Pressable
+          style={styles.captureBtn}
+          onPress={() => {
+            capturePhoto();
+            sheetRef.current?.open();
+          }}
+        >
           <View style={styles.capturedBtnInner} />
         </Pressable>
       </CameraView>
+      <BottomSheet height='90%' ref={sheetRef}>
+        <Text>
+          The smart 😎, tiny 📦, and flexible 🎗 bottom sheet your app craves 🚀
+        </Text>
+      </BottomSheet>
     </View>
   );
 }
