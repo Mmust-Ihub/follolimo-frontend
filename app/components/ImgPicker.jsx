@@ -1,12 +1,21 @@
-import { useState } from "react";
-import { Button, Image, View, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import {
+  Button,
+  Image,
+  View,
+  StyleSheet,
+  Text,
+  ScrollView,
+} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 
 export default function ImagePickerExample() {
   const [image, setImage] = useState(null);
+  const [diseaseInfo, setDiseaseInfo] = useState(null);
+  const [error, setError] = useState(false)
 
+  // Function to pick an image from the device's gallery
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -14,10 +23,39 @@ export default function ImagePickerExample() {
       quality: 1,
     });
 
-    console.log(result);
-
     if (!result.canceled) {
       setImage(result.assets[0].uri);
+      const data = await uploadImage(result.assets[0].uri);
+      if (data) setDiseaseInfo(data);
+    }
+  };
+
+  // Function to upload the selected image to the API
+  const uploadImage = async (imageUri) => {
+    const data = new FormData();
+    data.append("image", {
+      uri: imageUri,
+      type: "image/jpeg",
+      name: "uploaded_image.jpg",
+    });
+
+    try {
+      const res = await fetch(
+        "https://fololimo-api.vercel.app/api/v1/model/disease",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          body: data,
+        }
+      );
+      const response = await res.json();
+      console.log(res)
+      return response;
+    } catch (error) {
+      setError(true)
+      console.log("Upload image failed:", error);
     }
   };
 
@@ -25,10 +63,54 @@ export default function ImagePickerExample() {
     <View style={styles.container}>
       <Button title="Pick an image from camera roll" onPress={pickImage} />
       {image && <Image source={{ uri: image }} style={styles.image} />}
+
+      {diseaseInfo && (
+        <ScrollView style={styles.infoContainer}>
+          <Text style={styles.diseaseText}>{diseaseInfo.disease} disease</Text>
+          <Text>Crop: {diseaseInfo.crop}</Text>
+
+          <Text style={styles.sectionTitle}>Cause</Text>
+          {diseaseInfo.cause.map((c, index) => (
+            <Text key={index}>{c}</Text>
+          ))}
+
+          <Text style={styles.sectionTitle}>Environment Conditions</Text>
+          {diseaseInfo.environment_conditions.map((ec, index) => (
+            <Text key={index}>{ec}</Text>
+          ))}
+
+          <Text style={styles.sectionTitle}>Life Cycle</Text>
+          {diseaseInfo.life_cycle.map((lc, index) => (
+            <Text key={index}>{lc}</Text>
+          ))}
+
+          <Text style={styles.sectionTitle}>Nutrient Deficiency</Text>
+          {diseaseInfo.nutrient_deficiency.map((nd, index) => (
+            <Text key={index}>{nd}</Text>
+          ))}
+
+          <Text style={styles.sectionTitle}>Other Crops Infested</Text>
+          {diseaseInfo.other_crops_infested.map((oci, index) => (
+            <Text key={index}>{oci}</Text>
+          ))}
+
+          <Text style={styles.sectionTitle}>Preventive Measures</Text>
+          {diseaseInfo.preventive_measures.map((pm, index) => (
+            <Text key={index}>{pm}</Text>
+          ))}
+
+          <Text style={styles.sectionTitle}>Remedy</Text>
+          {diseaseInfo.remedy.map((remedy, index) => (
+            <Text key={index}>{remedy}</Text>
+          ))}
+        </ScrollView>
+      )}
+      {error && <Text>An error occured</Text>}
     </View>
   );
 }
 
+// Styles for the component
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -38,5 +120,25 @@ const styles = StyleSheet.create({
   image: {
     width: 200,
     height: 200,
+  },
+  infoContainer: {
+    marginTop: 20,
+    padding: 10,
+    width: "90%",
+    backgroundColor: "#f5f5f5",
+    borderRadius: 10,
+    flexGrow:1
+  },
+  diseaseText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "red",
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 10,
+    marginBottom: 5,
   },
 });
