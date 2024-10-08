@@ -1,7 +1,8 @@
 import { Text, View } from "react-native";
-import PhotoCamera from "./components/PhotoCamera";
-import ImgPicker from "./components/ImgPicker";
+import PhotoCamera from "../components/PhotoCamera";
+import ImgPicker from "../components/ImgPicker";
 export default function Index() {
+  
   return (
     <View
       style={{
@@ -9,7 +10,6 @@ export default function Index() {
         
       }}
     >
-      {/* <PhotoCamera /> */}
       <ImgPicker />
     </View>
   );
