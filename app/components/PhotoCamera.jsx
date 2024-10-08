@@ -21,11 +21,10 @@ export default function PhotoCamera() {
   const sheetRef = useRef(null);
   const cameraRef = useRef()
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
-  const [mediaLibraryPermission, requestMediaLibraryPermission] =
-    MediaLibrary.usePermissions();
+  const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
   const { width } = useWindowDimensions();
-  const [modalShow, setModalShown] = useState(false);
   const height = Math.round((width * 16) / 9);
+  const url = "https://fololimo-api.vercel.app/";
 
   useEffect(() => {
     (async () => {
@@ -61,10 +60,17 @@ export default function PhotoCamera() {
       if (mediaLibraryPermission.granted) {
         const asset = await MediaLibrary.createAssetAsync(photo.uri);
         console.log(asset);
+        const form = new FormData();
+        form.append("image", {
+          uri: photo.uri,
+        });
+        submitImage(form);
         await MediaLibrary.createAlbumAsync("ExpoProject", asset, false);
       } else {
         console.warn("Media library permission not granted");
       }
+      sheetRef.current?.open();
+      
     } catch (error) {
       console.warn(error);
     }
@@ -74,7 +80,29 @@ export default function PhotoCamera() {
     cameraRef.current.stopRecording();
     setIsRecording(false);
   }
-
+  const submitImage = async (image) => {
+    try {
+      const response = await fetch(
+        "https://fololimo-api.vercel.app/api/v1/model/disease",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          body: image,
+        }
+      );
+      console.log("response", response);
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Image uploaded successfully:", data);
+      } else {
+        console.warn("Image upload failed", response.statusText);
+      }
+    } catch (error) {
+      console.warn("Error uploading image", error);
+    }
+  }
   async function recordMedia() {
     try {
       const { status } = await Camera.requestMicrophonePermissionsAsync();
@@ -119,16 +147,34 @@ export default function PhotoCamera() {
           style={styles.captureBtn}
           onPress={() => {
             capturePhoto();
-            sheetRef.current?.open();
           }}
         >
           <View style={styles.capturedBtnInner} />
         </Pressable>
       </CameraView>
       <BottomSheet height='90%' ref={sheetRef}>
-        <Text>
-          The smart 😎, tiny 📦, and flexible 🎗 bottom sheet your app craves 🚀
-        </Text>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              setPreviewVisible(false);
+              setCapturedImage(null);
+              sheetRef.current?.close();
+            }}
+          >
+            <Text style={styles.text}>Retake</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              setPreviewVisible(false);
+              setCapturedImage(null);
+              sheetRef.current?.close();
+            }}
+          >
+            <Text style={styles.text}>Save</Text>
+          </TouchableOpacity>
+        </View>
       </BottomSheet>
     </View>
   );
