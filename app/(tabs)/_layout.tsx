@@ -6,6 +6,8 @@ import { router, Tabs } from "expo-router";
 import { AuthContext } from "@/contexts/AuthContext";
 import React, { useContext } from "react";
 import { View, ActivityIndicator } from "react-native"; // Import ActivityIndicator
+import { Colors } from "@/constants/Colors";
+
 
 export default function TabLayout() {
   const authContext = useContext(AuthContext);
@@ -17,7 +19,7 @@ export default function TabLayout() {
   console.log(isLoading, userToken);
   if (!isLoading && !userToken) {
     console.log("hello...");
-    router.replace("/(auth)/Login");
+    // router.replace("/(auth)/Login");
   }
 
   if (isLoading) {
@@ -29,7 +31,9 @@ export default function TabLayout() {
   }
 
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: "blue" }}>
+    <Tabs
+      screenOptions={{ tabBarActiveTintColor: Colors.light.tabIconSelected,  }}
+    >
       <Tabs.Screen
         name="index"
         options={{
@@ -37,16 +41,20 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="home" color={color} />
           ),
+          headerShown: false,
         }}
       />
       <Tabs.Screen
         name="scan"
         options={{
+          headerTitleAlign: "center",
+          headerTintColor: Colors.light.tabIconSelected,
           title: "Scan",
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons
               name="leaf-circle-outline"
-              size={28}
+              size={34}
               color={color}
             />
           ),
@@ -57,7 +65,17 @@ export default function TabLayout() {
         options={{
           title: "add",
           tabBarIcon: ({ color }) => (
-            <FontAwesome6 name="add" size={28} color={color} />
+            <View style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: 56,
+              width: 56,
+              borderRadius: 28,
+              backgroundColor: Colors.light.tabIconSelected,
+              marginBottom: 26
+            }}>
+              <FontAwesome6 name="add" size={28} color={'#fff'} />
+            </View>
           ),
         }}
       />
