@@ -10,24 +10,45 @@ import {
   Button,
 } from "react-native";
 import * as MediaLibrary from "expo-media-library";
-import BottomSheet from "@devvie/bottom-sheet";
+import BottomSheet, { BottomSheetMethods } from "@devvie/bottom-sheet";
 import Entypo from "@expo/vector-icons/Entypo";
 import { Colors } from "@/constants/Colors";
 import * as ImagePicker from "expo-image-picker";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
-export default function PhotoCamera({ onCapture }) {
+// type Image = {
+//   assetId: string | null,
+//   base64: string | null,
+//   duration: number | null,
+//   exif: Record<string, unknown> | null,
+//   fileName: string,
+//   fileSize: number,
+//   height: number,
+//   mimeType: string,
+//   rotation: number | null,
+//   type: "image",
+//   uri: string,
+//   width: number,
+// };
+
+// type ImagePickerResult = {
+//   assets: Image[],
+//   canceled: boolean,
+// };
+
+
+export default function PhotoCamera() {
   const [previewVisible, setPreviewVisible] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [facing, setFacing] = useState("back");
   const [flash, setFlash] = useState("off");
   const sheetRef = useRef(null);
-  const cameraRef = useRef(null);
+  const cameraRef = useRef()
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
-  const [mediaLibraryPermission, requestMediaLibraryPermission] =
-    MediaLibrary.usePermissions();
+  const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
   const { width } = useWindowDimensions();
   const height = Math.round((width * 16) / 9);
+  const url = "https://fololimo-api.vercel.app/";
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -39,14 +60,14 @@ export default function PhotoCamera({ onCapture }) {
 
     if (!result.canceled) {
       setCapturedImage(result.assets[0].uri);
-      onCapture(result.assets[0].uri); // Send image to parent
       console.log("result", result);
     }
   };
 
+
   useEffect(() => {
     (async () => {
-      if (!mediaLibraryPermission?.granted) {
+      if (!mediaLibraryPermission.granted) {
         const { status } = await requestMediaLibraryPermission();
         if (status !== "granted") {
           console.warn("Media library permission not granted");
@@ -73,39 +94,76 @@ export default function PhotoCamera({ onCapture }) {
     try {
       let photo = await cameraRef.current.takePictureAsync();
       setPreviewVisible(true);
-      setCapturedImage(photo.uri);
-      onCapture(photo.uri); // Send captured image to parent
+      setCapturedImage(photo);
       console.log("photo", photo);
-      if (mediaLibraryPermission?.granted) {
+      if (mediaLibraryPermission.granted) {
         const asset = await MediaLibrary.createAssetAsync(photo.uri);
         console.log(asset);
+        const form = new FormData();
+        form.append("image", {
+          uri: photo.uri,
+        });
+        submitImage(form);
+        await MediaLibrary.createAlbumAsync("ExpoProject", asset, false);
       } else {
         console.warn("Media library permission not granted");
       }
       sheetRef.current?.open();
+      
     } catch (error) {
       console.warn(error);
     }
   }
 
+  const submitImage = async (image) => {
+    try {
+      const response = await fetch(
+        "https://fololimo-api.vercel.app/api/v1/model/disease",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          body: image,
+        }
+      );
+      console.log("response", response);
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Image uploaded successfully:", data);
+      } else {
+        console.warn("Image upload failed", response.statusText);
+      }
+    } catch (error) {
+      console.warn("Error uploading image", error);
+    }
+  }
+  
   function toggleCameraFacing() {
+    console.log("toggleCameraFacing");
     setFacing((current) => (current === "back" ? "front" : "back"));
   }
 
   return (
     <View style={styles.container}>
-      <Camera
+      <CameraView
         style={{ height, flex: 1 }}
-        type={facing}
-        flashMode={flash}
-        ref={cameraRef}
+        facing={facing}
+        flash={flash}
         ratio="16:9"
+        ref={cameraRef}
+        autofocus="true"
       >
         <View className="absolute flex-row justify-between px-[20%] items-center bottom-[10%] w-screen">
           <Pressable style={styles.ActionButtons} onPress={pickImage}>
             <Entypo name="folder-images" size={24} color="black" />
           </Pressable>
-          <Pressable style={styles.captureBtn} onPress={capturePhoto}>
+          <Pressable
+            style={styles.captureBtn}
+            onPress={() => {
+              capturePhoto();
+            }}
+          >
             <View style={styles.capturedBtnInner} />
           </Pressable>
           <Pressable style={styles.ActionButtons} onPress={toggleCameraFacing}>
@@ -116,7 +174,7 @@ export default function PhotoCamera({ onCapture }) {
             />
           </Pressable>
         </View>
-      </Camera>
+      </CameraView>
 
       <BottomSheet height="90%" ref={sheetRef}>
         <View style={styles.buttonContainer}>
