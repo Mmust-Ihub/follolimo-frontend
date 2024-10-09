@@ -1,11 +1,19 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import * as SecureStore from "expo-secure-store";
+import { Alert } from "react-native";
+import { router } from "expo-router";
 
 interface AuthContextType {
   userToken: string | null;
   login: (username: string, password: string) => Promise<void>; // Change to include credentials
   logout: () => Promise<void>;
   isLoading: boolean;
+  register: (
+    email: string,
+    username: string,
+    password1: string,
+    password2: string
+  ) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -42,31 +50,93 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     console.log("Attempting to log in with", username, password);
     try {
       // Call your authentication API here to get the token
-      const response = await fetch("YOUR_API_ENDPOINT", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }), // Send username and password
-      });
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/users/login/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: username,
+            password: password,
+          }), // Send username and password
+        }
+      );
 
       if (!response.ok) {
+        // console.log(response);
+        const data = await response.json();
+        console.log(data);
         throw new Error("Login failed"); // Handle failed login
       }
 
-      const data = await response.json();
-      const token = data.token; // Assuming your API returns the token in this format
-
-      await SecureStore.setItemAsync("Token", token);
-      setUserToken(token);
-      console.log("Logged in, token:", token);
+      if (response.status === 200) {
+        const data = await response.json();
+        const token = data.key; // Assuming your API returns the token in this format
+        console.log(token);
+        await SecureStore.setItemAsync("Token", token);
+        setUserToken(token);
+        Alert.alert("Login Successful", "You are now logged in");
+        router.replace("/(tabs)");
+        console.log("Logged in, token:", token);
+      }
     } catch (error) {
       console.error("Login failed:", error);
     }
   };
 
-  const register = async (data: object) => {};
+  const register = async (
+    email: string,
+    username: string,
+    password1: string,
+    password2: string
+  ) => {
+    console.log(
+      "Attempting to register with",
+      email,
+      username,
+      password1,
+      password2
+    );
+    try {
+      // Call your authentication API here to get the token
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/users/register/ `,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: username,
+            email: email,
+            password1: password1,
+            password2: password2,
+          }), // Send username and password
+        }
+      );
 
+      if (!response.ok) {
+        const data = await response.json();
+        console.log(data);
+        console.log(response);
+        throw new Error("Register failed"); // Handle failed login
+      }
+
+      if (response.status === 201) {
+        const data = await response.json();
+        Alert.alert(
+          "Registration Successful",
+          "You can now login with your credentials"
+        );
+        router.replace("/(auth)/Login");
+        console.log("Logged in, token:", data);
+      }
+    } catch (error) {
+      console.error("Register failed:", error);
+    }
+  };
   const logout = async () => {
     try {
       await SecureStore.deleteItemAsync("userToken");
@@ -77,7 +147,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ userToken, login, logout, isLoading }}>
+    <AuthContext.Provider
+      value={{ userToken, login, register, logout, isLoading }}
+    >
       {children}
     </AuthContext.Provider>
   );

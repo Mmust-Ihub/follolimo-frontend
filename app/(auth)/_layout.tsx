@@ -4,8 +4,10 @@ import React from "react";
 function auth() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="login" />
+      <Stack.Screen name="Login" />
       <Stack.Screen name="signup" />
+      {/* <Stack.Screen name="forgot-password" /> */}
+      <Stack.Screen name="OnBoarding" />
     </Stack>
   );
 }

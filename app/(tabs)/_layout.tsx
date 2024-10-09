@@ -1,28 +1,39 @@
+import { useContext, useEffect } from "react";
+import { router, Tabs } from "expo-router";
+import { View, ActivityIndicator } from "react-native";
+import { AuthContext } from "@/contexts/AuthContext"; // For user authentication
+import { OnboardingContext } from "@/contexts/OnBoardingContext"; // For onboarding status
+import { Colors } from "@/constants/Colors";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { router, Tabs } from "expo-router";
-import { AuthContext } from "@/contexts/AuthContext";
-import React, { useContext } from "react";
-import { View, ActivityIndicator } from "react-native"; // Import ActivityIndicator
-import { Colors } from "@/constants/Colors";
-
 
 export default function TabLayout() {
   const authContext = useContext(AuthContext);
-  if (!authContext) {
-    throw new Error("AuthContext must be used within an AuthProvider");
+  const onboardingContext = useContext(OnboardingContext);
+
+  if (!authContext || !onboardingContext) {
+    throw new Error(
+      "AuthContext and OnboardingContext must be used within their providers"
+    );
   }
 
-  const { userToken, isLoading } = authContext;
-  console.log(isLoading, userToken);
-  if (!isLoading && !userToken) {
-    console.log("hello...");
-    // router.replace("/(auth)/Login");
-  }
+  const { userToken, isLoading: isAuthLoading } = authContext;
+  const { isOnboardingCompleted, completeOnboarding } = onboardingContext;
 
-  if (isLoading) {
+  useEffect(() => {
+    // Navigate to onboarding if not completed and user is not authenticated
+    if (!isAuthLoading && !userToken && !isOnboardingCompleted) {
+      console.log("Navigating to OnBoarding...");
+      router.replace("/(auth)/OnBoarding");
+    }
+    if (isOnboardingCompleted && !isAuthLoading && !userToken) {
+      console.log("Navigating to Login...");
+      router.replace("/(auth)/Login");
+    }
+  }, [isAuthLoading, userToken, isOnboardingCompleted]); // Depend on onboarding and auth states
+
+  if (isAuthLoading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="blue" />
@@ -32,7 +43,7 @@ export default function TabLayout() {
 
   return (
     <Tabs
-      screenOptions={{ tabBarActiveTintColor: Colors.light.tabIconSelected,  }}
+      screenOptions={{ tabBarActiveTintColor: Colors.light.tabIconSelected }}
     >
       <Tabs.Screen
         name="index"
@@ -63,18 +74,20 @@ export default function TabLayout() {
       <Tabs.Screen
         name="add"
         options={{
-          title: "add",
+          title: "Add",
           tabBarIcon: ({ color }) => (
-            <View style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: 56,
-              width: 56,
-              borderRadius: 28,
-              backgroundColor: Colors.light.tabIconSelected,
-              marginBottom: 26
-            }}>
-              <FontAwesome6 name="add" size={28} color={'#fff'} />
+            <View
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                height: 56,
+                width: 56,
+                borderRadius: 28,
+                backgroundColor: Colors.light.tabIconSelected,
+                marginBottom: 26,
+              }}
+            >
+              <FontAwesome6 name="add" size={28} color={"#fff"} />
             </View>
           ),
         }}
