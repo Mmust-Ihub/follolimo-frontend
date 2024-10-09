@@ -12,8 +12,9 @@ export default function TabLayout() {
 
   const { userToken, isLoading } = authContext;
 console.log(isLoading, userToken)
-  if (!isLoading && !userToken && userToken === "sample-token") {
+  if (!isLoading && !userToken) {
     console.log("hello...");
+    router.replace("/(auth)/Login");
   }
 
   if (isLoading) {

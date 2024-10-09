@@ -12,7 +12,7 @@ import * as ImagePicker from "expo-image-picker";
 export default function ImagePickerExample() {
   const [image, setImage] = useState(null);
   const [diseaseInfo, setDiseaseInfo] = useState(null);
-  const [error, setError] = useState(false)
+  const [error, setError] = useState(false);
 
   // Function to pick an image from the device's gallery
   const pickImage = async () => {
@@ -35,26 +35,27 @@ export default function ImagePickerExample() {
     const data = new FormData();
     data.append("image", {
       uri: imageUri,
-      type: "image/jpeg",
-      name: "uploaded_image.jpg",
     });
 
     try {
       const res = await fetch(
-        "https://fololimo-api.vercel.app/api/v1/model/disease",
+        "https://fololimo-api.vercel.app/api/v1/model/pest",
         {
           method: "POST",
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
+            Authorization: "Bearer e695aa9901c6e369ebae9c8ceba9b234d09dfe64",
           },
-          body: data,
+          body: imageUri,
         }
       );
       const response = await res.json();
-      console.log(res)
-      return response;
+      console.log(res);
+      console.log(response);
+
+      // return response;
     } catch (error) {
-      setError(true)
+      setError(true);
       console.log("Upload image failed:", error);
     }
   };
@@ -127,7 +128,7 @@ const styles = StyleSheet.create({
     width: "90%",
     backgroundColor: "#f5f5f5",
     borderRadius: 10,
-    flexGrow:1
+    flexGrow: 1,
   },
   diseaseText: {
     fontSize: 20,
