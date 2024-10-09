@@ -5,13 +5,34 @@ import {
   KeyboardAvoidingView,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from "react-native";
-import React from "react";
+import React, { useContext, useState } from "react";
 import { Ionicons } from "@expo/vector-icons"; // Use Ionicons from @expo/vector-icons
 import { Link } from "expo-router";
+import { AuthContext } from "@/contexts/AuthContext";
 
 export default function Login() {
-  console.log("Login page", process.env.EXPO_PUBLIC_API_URL);
+  const [username, setUsername] = useState("");
+
+  const [password, setPassword] = useState("");
+
+  // Get AuthContext and check if it's defined
+  const authContext = useContext(AuthContext);
+  if (!authContext) {
+    throw new Error("AuthContext is not available");
+  }
+
+  const { login } = authContext;
+  const handleLogin = () => {
+    console.log("Attempting to log in with", username, password);
+    if (!username || !password) {
+      Alert.alert("All fields are required");
+      return;
+    }
+
+    login(username, password);
+  };
   return (
     <SafeAreaView className="bg-green-900 flex-1">
       <KeyboardAvoidingView className="bg-white flex justify-center items-center h-screen px-4 space-y-6 rounded-lg shadow-lg">
@@ -23,6 +44,7 @@ export default function Login() {
         <View className="border border-green-500 rounded-lg w-full flex flex-row items-center px-4 py-2">
           <Ionicons name="person-outline" size={20} color="#A3A3A3" />
           <TextInput
+            onChange={(e) => setUsername(e.nativeEvent.text)}
             className="ml-2 flex-1"
             placeholder="Username..."
             placeholderTextColor="#A3A3A3"
@@ -33,6 +55,7 @@ export default function Login() {
         <View className="border border-green-500 rounded-lg w-full flex flex-row items-center px-4 py-2">
           <Ionicons name="lock-closed-outline" size={20} color="#A3A3A3" />
           <TextInput
+            onChange={(e) => setPassword(e.nativeEvent.text)}
             secureTextEntry
             className="ml-2 flex-1"
             placeholder="Password..."
@@ -50,7 +73,10 @@ export default function Login() {
         </View>
 
         {/* Login button */}
-        <TouchableOpacity className="bg-green-500 rounded-lg w-full px-4 py-2">
+        <TouchableOpacity
+          className="bg-green-500 rounded-lg w-full px-4 py-2"
+          onPress={handleLogin}
+        >
           <Text className="text-white text-center font-semibold">Login</Text>
         </TouchableOpacity>
 
