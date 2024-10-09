@@ -38,16 +38,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loadToken();
   }, [userToken]);
 
-  const login = async (username: string, password: string) => {
-    console.log("Attempting to log in with", username, password);
+  const login = async (username: string, password: string, email: string) => {
+    console.log("Attempting to log in with", username, password, email);
     try {
       // Call your authentication API here to get the token
-      const response = await fetch("YOUR_API_ENDPOINT", {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password }), // Send username and password
+        body: JSON.stringify({
+          username: username,
+          email: email,
+          password: password,
+        }), // Send username and password
       });
 
       if (!response.ok) {
@@ -65,7 +69,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const register = async (data: object) => {};
+  const register = async (
+    email: string,
+    username: string,
+    password1: string,
+    password2: string
+  ) => {};
 
   const logout = async () => {
     try {
