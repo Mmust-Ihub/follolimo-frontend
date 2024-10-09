@@ -14,7 +14,7 @@ export default function TabLayout() {
 console.log(isLoading, userToken)
   if (!isLoading && !userToken) {
     console.log("hello...");
-    router.replace("/(auth)/Login");
+    router.replace("/(auth)/login");
   }
 
   if (isLoading) {
