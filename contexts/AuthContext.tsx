@@ -24,7 +24,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const loadToken = async () => {
       try {
         const token = await SecureStore.getItemAsync("Token");
-        console.log(token)
+        console.log(token);
         if (token) {
           setUserToken(token);
         }
@@ -36,7 +36,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     loadToken();
-  }, []);
+  }, [userToken]);
 
   const login = async (username: string, password: string) => {
     console.log("Attempting to log in with", username, password);
@@ -65,9 +65,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const register = async (data: object)=>{
-
-  }
+  const register = async (data: object) => {};
 
   const logout = async () => {
     try {

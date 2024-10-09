@@ -1,10 +1,10 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { View, Text } from "react-native";
+import React from "react";
 
 export default function Login() {
   return (
-    <View>
+    <View style={{ backgroundColor: "tomato", flex: 1 }}>
       <Text>Login</Text>
     </View>
-  )
+  );
 }
