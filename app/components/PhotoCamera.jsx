@@ -10,25 +10,43 @@ import {
   Button,
 } from "react-native";
 import * as MediaLibrary from "expo-media-library";
-import BottomSheet, { BottomSheetMethods } from "@devvie/bottom-sheet";
+import BottomSheet from "@devvie/bottom-sheet";
+import Entypo from "@expo/vector-icons/Entypo";
+import { Colors } from "@/constants/Colors";
+import * as ImagePicker from "expo-image-picker";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
-export default function PhotoCamera() {
+export default function PhotoCamera({ onCapture }) {
   const [previewVisible, setPreviewVisible] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
-  const [isRecording, setIsRecording] = useState(false);
   const [facing, setFacing] = useState("back");
   const [flash, setFlash] = useState("off");
   const sheetRef = useRef(null);
-  const cameraRef = useRef()
+  const cameraRef = useRef(null);
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
-  const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
+  const [mediaLibraryPermission, requestMediaLibraryPermission] =
+    MediaLibrary.usePermissions();
   const { width } = useWindowDimensions();
   const height = Math.round((width * 16) / 9);
-  const url = "https://fololimo-api.vercel.app/";
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setCapturedImage(result.assets[0].uri);
+      onCapture(result.assets[0].uri); // Send image to parent
+      console.log("result", result);
+    }
+  };
 
   useEffect(() => {
     (async () => {
-      if (!mediaLibraryPermission.granted) {
+      if (!mediaLibraryPermission?.granted) {
         const { status } = await requestMediaLibraryPermission();
         if (status !== "granted") {
           console.warn("Media library permission not granted");
@@ -55,75 +73,16 @@ export default function PhotoCamera() {
     try {
       let photo = await cameraRef.current.takePictureAsync();
       setPreviewVisible(true);
-      setCapturedImage(photo);
+      setCapturedImage(photo.uri);
+      onCapture(photo.uri); // Send captured image to parent
       console.log("photo", photo);
-      if (mediaLibraryPermission.granted) {
+      if (mediaLibraryPermission?.granted) {
         const asset = await MediaLibrary.createAssetAsync(photo.uri);
         console.log(asset);
-        const form = new FormData();
-        form.append("image", {
-          uri: photo.uri,
-        });
-        submitImage(form);
-        await MediaLibrary.createAlbumAsync("ExpoProject", asset, false);
       } else {
         console.warn("Media library permission not granted");
       }
       sheetRef.current?.open();
-      
-    } catch (error) {
-      console.warn(error);
-    }
-  }
-
-  function stopRecording() {
-    cameraRef.current.stopRecording();
-    setIsRecording(false);
-  }
-  const submitImage = async (image) => {
-    try {
-      const response = await fetch(
-        "https://fololimo-api.vercel.app/api/v1/model/disease",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          body: image,
-        }
-      );
-      console.log("response", response);
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Image uploaded successfully:", data);
-      } else {
-        console.warn("Image upload failed", response.statusText);
-      }
-    } catch (error) {
-      console.warn("Error uploading image", error);
-    }
-  }
-  async function recordMedia() {
-    try {
-      const { status } = await Camera.requestMicrophonePermissionsAsync();
-      if (status !== "granted") {
-        console.warn("Microphone permission not granted");
-        return;
-      }
-
-      setIsRecording(true);
-      let recording = await cameraRef.current.recordAsync();
-
-      // Stop recording automatically after 5 seconds
-      setTimeout(async () => {
-        stopRecording();
-        if (mediaLibraryPermission.granted) {
-          const asset = await MediaLibrary.createAssetAsync(recording.uri);
-          await MediaLibrary.createAlbumAsync("ExpoProject", asset, false);
-        } else {
-          console.warn("Media library permission not granted");
-        }
-      }, 5000); // Adjust the recording duration as needed
     } catch (error) {
       console.warn(error);
     }
@@ -135,24 +94,31 @@ export default function PhotoCamera() {
 
   return (
     <View style={styles.container}>
-      <CameraView
+      <Camera
         style={{ height, flex: 1 }}
-        facing={facing}
-        flash={flash}
-        ratio="16:9"
+        type={facing}
+        flashMode={flash}
         ref={cameraRef}
-        autofocus="true"
+        ratio="16:9"
       >
-        <Pressable
-          style={styles.captureBtn}
-          onPress={() => {
-            capturePhoto();
-          }}
-        >
-          <View style={styles.capturedBtnInner} />
-        </Pressable>
-      </CameraView>
-      <BottomSheet height='90%' ref={sheetRef}>
+        <View className="absolute flex-row justify-between px-[20%] items-center bottom-[10%] w-screen">
+          <Pressable style={styles.ActionButtons} onPress={pickImage}>
+            <Entypo name="folder-images" size={24} color="black" />
+          </Pressable>
+          <Pressable style={styles.captureBtn} onPress={capturePhoto}>
+            <View style={styles.capturedBtnInner} />
+          </Pressable>
+          <Pressable style={styles.ActionButtons} onPress={toggleCameraFacing}>
+            <MaterialCommunityIcons
+              name="camera-flip"
+              size={24}
+              color="black"
+            />
+          </Pressable>
+        </View>
+      </Camera>
+
+      <BottomSheet height="90%" ref={sheetRef}>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.button}
@@ -186,23 +152,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#000",
   },
-  captureBtn: {
-    position: "absolute",
-    left: "50%",
-    width: 80,
-    height: 80,
-    borderWidth: 4,
-    borderColor: "#fff",
-    bottom: "15%",
+  ActionButtons: {
+    padding: 2,
     borderRadius: 50,
-    display: "flex",
+    backgroundColor: Colors.light.tabIconSelected,
+    height: 50,
+    width: 50,
     justifyContent: "center",
     alignItems: "center",
-    transform: [{ translateX: -50 }],
   },
   capturedBtnInner: {
-    width: 60,
-    height: 60,
+    width: 65,
+    height: 65,
     borderRadius: 50,
     backgroundColor: "#fff",
     borderColor: "#fff",
@@ -230,5 +191,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: "#000",
+  },
+  captureBtn: {
+    borderRadius: 50,
+    padding: 4,
+    borderColor: "#fff",
+    borderWidth: 3,
   },
 });
