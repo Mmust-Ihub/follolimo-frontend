@@ -3,7 +3,7 @@ import React from "react";
 
 export default function Login() {
   return (
-    <View style={{ backgroundColor: "tomato", flex: 1 }}>
+    <View className="bg-green-900 flex-1">
       <Text>Login</Text>
     </View>
   );
