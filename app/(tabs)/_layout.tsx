@@ -1,4 +1,7 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { router, Tabs } from "expo-router";
 import { AuthContext } from "@/contexts/AuthContext";
 import React, { useContext } from "react";
@@ -32,6 +35,37 @@ console.log(isLoading, userToken)
           title: "Home",
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="home" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="scan"
+        options={{
+          title: "Scan",
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons
+              name="leaf-circle-outline"
+              size={28}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="add"
+        options={{
+          title: "add",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome6 name="add" size={28} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="inventory"
+        options={{
+          title: "Inventory",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome name="folder-open" size={28} color={color} />
           ),
         }}
       />
