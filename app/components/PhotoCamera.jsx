@@ -15,6 +15,8 @@ import Entypo from "@expo/vector-icons/Entypo";
 import { Colors } from "@/constants/Colors";
 import * as ImagePicker from "expo-image-picker";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useImageContext } from "@/contexts/ImageContext";
+import { router } from "expo-router";
 
 // type Image = {
 //   assetId: string | null,
@@ -48,7 +50,11 @@ export default function PhotoCamera() {
   const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
   const { width } = useWindowDimensions();
   const height = Math.round((width * 16) / 9);
-  const url = "https://fololimo-api.vercel.app/";
+  const image = useImageContext();
+  if (!image) {
+    throw new Error("ImageContext not found");
+  }
+  const { setImageUri} = image;
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -60,7 +66,9 @@ export default function PhotoCamera() {
 
     if (!result.canceled) {
       setCapturedImage(result.assets[0].uri);
+      setImageUri(result.assets[0].uri);
       console.log("result", result);
+      router.push("/(modals)/ImageResults")
     }
   };
 
