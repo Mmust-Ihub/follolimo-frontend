@@ -17,7 +17,7 @@ export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
+  const [isOpen, setIsOpen] = useState(false);
   // Get AuthContext and check if it's defined
   const authContext = useContext(AuthContext);
 
@@ -44,6 +44,9 @@ export default function SignUp() {
     console.log("Registering with", username);
 
     register(email, username, password, confirmPassword);
+  };
+  const tooglePasswordField = () => {
+    setIsOpen((prev) => !prev);
   };
   return (
     <SafeAreaView className="bg-green-900 flex-1">

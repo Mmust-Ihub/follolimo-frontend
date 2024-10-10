@@ -47,11 +47,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [userToken]);
 
   const login = async (username: string, password: string) => {
+    setIsLoading(true);
     console.log("Attempting to log in with", username, password);
     try {
       // Call your authentication API here to get the token
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/users/login/`,
+        `${process.env.EXPO_PUBLIC_DJANGOAPI_URL}/users/login/`,
         {
           method: "POST",
           headers: {
@@ -65,6 +66,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       );
 
       if (!response.ok) {
+        setIsLoading(false);
         // console.log(response);
         const data = await response.json();
         console.log(data);
@@ -72,6 +74,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       if (response.status === 200) {
+        setIsLoading(false);
         const data = await response.json();
         const token = data.key; // Assuming your API returns the token in this format
         console.log(token);
@@ -82,7 +85,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.log("Logged in, token:", token);
       }
     } catch (error) {
+      setIsLoading(false);
       console.error("Login failed:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -92,6 +98,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     password1: string,
     password2: string
   ) => {
+    setIsLoading(true);
     console.log(
       "Attempting to register with",
       email,
@@ -102,7 +109,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       // Call your authentication API here to get the token
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/users/register/ `,
+        `${process.env.EXPO_PUBLIC_DJANGOAPI_URL}/users/register/ `,
         {
           method: "POST",
           headers: {
@@ -118,6 +125,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       );
 
       if (!response.ok) {
+        setIsLoading(false);
         const data = await response.json();
         console.log(data);
         console.log(response);
@@ -125,6 +133,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       if (response.status === 201) {
+        setIsLoading(false);
         const data = await response.json();
         Alert.alert(
           "Registration Successful",
@@ -134,13 +143,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.log("Logged in, token:", data);
       }
     } catch (error) {
+      setIsLoading(false);
       console.error("Register failed:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
   const logout = async () => {
     try {
-      await SecureStore.deleteItemAsync("userToken");
+      await SecureStore.deleteItemAsync("Token");
       setUserToken(null);
+      router.replace("/(auth)/Login");
     } catch (error) {
       console.error("Logout failed:", error);
     }

@@ -38,23 +38,23 @@ import { router } from "expo-router";
 //   canceled: boolean,
 // };
 
-
 export default function PhotoCamera() {
   const [previewVisible, setPreviewVisible] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [facing, setFacing] = useState("back");
   const [flash, setFlash] = useState("off");
   const sheetRef = useRef(null);
-  const cameraRef = useRef()
+  const cameraRef = useRef();
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
-  const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
+  const [mediaLibraryPermission, requestMediaLibraryPermission] =
+    MediaLibrary.usePermissions();
   const { width } = useWindowDimensions();
   const height = Math.round((width * 16) / 9);
   const image = useImageContext();
   if (!image) {
     throw new Error("ImageContext not found");
   }
-  const { setImageUri} = image;
+  const { setImageUri } = image;
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -68,10 +68,9 @@ export default function PhotoCamera() {
       setCapturedImage(result.assets[0].uri);
       setImageUri(result.assets[0].uri);
       console.log("result", result);
-      router.push("/(modals)/ImageResults")
+      router.push("/(modals)/ImageResults");
     }
   };
-
 
   useEffect(() => {
     (async () => {
@@ -117,7 +116,6 @@ export default function PhotoCamera() {
         console.warn("Media library permission not granted");
       }
       sheetRef.current?.open();
-      
     } catch (error) {
       console.warn(error);
     }
@@ -126,7 +124,7 @@ export default function PhotoCamera() {
   const submitImage = async (image) => {
     try {
       const response = await fetch(
-        "https://fololimo-api.vercel.app/api/v1/model/disease",
+        `${process.env.EXPO_PUBLIC_NODEAPI_URL}/model/disease`,
         {
           method: "POST",
           headers: {
@@ -145,8 +143,8 @@ export default function PhotoCamera() {
     } catch (error) {
       console.warn("Error uploading image", error);
     }
-  }
-  
+  };
+
   function toggleCameraFacing() {
     console.log("toggleCameraFacing");
     setFacing((current) => (current === "back" ? "front" : "back"));

@@ -6,9 +6,10 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import React, { useContext, useState } from "react";
-import { Ionicons } from "@expo/vector-icons"; // Use Ionicons from @expo/vector-icons
+import { Feather, Ionicons } from "@expo/vector-icons"; // Use Ionicons from @expo/vector-icons
 import { Link } from "expo-router";
 import { AuthContext } from "@/contexts/AuthContext";
 
@@ -23,7 +24,7 @@ export default function Login() {
     throw new Error("AuthContext is not available");
   }
 
-  const { login } = authContext;
+  const { login, isLoading } = authContext;
   const handleLogin = () => {
     console.log("Attempting to log in with", username, password);
     if (!username || !password) {
@@ -33,6 +34,14 @@ export default function Login() {
 
     login(username, password);
   };
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="blue" />
+        <Text className="text-lg font-bold">Loading...</Text>
+      </View>
+    );
+  }
   return (
     <SafeAreaView className="bg-green-900 flex-1">
       <KeyboardAvoidingView className="bg-white flex justify-center items-center h-screen px-4 space-y-6 rounded-lg shadow-lg">
@@ -61,6 +70,7 @@ export default function Login() {
             placeholder="Password..."
             placeholderTextColor="#A3A3A3"
           />
+          <Feather name="eye" size={24} color="gray"  className=""/>
         </View>
 
         {/* Forgot Password link aligned left under password input */}
