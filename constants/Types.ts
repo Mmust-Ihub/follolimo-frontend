@@ -24,3 +24,22 @@ export type PestInfo = {
   post_harvest_handling: string[];
   image_url: string;
 };
+export type Image = {
+  assetId: string | null;
+  base64: string | null;
+  duration: number | null;
+  exif: Record<string, unknown> | null;
+  fileName: string;
+  fileSize: number;
+  height: number;
+  mimeType: string;
+  rotation: number | null;
+  type: "image";
+  uri: string;
+  width: number;
+};
+
+export type ImagePickerResult = {
+  assets: Image[];
+  canceled: boolean;
+};

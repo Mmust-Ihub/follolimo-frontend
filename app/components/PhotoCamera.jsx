@@ -18,25 +18,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useImageContext } from "@/contexts/ImageContext";
 import { router } from "expo-router";
 
-// type Image = {
-//   assetId: string | null,
-//   base64: string | null,
-//   duration: number | null,
-//   exif: Record<string, unknown> | null,
-//   fileName: string,
-//   fileSize: number,
-//   height: number,
-//   mimeType: string,
-//   rotation: number | null,
-//   type: "image",
-//   uri: string,
-//   width: number,
-// };
 
-// type ImagePickerResult = {
-//   assets: Image[],
-//   canceled: boolean,
-// };
 
 export default function PhotoCamera() {
   const [previewVisible, setPreviewVisible] = useState(false);
@@ -67,7 +49,7 @@ export default function PhotoCamera() {
     if (!result.canceled) {
       setCapturedImage(result.assets[0].uri);
       setImageUri(result.assets[0].uri);
-      console.log("result", result);
+      console.log("result", result.assets[0]);
       router.push("/(modals)/ImageResults");
     }
   };

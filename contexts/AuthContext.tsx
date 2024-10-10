@@ -64,8 +64,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }), // Send username and password
         }
       );
-
+      console.log(response);
       if (!response.ok) {
+        
         setIsLoading(false);
         // console.log(response);
         const data = await response.json();

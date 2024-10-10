@@ -1,9 +1,17 @@
-import { View, Text, Image, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  ActivityIndicator,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { useImageContext } from "@/contexts/ImageContext";
 import { CropInfo, PestInfo } from "@/constants/Types";
 import { Colors } from "@/constants/Colors";
 import { AuthContext } from "@/contexts/AuthContext";
+import * as FileSystem from "expo-file-system"; // Import FileSystem for reading files
 
 export default function ImageResults() {
   const authContext = useContext(AuthContext);
@@ -16,46 +24,71 @@ export default function ImageResults() {
   if (!image) {
     throw new Error("ImageContext not found");
   }
-  const { imageUri } = image;
-  console.log(imageUri);
+  const { imageUri } = image; // Assume imageUri is a string
+  if (!imageUri) {
+    throw new Error("Image URI not found");
+  }
+  console.log(imageUri, token);
 
   const url = `${process.env.EXPO_PUBLIC_NODEAPI_URL}/model/disease`;
   const [results, setResults] = useState<CropInfo | PestInfo | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const HandleFetchResults = async () => {
+  const handleFetchResults = async () => {
+    console.log("Fetching results...", url, imageUri);
     try {
       setLoading(true);
-      const response = await fetch(url, {
+      if (!imageUri) {
+        setError("No image to process");
+        return;
+      }
+
+      const fileInfo = await FileSystem.getInfoAsync(imageUri);
+      console.log("File Info:", fileInfo);
+
+      const fileContent = await FileSystem.readAsStringAsync(imageUri, {
+        encoding: FileSystem.EncodingType.Base64, 
+      });
+
+      // Create FormData and append the file as a Blob
+      const blob = new Blob([fileContent], { type: "image/jpeg" });
+      const formData = new FormData();
+      formData.append("files", blob, fileInfo.uri.split("/").pop()); // Append blob with filename
+
+
+      const apiResponse = await fetch(url, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          image: imageUri,
-        }),
+        body: formData,
       });
-      console.log(response);
-      if (!response.ok) {
+
+      console.log(apiResponse, "API Response");
+      if (!apiResponse.ok) {
         setError("An error occurred");
+        return;
       }
-      const data = await response.json();
-      setResults(data);
-      console.log(data);
+
+      const data = await apiResponse.json();
+      setResults(data); // Handle the result data
+      console.log("API Response:", data);
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching results:", error);
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+
   useEffect(() => {
     if (imageUri) {
-      HandleFetchResults();
+      handleFetchResults();
     }
   }, [imageUri]);
+
   return (
     <View className="flex-1 justify-center items-center">
       {imageUri && (
@@ -69,9 +102,46 @@ export default function ImageResults() {
       ) : (
         <View className="flex-1 p-4 justify-center items-center">
           {error ? (
-            <Text>{error}</Text>
+            <View>
+              <Text>{error}</Text>
+              <View className="flex-row w-[80vw] gap-3 justify-center">
+                <TouchableOpacity
+                  className="bg-green-700 p-2 px-4"
+                  onPress={handleFetchResults}
+                >
+                  <Text className="text-white">Retry</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className="bg-green-700 p-2 px-4"
+                  onPress={() => setResults(null)}
+                >
+                  <Text className="text-white">Clear</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           ) : (
-            <Text>Data fetched successfullty</Text>
+            <ScrollView>
+              {results ? (
+                <View>
+                  <Text className="text-xl font-bold text-center mb-4">
+                    Analysis Results
+                  </Text>
+                  {"disease" in results && (
+                    <Text>
+                      Disease: {results.disease}
+                      {"\n"}
+                    </Text>
+                  )}
+                </View>
+              ) : (
+                <TouchableOpacity
+                  className="bg-green-700 p-2 px-4"
+                  onPress={handleFetchResults}
+                >
+                  <Text className="text-white">Retry</Text>
+                </TouchableOpacity>
+              )}
+            </ScrollView>
           )}
         </View>
       )}
