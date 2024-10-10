@@ -5,7 +5,7 @@ import { CropInfo, PestInfo } from "@/constants/Types";
 import { Colors } from "@/constants/Colors";
 
 export default function ImageResults() {
-  const token = "!!@@##$$%%^^&&**((()))__++==";
+  const token = "!!@@##$$%%^^&&**((()))++==";
   const image = useImageContext();
   if (!image) {
     throw new Error("ImageContext not found");
