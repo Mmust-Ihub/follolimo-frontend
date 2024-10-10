@@ -67,6 +67,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (!response.ok) {
         setIsLoading(false);
+        Alert.alert("Login failed", "Invalid credentials");
         // console.log(response);
         const data = await response.json();
         console.log(data);
@@ -84,8 +85,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         router.replace("/(tabs)");
         console.log("Logged in, token:", token);
       }
+      if (response.status === 401) {
+        setIsLoading(false);
+        Alert.alert("Login failed", "Invalid credentials");
+        const data = await response.json();
+        console.log(data);
+        throw new Error("Login failed"); // Handle failed login
+      }
+      if (response.status !== 200 && response.status !== 401) {
+        setIsLoading(false);
+        Alert.alert("Login failed", "Invalid credentials");
+        const data = await response.json();
+        console.log(data);
+        throw new Error("Login failed"); // Handle failed login
+      }
     } catch (error) {
       setIsLoading(false);
+      Alert.alert("Login failed " + error + " Invalid credentials");
       console.error("Login failed:", error);
     } finally {
       setIsLoading(false);
@@ -126,6 +142,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (!response.ok) {
         setIsLoading(false);
+        Alert.alert("Registration failed");
         const data = await response.json();
         console.log(data);
         console.log(response);
@@ -144,6 +161,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error) {
       setIsLoading(false);
+      Alert.alert("Registration failed " + error);
       console.error("Register failed:", error);
     } finally {
       setIsLoading(false);
