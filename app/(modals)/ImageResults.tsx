@@ -1,11 +1,17 @@
 import { View, Text, Image, ActivityIndicator } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useImageContext } from "@/contexts/ImageContext";
 import { CropInfo, PestInfo } from "@/constants/Types";
 import { Colors } from "@/constants/Colors";
+import { AuthContext } from "@/contexts/AuthContext";
 
 export default function ImageResults() {
-  const token = "!!@@##$$%%^^&&**((()))++==";
+  const authContext = useContext(AuthContext);
+  if (!authContext) {
+    throw new Error("AuthContext not found");
+  }
+  const { userToken: token } = authContext;
+
   const image = useImageContext();
   if (!image) {
     throw new Error("ImageContext not found");
@@ -13,19 +19,19 @@ export default function ImageResults() {
   const { imageUri } = image;
   console.log(imageUri);
 
-  const url = "https://fololimo-api.vercel.app/api/v1/model/disease";
+  const url = `${process.env.EXPO_PUBLIC_NODEAPI_URL}/model/disease`;
   const [results, setResults] = useState<CropInfo | PestInfo | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   const HandleFetchResults = async () => {
-      try {
-        setLoading(true);
+    try {
+      setLoading(true);
       const response = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           image: imageUri,
@@ -40,9 +46,9 @@ export default function ImageResults() {
       console.log(data);
     } catch (error) {
       console.error(error);
-      } finally {
-        setLoading(false);
-      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

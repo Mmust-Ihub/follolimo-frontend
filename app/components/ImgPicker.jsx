@@ -8,12 +8,18 @@ import {
   ScrollView,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import { AuthContext } from "@/contexts/AuthContext";
 
 export default function ImagePickerExample() {
   const [image, setImage] = useState(null);
   const [diseaseInfo, setDiseaseInfo] = useState(null);
   const [error, setError] = useState(false);
 
+  const authContext = useContext(AuthContext);
+  if (!authContext) {
+    throw new Error("AuthContext not found");
+  }
+  const { userToken: token } = authContext;
   // Function to pick an image from the device's gallery
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -39,12 +45,12 @@ export default function ImagePickerExample() {
 
     try {
       const res = await fetch(
-        "https://fololimo-api.vercel.app/api/v1/model/pest",
+        `${process.env.EXPO_PUBLIC_NODEAPI_URL}/model/pest`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer e695aa9901c6e369ebae9c8ceba9b234d09dfe64",
+            Authorization: `Bearer ${token}`,
           },
           body: imageUri,
         }
