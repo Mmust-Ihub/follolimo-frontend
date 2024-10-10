@@ -6,119 +6,255 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
+  TouchableWithoutFeedback,
+  Keyboard,
+  ScrollView,
 } from "react-native";
 import React, { useContext, useState } from "react";
-import { Ionicons } from "@expo/vector-icons"; // Use Ionicons from @expo/vector-icons
+import Modal from "react-native-modal";
+import { Feather, Ionicons } from "@expo/vector-icons"; // Use Ionicons from @expo/vector-icons
 import { Link } from "expo-router";
 import { AuthContext } from "@/contexts/AuthContext";
+import { ThemeContext } from "@/contexts/ThemeContext"; // For theme management
+import { Colors } from "@/constants/Colors"; // Custom colors based on themes
 
 export default function SignUp() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isCOpen, setIsCOpen] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+
   // Get AuthContext and check if it's defined
   const authContext = useContext(AuthContext);
+  const themeContext = useContext(ThemeContext);
 
-  if (!authContext) {
-    throw new Error("AuthContext is not available");
+  if (!authContext || !themeContext) {
+    throw new Error("Contexts not found");
   }
 
-  const { register } = authContext;
+  const { register, isLoading } = authContext;
+  const { isDarkMode } = themeContext;
 
   const handleSubmit = () => {
+     Keyboard.dismiss();
     if (!username || !email || !password || !confirmPassword) {
-      Alert.alert("All fields are required");
+      setModalMessage("All fields are required");
+      setIsModalVisible(true);
       return;
     }
     if (password !== confirmPassword) {
-      Alert.alert("Passwords do not match");
+      setModalMessage("Password does not match");
+      setIsModalVisible(true);
       return;
     }
-    const emailTest = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailTest.test(email)) {
-      Alert.alert("Invalid email address");
-      return;
-    }
-    console.log("Registering with", username);
+    const emailTest =
+      /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
 
+    if (!emailTest.test(email)) {
+      setModalMessage("Invalid email address");
+      setIsModalVisible(true);
+      return;
+    }
+    const passwordTest = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
+    if (!passwordTest.test(password)) {
+      setModalMessage(
+        "Password must contain at least 8 characters, one Uppercase, one Lowercase, and one Number"
+      );
+      setIsModalVisible(true);
+      return;
+    }
     register(email, username, password, confirmPassword);
   };
-  const tooglePasswordField = () => {
-    setIsOpen((prev) => !prev);
-  };
-  return (
-    <SafeAreaView className="bg-green-900 flex-1">
-      <KeyboardAvoidingView className="bg-white flex justify-center items-center h-screen px-4 space-y-6 rounded-lg shadow-lg">
-        <Text className="font-extrabold text-xl uppercase text-center text-green-900 mb-4">
-          Register To Follolimo
+
+  const handleOpen = () => setIsOpen((prev) => !prev);
+  const handleCOpen = () => setIsCOpen((prev) => !prev);
+
+  // Set theme-based colors
+  const backgroundColor = isDarkMode
+    ? Colors.dark.background
+    : Colors.light.background;
+  const textColor = isDarkMode ? Colors.dark.text : Colors.light.text;
+  const inputBorderColor = isDarkMode ? Colors.dark.tint : Colors.light.tint;
+  const iconColor = isDarkMode ? Colors.dark.icon : Colors.light.icon;
+
+  if (isLoading) {
+    return (
+      <SafeAreaView
+        style={{ backgroundColor }}
+        className="flex-1 justify-center items-center"
+      >
+        <ActivityIndicator size="large" color={Colors.light.tint} />
+        <Text style={{ color: textColor }} className="text-lg mt-4">
+          Registering...
         </Text>
+      </SafeAreaView>
+    );
+  }
 
-        {/* Username input with icon */}
-        <View className="border border-green-500 rounded-lg w-full flex flex-row items-center px-4 py-2">
-          <Ionicons name="person-outline" size={20} color="#A3A3A3" />
-          <TextInput
-            onChange={(e) => setUsername(e.nativeEvent.text)}
-            className="ml-2 flex-1"
-            placeholder="Username..."
-            placeholderTextColor="#A3A3A3"
-          />
-        </View>
-        {/* email input with icon */}
-        <View className="border border-green-500 rounded-lg w-full flex flex-row items-center px-4 py-2">
-          <Ionicons name="person-outline" size={20} color="#A3A3A3" />
-          <TextInput
-            onChange={(e) => setEmail(e.nativeEvent.text)}
-            className="ml-2 flex-1"
-            placeholder="email..."
-            placeholderTextColor="#A3A3A3"
-          />
-        </View>
-
-        {/* Password input with icon */}
-        <View className="border border-green-500 rounded-lg w-full flex flex-row items-center px-4 py-2">
-          <Ionicons name="lock-closed-outline" size={20} color="#A3A3A3" />
-          <TextInput
-            onChange={(e) => setPassword(e.nativeEvent.text)}
-            secureTextEntry
-            className="ml-2 flex-1"
-            placeholder="Password..."
-            placeholderTextColor="#A3A3A3"
-          />
-        </View>
-        <View className="border border-green-500 rounded-lg w-full flex flex-row items-center px-4 py-2">
-          <Ionicons name="lock-closed-outline" size={20} color="#A3A3A3" />
-          <TextInput
-            onChange={(e) => setConfirmPassword(e.nativeEvent.text)}
-            secureTextEntry
-            className="ml-2 flex-1"
-            placeholder="Comfirm Password..."
-            placeholderTextColor="#A3A3A3"
-          />
-        </View>
-
-        {/* Login button */}
-        <TouchableOpacity
-          className="bg-green-500 rounded-lg w-full px-4 py-2"
-          onPress={handleSubmit}
-        >
-          <Text className="text-white text-center font-semibold">Register</Text>
-        </TouchableOpacity>
-
-        {/* Sign Up link aligned right below the Login button */}
-        <View className="w-full flex flex-row justify-start mt-2">
-          <TouchableOpacity className="flex flex-row gap-2">
-            <Link
-              href="/(auth)/Login"
-              className="text-green-500 text-sm text-right"
+  return (
+    <SafeAreaView style={{ backgroundColor }} className="flex-1">
+      <ScrollView>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <KeyboardAvoidingView className="flex justify-center items-center h-screen px-4 space-y-6">
+            <Text
+              style={{ color: textColor }}
+              className="font-extrabold text-xl uppercase text-center mb-4"
             >
-              <Text className=" text-sm">Already have an account?</Text>
-              <Text className="text-green-500 text-md">Login</Text>
-            </Link>
+              Register To Follolimo
+            </Text>
+
+            {/* Username input with icon */}
+            <View
+              style={{ borderColor: inputBorderColor }}
+              className="border rounded-lg w-full flex flex-row items-center px-4 py-2"
+            >
+              <Ionicons name="person-outline" size={20} color={iconColor} />
+              <TextInput
+                onChange={(e) => setUsername(e.nativeEvent.text)}
+                className="ml-2 flex-1"
+                placeholder="Username..."
+                placeholderTextColor={iconColor}
+                style={{ color: textColor }}
+              />
+            </View>
+
+            {/* Email input with icon */}
+            <View
+              style={{ borderColor: inputBorderColor }}
+              className="border rounded-lg w-full flex flex-row items-center px-4 py-2"
+            >
+              <Ionicons name="mail-outline" size={20} color={iconColor} />
+              <TextInput
+                onChange={(e) => setEmail(e.nativeEvent.text)}
+                className="ml-2 flex-1"
+                placeholder="Email..."
+                placeholderTextColor={iconColor}
+                style={{ color: textColor }}
+              />
+            </View>
+
+            {/* Password input with icon */}
+            <View
+              style={{ borderColor: inputBorderColor }}
+              className="border rounded-lg w-full flex flex-row items-center px-4 py-2"
+            >
+              <Ionicons
+                name="lock-closed-outline"
+                size={20}
+                color={iconColor}
+              />
+              <TextInput
+                onChange={(e) => setPassword(e.nativeEvent.text)}
+                secureTextEntry={!isOpen}
+                className="ml-2 flex-1"
+                placeholder="Password..."
+                placeholderTextColor={iconColor}
+                style={{ color: textColor }}
+              />
+              <TouchableOpacity onPress={handleOpen}>
+                <Feather
+                  name={isOpen ? "eye" : "eye-off"}
+                  size={24}
+                  color={iconColor}
+                />
+              </TouchableOpacity>
+            </View>
+
+            {/* Confirm Password input with icon */}
+            <View
+              style={{ borderColor: inputBorderColor }}
+              className="border rounded-lg w-full flex flex-row items-center px-4 py-2"
+            >
+              <Ionicons
+                name="lock-closed-outline"
+                size={20}
+                color={iconColor}
+              />
+              <TextInput
+                onChange={(e) => setConfirmPassword(e.nativeEvent.text)}
+                secureTextEntry={!isCOpen}
+                className="ml-2 flex-1"
+                placeholder="Confirm Password..."
+                placeholderTextColor={iconColor}
+                style={{ color: textColor }}
+              />
+              <TouchableOpacity onPress={handleCOpen}>
+                <Feather
+                  name={isCOpen ? "eye" : "eye-off"}
+                  size={24}
+                  color={iconColor}
+                />
+              </TouchableOpacity>
+            </View>
+
+            {/* Register button */}
+            <TouchableOpacity
+              className="bg-green-500 rounded-lg w-full px-4 py-3"
+              onPress={handleSubmit}
+            >
+              <Text className="text-white text-center font-bold">Register</Text>
+            </TouchableOpacity>
+
+            {/* Login link below the Register button */}
+            <View className="w-full flex flex-row justify-start mt-2">
+              <TouchableOpacity className="flex flex-row gap-2">
+                <Link href="/(auth)/Login" className="text-green-500 text-md">
+                  <Text className="text-lg underline">
+                    Already have an account?
+                  </Text>
+                  <Text className="text-green-500 text-lg underline">
+                    {" "}
+                    Login
+                  </Text>
+                </Link>
+              </TouchableOpacity>
+            </View>
+          </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
+      </ScrollView>
+
+      {/* Custom Modal */}
+      <Modal isVisible={isModalVisible}>
+        <View
+          style={{
+            backgroundColor: "white",
+            padding: 20,
+            borderRadius: 10,
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ fontSize: 20, fontWeight: "bold", color: "red" }}>
+            Error
+          </Text>
+          <Text style={{ fontSize: 16, marginTop: 10, textAlign: "center" }}>
+            {modalMessage}
+          </Text>
+          <TouchableOpacity
+            onPress={() => setIsModalVisible(false)}
+            style={{
+              backgroundColor: "green",
+              padding: 10,
+              marginTop: 20,
+              borderRadius: 5,
+            }}
+          >
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                paddingHorizontal: 20,
+              }}
+            >
+              Close
+            </Text>
           </TouchableOpacity>
         </View>
-      </KeyboardAvoidingView>
+      </Modal>
     </SafeAreaView>
   );
 }
