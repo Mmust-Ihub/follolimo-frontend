@@ -36,10 +36,10 @@ export default function ImagePickerExample() {
     }
   };
 
-  // Function to upload the selected image to the API
   const uploadImage = async (imageUri) => {
+    console.log("Uploading image...", imageUri);
     const data = new FormData();
-    data.append("image", {
+    data.append("files", {
       uri: imageUri,
     });
 

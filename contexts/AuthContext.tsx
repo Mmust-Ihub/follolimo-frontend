@@ -64,8 +64,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }), // Send username and password
         }
       );
-
+      console.log(response);
       if (!response.ok) {
+        
         setIsLoading(false);
         Alert.alert("Login failed", "Invalid credentials");
         // console.log(response);
