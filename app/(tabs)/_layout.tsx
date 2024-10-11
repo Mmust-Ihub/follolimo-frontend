@@ -113,6 +113,7 @@ export default function TabLayout() {
           name="add"
           options={{
             title: "Add",
+            headerShown: false,
             tabBarIcon: ({ color }) => (
               <View
                 style={{
