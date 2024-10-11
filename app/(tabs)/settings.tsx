@@ -1,9 +1,26 @@
 import React, { useContext } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Switch } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Switch,
+  LayoutAnimation,
+  Platform,
+  UIManager,
+} from "react-native";
 import { AuthContext } from "@/contexts/AuthContext";
 import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
 import { ThemeContext } from "@/contexts/ThemeContext"; // Theme context for dark mode
 import { Colors } from "@/constants/Colors";
+
+// Enable LayoutAnimation on Android
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 export default function Settings() {
   const authContext = useContext(AuthContext);
@@ -18,6 +35,12 @@ export default function Settings() {
   }
   const { isDarkMode, toggleTheme } = themeContext;
 
+  // Trigger layout animation before theme change
+  const handleThemeToggle = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    toggleTheme();
+  };
+
   // Determine background and text colors based on theme
   const backgroundColor = isDarkMode
     ? Colors.dark.background
@@ -26,10 +49,7 @@ export default function Settings() {
   const iconColor = isDarkMode ? Colors.dark.icon : Colors.light.icon;
 
   return (
-    <View
-      style={{ backgroundColor }}
-      className="flex-1 p-5 transition-colors ease-in-out"
-    >
+    <View style={{ backgroundColor }} className="flex-1 p-5 ">
       <ScrollView className="w-full">
         {/* Profile */}
         <TouchableOpacity className="flex-row items-center py-4 border-b border-gray-200">
@@ -58,7 +78,7 @@ export default function Settings() {
           <Switch
             trackColor={{ false: "#767577", true: "#fff" }}
             thumbColor={isDarkMode ? "#00ff00" : "#00ff00"}
-            onValueChange={toggleTheme}
+            onValueChange={handleThemeToggle}
             value={isDarkMode}
             className="ml-4"
           />
