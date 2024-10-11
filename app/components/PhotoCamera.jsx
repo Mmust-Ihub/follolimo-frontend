@@ -8,9 +8,10 @@ import {
   StyleSheet,
   TouchableOpacity,
   Button,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import * as MediaLibrary from "expo-media-library";
-import BottomSheet, { BottomSheetMethods } from "@devvie/bottom-sheet";
 import Entypo from "@expo/vector-icons/Entypo";
 import { Colors } from "@/constants/Colors";
 import * as ImagePicker from "expo-image-picker";
@@ -21,12 +22,10 @@ import { router } from "expo-router";
 
 
 export default function PhotoCamera() {
-  const [previewVisible, setPreviewVisible] = useState(false);
-  const [capturedImage, setCapturedImage] = useState(null);
   const [facing, setFacing] = useState("back");
   const [flash, setFlash] = useState("off");
-  const sheetRef = useRef(null);
   const cameraRef = useRef();
+  const [loading, setLoading] = useState(false);
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [mediaLibraryPermission, requestMediaLibraryPermission] =
     MediaLibrary.usePermissions();
@@ -42,7 +41,6 @@ export default function PhotoCamera() {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [4, 3],
       quality: 1,
     });
 
@@ -58,74 +56,48 @@ export default function PhotoCamera() {
     (async () => {
       if (!mediaLibraryPermission.granted) {
         const { status } = await requestMediaLibraryPermission();
-        if (status !== "granted") {
+        if (status !== "granted" | null) {
+          requestCameraPermission();
           console.warn("Media library permission not granted");
+          router.push("/(tabs)")
         }
       }
     })();
   }, [mediaLibraryPermission]);
 
-  if (!cameraPermission) {
-    return <View />;
-  }
-  if (!cameraPermission.granted) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.message}>
-          We need your permission to show the camera
-        </Text>
-        <Button onPress={requestCameraPermission} title="Grant Permission" />
-      </View>
-    );
-  }
+  
 
   async function capturePhoto() {
+    setLoading(true);
     try {
-      let photo = await cameraRef.current.takePictureAsync();
-      setPreviewVisible(true);
-      setCapturedImage(photo);
+      let photo = await cameraRef.current.takePictureAsync({ shutterSound : false });
       console.log("photo", photo);
       if (mediaLibraryPermission.granted) {
+        
         const asset = await MediaLibrary.createAssetAsync(photo.uri);
-        console.log(asset);
-        const form = new FormData();
-        form.append("image", {
-          uri: photo.uri,
-        });
-        submitImage(form);
+        console.log("asset...",asset);
         await MediaLibrary.createAlbumAsync("ExpoProject", asset, false);
+        setImageUri(photo.uri);
+        router.push("/(modals)/ImageResults");
       } else {
         console.warn("Media library permission not granted");
-      }
-      sheetRef.current?.open();
-    } catch (error) {
-      console.warn(error);
-    }
-  }
-
-  const submitImage = async (image) => {
-    try {
-      const response = await fetch(
-        `${process.env.EXPO_PUBLIC_NODEAPI_URL}/model/disease`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "multipart/form-data",
+        Alert.alert("Permission required", "Please allow media library permission to save photos", [
+          {
+            text: "OK",
+            onPress: () => {
+              requestMediaLibraryPermission();
+            },
           },
-          body: image,
-        }
-      );
-      console.log("response", response);
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Image uploaded successfully:", data);
-      } else {
-        console.warn("Image upload failed", response.statusText);
+        ]);
+
       }
     } catch (error) {
-      console.warn("Error uploading image", error);
+      console.warn("My bad",error);
+    }finally{
+      setLoading(false);
     }
-  };
+
+  }
 
   function toggleCameraFacing() {
     console.log("toggleCameraFacing");
@@ -135,13 +107,14 @@ export default function PhotoCamera() {
   return (
     <View style={styles.container}>
       <CameraView
-        style={{ height, flex: 1 }}
+        style={{ height, flex: 1, position: "relative" }}
         facing={facing}
         flash={flash}
         ratio="16:9"
         ref={cameraRef}
         autofocus="true"
       >
+        {loading && <ActivityIndicator style={{position: "absolute", top: '50%', left: '50%'}} size="large" color="#fff" />}
         <View className="absolute flex-row justify-between px-[20%] items-center bottom-[10%] w-screen">
           <Pressable style={styles.ActionButtons} onPress={pickImage}>
             <Entypo name="folder-images" size={24} color="black" />
@@ -163,31 +136,6 @@ export default function PhotoCamera() {
           </Pressable>
         </View>
       </CameraView>
-
-      <BottomSheet height="90%" ref={sheetRef}>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              setPreviewVisible(false);
-              setCapturedImage(null);
-              sheetRef.current?.close();
-            }}
-          >
-            <Text style={styles.text}>Retake</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              setPreviewVisible(false);
-              setCapturedImage(null);
-              sheetRef.current?.close();
-            }}
-          >
-            <Text style={styles.text}>Save</Text>
-          </TouchableOpacity>
-        </View>
-      </BottomSheet>
     </View>
   );
 }
