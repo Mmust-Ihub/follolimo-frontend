@@ -45,7 +45,7 @@ export default function TabLayout() {
     // Navigate to onboarding if not completed and user is not authenticated
     if (!isAuthLoading && !userToken && !isOnboardingCompleted) {
       console.log("Navigating to OnBoarding...");
-      // router.replace("/(auth)/OnBoarding");
+      router.replace("/(auth)/OnBoarding");
     }
     if (isOnboardingCompleted && !isAuthLoading && !userToken) {
       console.log("Navigating to Login...");
@@ -113,6 +113,7 @@ export default function TabLayout() {
           name="add"
           options={{
             title: "Add",
+            headerShown: false,
             tabBarIcon: ({ color }) => (
               <View
                 style={{
