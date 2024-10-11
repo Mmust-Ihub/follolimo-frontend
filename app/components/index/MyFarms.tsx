@@ -1,9 +1,13 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import FarmCard from './FarmCard';
-import { Colors } from '@/constants/Colors';
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import React from "react";
+import FarmCard from "./FarmCard";
+import { Colors } from "@/constants/Colors";
 
-export default function MyFarms() {
+interface MyFarmsProps {
+  textColor: string;
+}
+
+export default function MyFarms({ textColor }: MyFarmsProps) {
   const farms = [
     {
       name: "Farm 1",
@@ -31,10 +35,11 @@ export default function MyFarms() {
       image: "https://picsum.photos/200/300",
     },
   ];
+
   return (
     <View>
-      <View className="flex-row justify-between">
-        <Text className="font-semibold">My Farms</Text>
+      <View style={styles.header}>
+        <Text style={[styles.title, { color: textColor }]}>My Farms</Text>
         <Pressable>
           <Text
             style={{
@@ -55,4 +60,14 @@ export default function MyFarms() {
   );
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  title: {
+    fontWeight: "600",
+    fontSize: 16,
+  },
+});

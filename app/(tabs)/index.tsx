@@ -1,15 +1,31 @@
-import { Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
-import { useEffect, useState } from "react";
+import {
+  Platform,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+} from "react-native";
+import { useContext, useEffect, useState } from "react";
 import { screenHeight } from "@/constants/AppDimensions";
-import { Image } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Colors } from "@/constants/Colors";
+import { ThemeContext } from "@/contexts/ThemeContext"; // For theme management
 import WeatherInfo from "../components/index/WeatherInfo";
 import MyFarms from "../components/index/MyFarms";
 import MyTasks from "../components/index/MyTasks";
 
 export default function Index() {
   const [greetingType, setGreetingType] = useState("Hello");
+  const themeContext = useContext(ThemeContext); // Access theme mode
+  const isDarkMode = themeContext?.isDarkMode ?? false;
+  // Dynamic theme-based styles
+  const backgroundColor = isDarkMode
+    ? Colors.dark.background
+    : Colors.light.background;
+  const textColor = isDarkMode ? Colors.dark.text : Colors.light.text;
 
   useEffect(() => {
     const getGreeting = () => {
@@ -24,40 +40,42 @@ export default function Index() {
     };
 
     setGreetingType(getGreeting());
-    console.log("greetingType", getGreeting());
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View className="flex-row  items-center justify-between">
-        <View className="flex-row gap-3 justify-start items-center">
+    <SafeAreaView style={[styles.container, { backgroundColor }]}>
+      <View style={styles.header}>
+        <View style={styles.userInfo}>
           <Image
             style={styles.userImage}
             source={require("@/assets/images/splash.png")}
           />
           <View>
-            <Text className="font-semibold">{greetingType}👋,</Text>
-            <Text>Muchael123</Text>
+            <Text style={[styles.greetingText, { color: textColor }]}>
+              {greetingType}👋,
+            </Text>
+            <Text style={[styles.usernameText, { color: textColor }]}>
+              Muchael123
+            </Text>
           </View>
         </View>
-        <View className="relative ">
-          <MaterialIcons
-            name="notifications-on"
-            size={28}
-            color={Colors.light.tabIconSelected}
-          />
-        </View>
+        <MaterialIcons
+          name="notifications-on"
+          size={28}
+          color={Colors.light.tabIconSelected}
+        />
       </View>
       <WeatherInfo />
       <ScrollView
         contentContainerStyle={styles.scrollViewStyle}
         showsVerticalScrollIndicator={false}
       >
-        <MyFarms />
-        <MyTasks />
+        <MyFarms textColor={textColor} />
+
+        <MyTasks textColor={textColor} />
       </ScrollView>
       <Pressable style={styles.Chat}>
-        <Text className="text-xs text-white">Chat with Dr Shamba</Text>
+        <Text style={styles.chatText}>Chat with Dr Shamba</Text>
       </Pressable>
     </SafeAreaView>
   );
@@ -66,24 +84,35 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: Platform.OS === "android" ? screenHeight*.06 : 0,
+    paddingTop: Platform.OS === "android" ? screenHeight * 0.06 : 0,
     paddingHorizontal: 20,
     gap: 20,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  userInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
   userImage: {
     width: 50,
     height: 50,
     borderRadius: 50,
-    objectFit: "cover",
     shadowColor: "#000",
-    left: -8,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: .6,
+    elevation: 0.6,
+  },
+  greetingText: {
+    fontWeight: "600",
+  },
+  usernameText: {
+    fontSize: 14,
   },
   scrollViewStyle: {
     gap: 20,
@@ -94,19 +123,18 @@ const styles = StyleSheet.create({
     right: 20,
     backgroundColor: Colors.light.tabIconSelected,
     padding: 10,
-    borderTopRightRadius: 50,
-    borderTopLeftRadius: 50,
-    borderBottomLeftRadius: 50,
-    elevation: 5,
+    borderRadius: 35,
     width: 70,
     height: 70,
     justifyContent: "center",
     alignItems: "center",
+    elevation: 5,
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1.54,
-    },
+    shadowOffset: { width: 0, height: 1.54 },
     shadowOpacity: 0.75,
   },
-})
+  chatText: {
+    fontSize: 12,
+    color: "#fff",
+  },
+});

@@ -1,8 +1,12 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import { Colors } from '@/constants/Colors';
+import { Pressable, StyleSheet, Text, View} from "react-native";
+import React from "react";
+import { Colors } from "@/constants/Colors";
 
-export default function MyTasks() {
+interface MyTasksProps {
+  textColor: string;
+}
+
+export default function MyTasks({ textColor }: MyTasksProps) {
   const tasks = [
     {
       date: "12 May 2021",
@@ -13,7 +17,6 @@ export default function MyTasks() {
       date: "13 June 2023",
       task: "Weeding",
       status: "Pending",
-
     },
     {
       date: "14 July 2022",
@@ -30,11 +33,14 @@ export default function MyTasks() {
       task: "Irrigation",
       status: "Pending",
     },
-  ]
+  ];
+
   return (
     <View className="mb-8">
       <View className="flex-row justify-between p-2">
-        <Text className="font-semibold ">My Farms</Text>
+        <Text className="font-semibold " style={{ color: textColor }}>
+          My Farms
+        </Text>
         <Pressable>
           <Text
             style={{
@@ -46,7 +52,7 @@ export default function MyTasks() {
           </Text>
         </Pressable>
       </View>
-      <View className="gap-3 ">
+      <View className="gap-3">
         {tasks.map((task, index) => (
           <View
             key={index}
@@ -56,8 +62,16 @@ export default function MyTasks() {
               {task.date}
             </Text>
             <View>
-              <Text>{task.task}</Text>
-              <Text>{task.status}</Text>
+              <Text style={{ color: textColor }}>{task.task}</Text>
+              <Text
+                className={`font-bold ${
+                  task.status === "Completed"
+                    ? "text-green-500 shadow-green-500"
+                    : "text-yellow-500 shadow-yellow-500"
+                }`}
+              >
+                {task.status}
+              </Text>
             </View>
           </View>
         ))}
@@ -65,5 +79,3 @@ export default function MyTasks() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({})
