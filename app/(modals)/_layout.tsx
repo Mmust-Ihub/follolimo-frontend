@@ -1,10 +1,24 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import { Stack } from 'expo-router/stack'
+import { View, Text } from "react-native";
+import React, { useContext } from "react";
+import { Stack } from "expo-router/stack";
+import { ThemeContext } from "@/contexts/ThemeContext"; // Import ThemeContext
+import { Colors } from "@/constants/Colors"; // Import Colors
 
-export default function modals() {
+export default function Modals() {
+  const themeContext = useContext(ThemeContext); // Access the theme context
+  const isDarkMode = themeContext?.isDarkMode || false; // Get current theme
+  const themeColors = isDarkMode ? Colors.dark : Colors.light; // Use colors based on theme
+
   return (
-    <Stack screenOptions={{presentation: "modal"}}>
+    <Stack
+      screenOptions={{
+        presentation: "modal",
+        headerStyle: {
+          backgroundColor: themeColors.headerBackground, // Dynamic header background
+        },
+        headerTintColor: themeColors.headerText, // Dynamic header text color
+      }}
+    >
       <Stack.Screen
         name="ImageResults"
         options={{

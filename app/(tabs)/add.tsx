@@ -6,26 +6,127 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity,
 } from "react-native";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemeContext } from "@/contexts/ThemeContext"; // Import your ThemeContext
 import { Colors } from "@/constants/Colors";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  AntDesign,
+  Ionicons,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
+import { Picker } from "@react-native-picker/picker"; // Import Picker for dropdowns
+import { AuthContext } from "@/contexts/AuthContext";
+
+// Define types for regions, counties, and subcounties
+interface Region {
+  id: number;
+  region: string;
+}
+
+interface County {
+  id: number;
+  city: string;
+  region: number;
+}
+
+interface Subcounty {
+  id: number;
+  sub_county: string;
+  city: number;
+}
 
 export default function AddFarm() {
+  const authContext = useContext(AuthContext);
   const themeContext = useContext(ThemeContext);
-  if (!themeContext) {
+
+  if (!authContext || !themeContext) {
     throw new Error("Contexts not found");
   }
 
+  const { userToken } = authContext;
   const { isDarkMode } = themeContext;
-  // Set theme-based colors
   const backgroundColor = isDarkMode ? Colors.dark.tint : Colors.light.tint;
   const formBackgroundColor = isDarkMode
     ? Colors.dark.background
     : Colors.light.background;
   const textColor = isDarkMode ? Colors.dark.text : Colors.light.text;
   const placeholderColor = isDarkMode ? "lightgray" : "gray"; // Adjust based on theme
+
+  // State management
+  const [regions, setRegions] = useState<Region[]>([]);
+  const [counties, setCounties] = useState<County[]>([]);
+  const [subcounties, setSubcounties] = useState<Subcounty[]>([]);
+  const [selectedRegion, setSelectedRegion] = useState<number | null>(null);
+  const [selectedCounty, setSelectedCounty] = useState<number | null>(null);
+  const [selectedSubcounty, setSelectedSubcounty] = useState<number | null>(
+    null
+  );
+
+  // Fetch regions
+  useEffect(() => {
+    const fetchRegions = async () => {
+      try {
+        const response = await fetch(
+          "https://fololimo-api-eight.vercel.app/api/v1/fololimo/regions/",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Token ${userToken}`, // Replace with your actual token
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = await response.json();
+        setRegions(data);
+      } catch (error) {
+        console.error("Error fetching regions:", error);
+      }
+    };
+
+    fetchRegions();
+  }, []);
+
+  // Fetch counties based on selected region
+  useEffect(() => {
+    const fetchCounties = async () => {
+      if (selectedRegion) {
+        try {
+          const response = await fetch(
+            `https://fololimo-api-eight.vercel.app/api/v1/fololimo/cities/?region=${selectedRegion}`
+          );
+          const data = await response.json();
+          setCounties(data);
+          setSelectedCounty(null); // Reset county and subcounty when region changes
+          setSubcounties([]);
+        } catch (error) {
+          console.error("Error fetching counties:", error);
+        }
+      }
+    };
+
+    fetchCounties();
+  }, [selectedRegion]);
+
+  // Fetch subcounties based on selected county
+  useEffect(() => {
+    const fetchSubcounties = async () => {
+      if (selectedCounty) {
+        try {
+          const response = await fetch(
+            `https://fololimo-api-eight.vercel.app/api/v1/fololimo/subcounties/?city=${selectedCounty}`
+          );
+          const data = await response.json();
+          setSubcounties(data);
+          setSelectedSubcounty(null); // Reset subcounty when county changes
+        } catch (error) {
+          console.error("Error fetching subcounties:", error);
+        }
+      }
+    };
+
+    fetchSubcounties();
+  }, [selectedCounty]);
 
   return (
     <SafeAreaView
@@ -40,6 +141,11 @@ export default function AddFarm() {
         <Text className="text-white text-base font-semibold">
           Please fill in the details
         </Text>
+        <Text className="text-white text-base font-semibold">
+          You may scroll down to register farm
+          <AntDesign name="arrowdown" size={20} color="white" />{" "}
+          {/* Changed to white */}
+        </Text>
       </View>
 
       {/* Form Section */}
@@ -51,7 +157,7 @@ export default function AddFarm() {
           {/* Name Input */}
           <View className="w-full mb-2">
             <Text className="mb-2" style={{ color: textColor }}>
-              Name
+              Farm Name
             </Text>
             <View className="border rounded-lg w-full flex flex-row items-center px-4 py-2 border-green-500">
               <Ionicons
@@ -60,29 +166,101 @@ export default function AddFarm() {
                 color={placeholderColor}
               />
               <TextInput
-                placeholder="Enter name..."
+                placeholder="Enter Farm name..."
                 placeholderTextColor={placeholderColor}
-                className="ml-2 flex-1 text-black" // Keeps the default input style
+                className="ml-2 flex-1" // Removed text-black class
+                style={{ color: textColor }} // Set text color dynamically
               />
             </View>
           </View>
 
-          {/* Location Input */}
+          {/* Horizontal Picker Section */}
+          <View className="flex-row justify-between w-full mb-2">
+            {/* Region Dropdown */}
+            <View className="flex-1 mr-2">
+              <Text className="mb-2" style={{ color: textColor }}>
+                Choose Region
+              </Text>
+              <View className="border rounded-lg w-full flex flex-row items-center border-green-500 overflow-hidden">
+                <Picker
+                  selectedValue={selectedRegion}
+                  onValueChange={(itemValue) => setSelectedRegion(itemValue)}
+                  style={{
+                    height: 50,
+                    width: "100%",
+                    backgroundColor: formBackgroundColor,
+                    color: textColor,
+                  }}
+                  itemStyle={{ color: textColor }} // Ensure picker items are themed
+                >
+                  <Picker.Item label="Select a region" value={null} />
+                  {regions?.map((region) => (
+                    <Picker.Item
+                      key={region.id}
+                      label={region.region}
+                      value={region.id}
+                    />
+                  ))}
+                </Picker>
+              </View>
+            </View>
+
+            {/* County Dropdown */}
+            <View className="flex-1 mx-2">
+              <Text className="mb-2" style={{ color: textColor }}>
+                Choose County
+              </Text>
+              <View className="border rounded-lg w-full flex flex-row items-center border-green-500 overflow-hidden">
+                <Picker
+                  selectedValue={selectedCounty}
+                  onValueChange={(itemValue) => setSelectedCounty(itemValue)}
+                  style={{
+                    height: 50,
+                    width: "100%",
+                    backgroundColor: formBackgroundColor,
+                    color: textColor,
+                  }}
+                  itemStyle={{ color: textColor }} // Ensure picker items are themed
+                >
+                  <Picker.Item label="Select a county" value={null} />
+                  {counties?.map((county) => (
+                    <Picker.Item
+                      key={county.id}
+                      label={county.city}
+                      value={county.id}
+                    />
+                  ))}
+                </Picker>
+              </View>
+            </View>
+          </View>
+
+          {/* Subcounty Dropdown (Under the Horizontal Pickers) */}
           <View className="w-full mb-2">
             <Text className="mb-2" style={{ color: textColor }}>
-              Location
+              Choose Subcounty
             </Text>
-            <View className="border rounded-lg w-full flex flex-row items-center px-4 py-2 border-green-500">
-              <Ionicons
-                name="location-outline"
-                size={20}
-                color={placeholderColor}
-              />
-              <TextInput
-                placeholder="Enter location..."
-                placeholderTextColor={placeholderColor}
-                className="ml-2 flex-1 text-black" // Keeps the default input style
-              />
+            <View className="border rounded-lg w-full flex flex-row items-center border-green-500 overflow-hidden">
+              <Picker
+                selectedValue={selectedSubcounty}
+                onValueChange={(itemValue) => setSelectedSubcounty(itemValue)}
+                style={{
+                  height: 50,
+                  width: "100%",
+                  backgroundColor: formBackgroundColor,
+                  color: textColor,
+                }}
+                itemStyle={{ color: textColor }} // Ensure picker items are themed
+              >
+                <Picker.Item label="Select a subcounty" value={null} />
+                {subcounties?.map((subcounty) => (
+                  <Picker.Item
+                    key={subcounty.id}
+                    label={subcounty.sub_county}
+                    value={subcounty.id}
+                  />
+                ))}
+              </Picker>
             </View>
           </View>
 
@@ -93,14 +271,16 @@ export default function AddFarm() {
             </Text>
             <View className="border rounded-lg w-full flex flex-row items-center px-4 py-2 border-green-500">
               <MaterialCommunityIcons
-                name="tape-measure"
+                name="move-resize-variant"
                 size={20}
                 color={placeholderColor}
               />
               <TextInput
+                keyboardType="numeric"
                 placeholder="Enter farm size..."
                 placeholderTextColor={placeholderColor}
-                className="ml-2 flex-1 text-black" // Keeps the default input style
+                className="ml-2 flex-1" // Removed text-black class
+                style={{ color: textColor }} // Set text color dynamically
               />
             </View>
           </View>
