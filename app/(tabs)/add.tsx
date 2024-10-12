@@ -5,17 +5,19 @@ import {
   TextInput,
   KeyboardAvoidingView,
   TouchableOpacity,
+  Alert,
+  Keyboard,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ThemeContext } from "@/contexts/ThemeContext"; // Import your ThemeContext
+import { ThemeContext } from "@/contexts/ThemeContext";
 import { Colors } from "@/constants/Colors";
 import {
   AntDesign,
   Ionicons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
-import { Picker } from "@react-native-picker/picker"; // Import Picker for dropdowns
+import { Picker } from "@react-native-picker/picker";
 import { AuthContext } from "@/contexts/AuthContext";
 
 // Define types for regions, counties, and subcounties
@@ -51,7 +53,8 @@ export default function AddFarm() {
     ? Colors.dark.background
     : Colors.light.background;
   const textColor = isDarkMode ? Colors.dark.text : Colors.light.text;
-  const placeholderColor = isDarkMode ? "lightgray" : "gray"; // Adjust based on theme
+  const placeholderColor = isDarkMode ? "lightgray" : "gray";
+  const tintColor = isDarkMode ? Colors.dark.tint : Colors.light.tint; // Define tint color for ripple effect and dropdown icon
 
   // State management
   const [regions, setRegions] = useState<Region[]>([]);
@@ -62,17 +65,22 @@ export default function AddFarm() {
   const [selectedSubcounty, setSelectedSubcounty] = useState<number | null>(
     null
   );
+  const [selectedSubcountyName, setSelectedSubcountyName] = useState<
+    string | null
+  >(null);
+  const [farmName, setFarmName] = useState<string>("");
+  const [farmSize, setFarmSize] = useState<number | null>(null);
 
   // Fetch regions
   useEffect(() => {
     const fetchRegions = async () => {
       try {
         const response = await fetch(
-          "https://fololimo-api-eight.vercel.app/api/v1/fololimo/regions/",
+          `${process.env.EXPO_PUBLIC_DJANGOAPI_URL}/fololimo/regions/`,
           {
             method: "GET",
             headers: {
-              Authorization: `Token ${userToken}`, // Replace with your actual token
+              Authorization: `Token ${userToken}`,
               "Content-Type": "application/json",
             },
           }
@@ -93,11 +101,11 @@ export default function AddFarm() {
       if (selectedRegion) {
         try {
           const response = await fetch(
-            `https://fololimo-api-eight.vercel.app/api/v1/fololimo/cities/?region=${selectedRegion}`
+            `${process.env.EXPO_PUBLIC_DJANGOAPI_URL}/fololimo/cities/?region=${selectedRegion}`
           );
           const data = await response.json();
           setCounties(data);
-          setSelectedCounty(null); // Reset county and subcounty when region changes
+          setSelectedCounty(null);
           setSubcounties([]);
         } catch (error) {
           console.error("Error fetching counties:", error);
@@ -114,11 +122,12 @@ export default function AddFarm() {
       if (selectedCounty) {
         try {
           const response = await fetch(
-            `https://fololimo-api-eight.vercel.app/api/v1/fololimo/subcounties/?city=${selectedCounty}`
+            `${process.env.EXPO_PUBLIC_DJANGOAPI_URL}/fololimo/subcounties/?city=${selectedCounty}`
           );
           const data = await response.json();
           setSubcounties(data);
-          setSelectedSubcounty(null); // Reset subcounty when county changes
+          setSelectedSubcounty(null);
+          setSelectedSubcountyName(null);
         } catch (error) {
           console.error("Error fetching subcounties:", error);
         }
@@ -127,6 +136,63 @@ export default function AddFarm() {
 
     fetchSubcounties();
   }, [selectedCounty]);
+
+  const handleRegister = async () => {
+    Keyboard.dismiss();
+    if (!farmName || !farmSize || !selectedSubcounty) {
+      Alert.alert("Error", "Please fill in all fields.");
+      return;
+    }
+
+    const farmData = {
+      name: farmName,
+      location: selectedSubcountyName, // Use subcounty name
+      size: farmSize,
+    };
+
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_DJANGOAPI_URL}/insights/farms/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Token ${userToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(farmData),
+        }
+      );
+
+      if (response.status === 201) {
+        const createdFarm = await response.json();
+        Alert.alert(
+          "Success",
+          `Farm ${createdFarm.name} registered successfully!`
+        );
+        // Reset fields
+        setFarmName("");
+        setFarmSize(null);
+        setSelectedRegion(null);
+        setSelectedCounty(null);
+        setSelectedSubcounty(null);
+        setSelectedSubcountyName(null);
+      } else {
+        Alert.alert("Error", "Farm registration failed. Please try again.");
+      }
+      console.log("response", await response.json());
+    } catch (error) {
+      console.error("Error registering farm:", error);
+      Alert.alert("Error", "An error occurred while registering the farm.");
+    } finally {
+      // Reset fields
+      setFarmName("");
+      setFarmSize(null);
+      setSelectedRegion(null);
+      setSelectedCounty(null);
+      setSelectedSubcounty(null);
+      setSelectedSubcountyName(null);
+    }
+  };
 
   return (
     <SafeAreaView
@@ -143,8 +209,7 @@ export default function AddFarm() {
         </Text>
         <Text className="text-white text-base font-semibold">
           You may scroll down to register farm
-          <AntDesign name="arrowdown" size={20} color="white" />{" "}
-          {/* Changed to white */}
+          <AntDesign name="arrowdown" size={20} color="white" />
         </Text>
       </View>
 
@@ -168,8 +233,10 @@ export default function AddFarm() {
               <TextInput
                 placeholder="Enter Farm name..."
                 placeholderTextColor={placeholderColor}
-                className="ml-2 flex-1" // Removed text-black class
-                style={{ color: textColor }} // Set text color dynamically
+                className="ml-2 flex-1"
+                style={{ color: textColor }}
+                value={farmName}
+                onChangeText={setFarmName}
               />
             </View>
           </View>
@@ -191,7 +258,9 @@ export default function AddFarm() {
                     backgroundColor: formBackgroundColor,
                     color: textColor,
                   }}
-                  itemStyle={{ color: textColor }} // Ensure picker items are themed
+                  itemStyle={{ color: textColor }}
+                  dropdownIconColor={tintColor} // Set dropdown icon color
+                  dropdownIconRippleColor={tintColor} // Set ripple effect color
                 >
                   <Picker.Item label="Select a region" value={null} />
                   {regions?.map((region) => (
@@ -206,7 +275,7 @@ export default function AddFarm() {
             </View>
 
             {/* County Dropdown */}
-            <View className="flex-1 mx-2">
+            <View className="flex-1 ml-2">
               <Text className="mb-2" style={{ color: textColor }}>
                 Choose County
               </Text>
@@ -220,7 +289,9 @@ export default function AddFarm() {
                     backgroundColor: formBackgroundColor,
                     color: textColor,
                   }}
-                  itemStyle={{ color: textColor }} // Ensure picker items are themed
+                  itemStyle={{ color: textColor }}
+                  dropdownIconColor={tintColor} // Set dropdown icon color
+                  dropdownIconRippleColor={tintColor} // Set ripple effect color
                 >
                   <Picker.Item label="Select a county" value={null} />
                   {counties?.map((county) => (
@@ -235,7 +306,7 @@ export default function AddFarm() {
             </View>
           </View>
 
-          {/* Subcounty Dropdown (Under the Horizontal Pickers) */}
+          {/* Subcounty Dropdown */}
           <View className="w-full mb-2">
             <Text className="mb-2" style={{ color: textColor }}>
               Choose Subcounty
@@ -243,14 +314,22 @@ export default function AddFarm() {
             <View className="border rounded-lg w-full flex flex-row items-center border-green-500 overflow-hidden">
               <Picker
                 selectedValue={selectedSubcounty}
-                onValueChange={(itemValue) => setSelectedSubcounty(itemValue)}
+                onValueChange={(itemValue) => {
+                  setSelectedSubcounty(itemValue);
+                  const selected = subcounties.find(
+                    (subcounty) => subcounty.id === itemValue
+                  );
+                  setSelectedSubcountyName(selected?.sub_county || null);
+                }}
                 style={{
                   height: 50,
                   width: "100%",
                   backgroundColor: formBackgroundColor,
                   color: textColor,
                 }}
-                itemStyle={{ color: textColor }} // Ensure picker items are themed
+                itemStyle={{ color: textColor }}
+                dropdownIconColor={tintColor} // Set dropdown icon color
+                dropdownIconRippleColor={tintColor} // Set ripple effect color
               >
                 <Picker.Item label="Select a subcounty" value={null} />
                 {subcounties?.map((subcounty) => (
@@ -264,34 +343,37 @@ export default function AddFarm() {
             </View>
           </View>
 
-          {/* Farm Size Input */}
-          <View className="w-full mb-6">
+          {/* Size Input */}
+          <View className="w-full mb-2">
             <Text className="mb-2" style={{ color: textColor }}>
-              Farm Size
+              Farm Size (in acres)
             </Text>
             <View className="border rounded-lg w-full flex flex-row items-center px-4 py-2 border-green-500">
               <MaterialCommunityIcons
-                name="move-resize-variant"
+                name="image-size-select-small"
                 size={20}
                 color={placeholderColor}
               />
               <TextInput
-                keyboardType="numeric"
-                placeholder="Enter farm size..."
+                placeholder="Enter Farm size..."
                 placeholderTextColor={placeholderColor}
-                className="ml-2 flex-1" // Removed text-black class
-                style={{ color: textColor }} // Set text color dynamically
+                className="ml-2 flex-1"
+                style={{ color: textColor }}
+                keyboardType="numeric"
+                value={farmSize?.toString()}
+                onChangeText={(text) => setFarmSize(Number(text))}
               />
             </View>
           </View>
 
-          {/* Register Button */}
+          {/* Submit Button */}
           <TouchableOpacity
-            className="bg-green-500 py-4 rounded-full items-center w-full mb-2"
-            activeOpacity={0.7}
+            className="w-full rounded-lg bg-green-500 py-3 items-center"
+            onPress={handleRegister}
           >
-            <Text className="text-white text-lg font-semibold">Register</Text>
+            <Text className="text-white font-semibold text-lg">Submit</Text>
           </TouchableOpacity>
+          <TouchableOpacity className="w-full  py-3 "></TouchableOpacity>
         </KeyboardAvoidingView>
       </ScrollView>
     </SafeAreaView>
