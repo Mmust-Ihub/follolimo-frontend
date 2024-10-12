@@ -2,12 +2,14 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import FarmCard from "./FarmCard";
 import { Colors } from "@/constants/Colors";
+import { useRouter } from "expo-router";
 
 interface MyFarmsProps {
   textColor: string;
 }
 
 export default function MyFarms({ textColor }: MyFarmsProps) {
+  const router = useRouter()
   const farms = [
     {
       name: "Farm 1",
@@ -40,7 +42,7 @@ export default function MyFarms({ textColor }: MyFarmsProps) {
     <View>
       <View style={styles.header}>
         <Text style={[styles.title, { color: textColor }]}>My Farms</Text>
-        <Pressable>
+        <Pressable onPress={() => router.replace('/(tabs)/inventory/MyFarms')}>
           <Text
             style={{
               color: Colors.light.tabIconSelected,

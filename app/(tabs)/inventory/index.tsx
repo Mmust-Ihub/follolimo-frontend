@@ -1,10 +1,10 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-export default function inventory() {
+export default function index() {
   return (
     <View>
-      <Text>inventory</Text>
+      <Text>index</Text>
     </View>
   )
 }

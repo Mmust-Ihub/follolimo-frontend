@@ -16,6 +16,7 @@ import { ThemeContext } from "@/contexts/ThemeContext"; // For theme management
 import WeatherInfo from "../components/index/WeatherInfo";
 import MyFarms from "../components/index/MyFarms";
 import MyTasks from "../components/index/MyTasks";
+import { useRouter } from "expo-router";
 
 export default function Index() {
   const [greetingType, setGreetingType] = useState("Hello");
@@ -26,8 +27,9 @@ export default function Index() {
     ? Colors.dark.background
     : Colors.light.background;
   const textColor = isDarkMode ? Colors.dark.text : Colors.light.text;
-
+const router = useRouter();
   useEffect(() => {
+    
     const getGreeting = () => {
       const currentHour = new Date().getHours();
       if (currentHour < 12) {
@@ -74,7 +76,7 @@ export default function Index() {
 
         <MyTasks textColor={textColor} />
       </ScrollView>
-      <Pressable style={styles.Chat}>
+      <Pressable style={styles.Chat} onPress={() => router.push("/(modals)/Chat")}>
         <Text style={styles.chatText}>Chat with Dr Shamba</Text>
       </Pressable>
     </SafeAreaView>
