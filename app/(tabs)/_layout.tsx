@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { router, Tabs } from "expo-router";
-import { View, ActivityIndicator, StatusBar } from "react-native";
+import { View, ActivityIndicator, StatusBar, StyleSheet } from "react-native";
 import { AuthContext } from "@/contexts/AuthContext"; // For user authentication
 import { OnboardingContext } from "@/contexts/OnBoardingContext"; // For onboarding status
 import { ThemeContext } from "@/contexts/ThemeContext"; // For theme management
@@ -8,6 +8,7 @@ import { Colors } from "@/constants/Colors"; // Custom color palette
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { Image } from "react-native";
 
 export default function TabLayout() {
   const authContext = useContext(AuthContext);
@@ -132,11 +133,19 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
+
           name="inventory"
           options={{
-            headerShown: false,
+            headerTitle: "My inventory",
+            
             tabBarIcon: ({ color }) => (
               <FontAwesome name="folder-open" size={28} color={color} />
+            ),
+            headerLeft: () => (
+              <Image
+                style={styles.userImage}
+                source={require("@/assets/images/splash.png")}
+              />
             ),
           }}
         />
@@ -153,3 +162,16 @@ export default function TabLayout() {
     </>
   );
 }
+const styles = StyleSheet.create({
+  userImage: {
+    width: 50,
+    height: 50,
+    left: 5,
+    borderRadius: 50,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 0.6,
+  },
+});
