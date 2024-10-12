@@ -45,7 +45,6 @@ export default function PhotoCamera() {
     });
 
     if (!result.canceled) {
-      setCapturedImage(result.assets[0].uri);
       setImageUri(result.assets[0].uri);
       console.log("result", result.assets[0]);
       router.push("/(modals)/ImageResults");
