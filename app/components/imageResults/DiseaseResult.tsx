@@ -1,17 +1,34 @@
 import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useContext } from "react";
 import Markdown from "react-native-markdown-display";
 import { CropInfo } from "@/constants/Types";
 import { Colors } from "@/constants/Colors";
+import { ThemeContext } from "@/contexts/ThemeContext";
 
 export default function DiseaseResult(results: CropInfo) {
+  const themeContext = useContext(ThemeContext); // Access the theme context
+  const isDarkMode = themeContext?.isDarkMode || false; // Get current theme
+  const themeColors = isDarkMode ? Colors.dark : Colors.light; // Use theme colors based on mode
+
+  // Define markdown styles based on the theme
+  const markdownStyles = {
+    body: {
+      color: themeColors.text,
+    },
+    heading1: {
+      color: themeColors.tint,
+    },
+    heading2: {
+      color: themeColors.tint,
+    },
+    // You can add more specific styles for other Markdown elements here
+  };
+
   return (
     <View>
-      <Text className="text-xl font-bold text-center mb-4">
-        Analysis Results
-      </Text>
-
-      <View style={styles.majorInfo}>
+      <View
+        style={[styles.majorInfo, { backgroundColor: themeColors.background }]}
+      >
         {results.crop ? (
           <Text style={styles.majorInfoText}>Crop: {results.crop}</Text>
         ) : (
@@ -28,86 +45,180 @@ export default function DiseaseResult(results: CropInfo) {
       <View>
         {results.other_crops_infested?.length ? (
           <View>
-            <Text style={styles.resultsSubHeading}>Other Crops Infested</Text>
+            <Text
+              style={[styles.resultsSubHeading, { color: themeColors.tint }]}
+            >
+              Other Crops Infested
+            </Text>
             {results.other_crops_infested.map((crop, index) => (
-              <Text key={index}>
+              <Text key={index} style={{ color: themeColors.text }}>
                 {index + 1}. {"\t"}
                 {crop}
               </Text>
             ))}
           </View>
         ) : (
-          <Text>No other crops infested</Text>
+          <Text style={{ color: themeColors.text }}>
+            No other crops infested
+          </Text>
         )}
 
         {results.cause?.length ? (
-          <View style={styles.resultsContainer}>
-            <Text style={styles.resultsSubHeading}>Causes</Text>
+          <View
+            style={[
+              styles.resultsContainer,
+              { backgroundColor: themeColors.background },
+            ]}
+          >
+            <Text
+              style={[styles.resultsSubHeading, { color: themeColors.tint }]}
+            >
+              Causes
+            </Text>
             {results.cause.map((cause, index) => (
-              <Markdown key={index}>{cause}</Markdown>
+              <Markdown key={index} style={markdownStyles}>
+                {cause}
+              </Markdown>
             ))}
           </View>
         ) : null}
 
         {results.life_cycle?.length ? (
-          <View style={styles.resultsContainer}>
-            <Text style={styles.resultsSubHeading}>Life Cycle</Text>
+          <View
+            style={[
+              styles.resultsContainer,
+              { backgroundColor: themeColors.background },
+            ]}
+          >
+            <Text
+              style={[styles.resultsSubHeading, { color: themeColors.tint }]}
+            >
+              Life Cycle
+            </Text>
             {results.life_cycle.map((lifeCycle, index) => (
-              <Markdown key={index}>{lifeCycle}</Markdown>
+              <Markdown key={index} style={markdownStyles}>
+                {lifeCycle}
+              </Markdown>
             ))}
           </View>
         ) : null}
 
         {results.remedy?.length ? (
-          <View style={styles.resultsContainer}>
-            <Text style={styles.resultsSubHeading}>Remedy</Text>
+          <View
+            style={[
+              styles.resultsContainer,
+              { backgroundColor: themeColors.background },
+            ]}
+          >
+            <Text
+              style={[styles.resultsSubHeading, { color: themeColors.tint }]}
+            >
+              Remedy
+            </Text>
             {results.remedy.map((remedy, index) => (
-              <Markdown key={index}>{remedy}</Markdown>
+              <Markdown key={index} style={markdownStyles}>
+                {remedy}
+              </Markdown>
             ))}
           </View>
         ) : null}
 
         {results.preventive_measures?.length ? (
-          <View style={styles.resultsContainer}>
-            <Text style={styles.resultsSubHeading}>Preventive Measures</Text>
+          <View
+            style={[
+              styles.resultsContainer,
+              { backgroundColor: themeColors.background },
+            ]}
+          >
+            <Text
+              style={[styles.resultsSubHeading, { color: themeColors.tint }]}
+            >
+              Preventive Measures
+            </Text>
             {results.preventive_measures.map((measure, index) => (
-              <Markdown key={index}>{measure}</Markdown>
+              <Markdown key={index} style={markdownStyles}>
+                {measure}
+              </Markdown>
             ))}
           </View>
         ) : null}
 
         {results.environment_conditions?.length ? (
-          <View style={styles.resultsContainer}>
-            <Text style={styles.resultsSubHeading}>Environment Conditions</Text>
+          <View
+            style={[
+              styles.resultsContainer,
+              { backgroundColor: themeColors.background },
+            ]}
+          >
+            <Text
+              style={[styles.resultsSubHeading, { color: themeColors.tint }]}
+            >
+              Environment Conditions
+            </Text>
             {results.environment_conditions.map((condition, index) => (
-              <Markdown key={index}>{condition}</Markdown>
+              <Markdown key={index} style={markdownStyles}>
+                {condition}
+              </Markdown>
             ))}
           </View>
         ) : null}
 
         {results.nutrient_deficiency?.length ? (
-          <View style={styles.resultsContainer}>
-            <Text style={styles.resultsSubHeading}>Nutrient Deficiency</Text>
+          <View
+            style={[
+              styles.resultsContainer,
+              { backgroundColor: themeColors.background },
+            ]}
+          >
+            <Text
+              style={[styles.resultsSubHeading, { color: themeColors.tint }]}
+            >
+              Nutrient Deficiency
+            </Text>
             {results.nutrient_deficiency.map((deficiency, index) => (
-              <Markdown key={index}>{deficiency}</Markdown>
+              <Markdown key={index} style={markdownStyles}>
+                {deficiency}
+              </Markdown>
             ))}
           </View>
         ) : null}
 
         {results.companion_planting?.length ? (
-          <View style={styles.resultsContainer}>
-            <Text style={styles.resultsSubHeading}>Companion Planting</Text>
+          <View
+            style={[
+              styles.resultsContainer,
+              { backgroundColor: themeColors.background },
+            ]}
+          >
+            <Text
+              style={[styles.resultsSubHeading, { color: themeColors.tint }]}
+            >
+              Companion Planting
+            </Text>
             {results.companion_planting.map((plant, index) => (
-              <Markdown key={index}>{plant}</Markdown>
+              <Markdown key={index} style={markdownStyles}>
+                {plant}
+              </Markdown>
             ))}
           </View>
         ) : null}
 
         {results.post_harvest_handling?.length ? (
-          <View style={styles.resultsContainer}>
-            <Text style={styles.resultsSubHeading}>Post Harvest Handling</Text>
+          <View
+            style={[
+              styles.resultsContainer,
+              { backgroundColor: themeColors.background },
+            ]}
+          >
+            <Text
+              style={[styles.resultsSubHeading, { color: themeColors.tint }]}
+            >
+              Post Harvest Handling
+            </Text>
             {results.post_harvest_handling.map((handling, index) => (
-              <Markdown key={index}>{handling}</Markdown>
+              <Markdown key={index} style={markdownStyles}>
+                {handling}
+              </Markdown>
             ))}
           </View>
         ) : null}
@@ -118,7 +229,6 @@ export default function DiseaseResult(results: CropInfo) {
 
 const styles = StyleSheet.create({
   majorInfo: {
-    backgroundColor: "#f0f0f0",
     paddingVertical: 10,
     marginTop: 10,
     borderRadius: 10,
@@ -129,17 +239,14 @@ const styles = StyleSheet.create({
   majorInfoText: {
     fontSize: 18,
     fontWeight: "bold",
-    color: Colors.light.tabIconSelected,
+    color: Colors.light.tabIconSelected, // Remain static
   },
   resultsSubHeading: {
     fontSize: 16,
     fontWeight: "semibold",
-    color: Colors.light.tabIconSelected,
-    textDecorationColor: Colors.light.tabIconSelected,
     textDecorationLine: "underline",
   },
   resultsContainer: {
-    backgroundColor: "#f0f0f0",
     padding: 10,
     borderRadius: 10,
     marginTop: 10,

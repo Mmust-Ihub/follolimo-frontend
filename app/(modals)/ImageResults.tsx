@@ -7,15 +7,15 @@ import {
   ScrollView,
   StyleSheet,
 } from "react-native";
-
 import React, { useContext, useEffect, useState } from "react";
 import { useImageContext } from "@/contexts/ImageContext";
 import { CropInfo, PestInfo } from "@/constants/Types";
 import { Colors } from "@/constants/Colors";
 import { AuthContext } from "@/contexts/AuthContext";
-import * as FileSystem from "expo-file-system"; 
+import { ThemeContext } from "@/contexts/ThemeContext"; // Import ThemeContext
+import * as FileSystem from "expo-file-system";
 import DiseaseResult from "../components/imageResults/DiseaseResult";
-import PestResult from "../components/imageResults/PestResult"; // Import PestResult component
+import PestResult from "../components/imageResults/PestResult";
 
 export default function ImageResults() {
   const authContext = useContext(AuthContext);
@@ -34,13 +34,15 @@ export default function ImageResults() {
   }
   console.log(imageUri, token);
 
+  const themeContext = useContext(ThemeContext); // Access the theme context
+  const isDarkMode = themeContext?.isDarkMode || false; // Get current theme
+  const themeColors = isDarkMode ? Colors.dark : Colors.light; // Use colors based on theme
 
   const [Cropresults, setCropResults] = useState<CropInfo | null>(null);
   const [Pestresults, setPestResults] = useState<PestInfo | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [whatTofetch, setWhatToFetch] = useState<string>("disease");
-
 
   const handleFetchResults = async () => {
     if (!whatTofetch) {
@@ -102,7 +104,10 @@ export default function ImageResults() {
   };
 
   return (
-    <View className="flex-1">
+    <View
+      className="flex-1"
+      style={{ backgroundColor: themeColors.background }}
+    >
       {imageUri && (
         <Image
           source={{ uri: imageUri }}
@@ -110,18 +115,18 @@ export default function ImageResults() {
         />
       )}
       {loading ? (
-        <ActivityIndicator size="large" color={Colors.light.tabIconSelected} />
+        <ActivityIndicator size="large" color={themeColors.tabIconSelected} />
       ) : (
         <View className="flex-1 p-4 justify-center items-center">
           {error ? (
             <View>
-              <Text>{error}</Text>
+              <Text style={{ color: themeColors.text }}>{error}</Text>
               <View className="flex-row w-[80vw] gap-3 justify-center">
                 <TouchableOpacity
                   className="bg-green-700 p-2 px-4"
                   onPress={() => handleFetchResults()}
                 >
-                  <Text className="text-white">Pest</Text>
+                  <Text style={{ color: "white" }}>Pest</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   className="bg-green-700 p-2 px-4"
@@ -130,7 +135,7 @@ export default function ImageResults() {
                     setPestResults(null);
                   }}
                 >
-                  <Text className="text-white">Clear</Text>
+                  <Text style={{ color: "white" }}>Clear</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -140,13 +145,16 @@ export default function ImageResults() {
               contentContainerStyle={{
                 padding: 10,
                 borderRadius: 10,
-                backgroundColor: "#f0f0f0",
+                backgroundColor: themeColors.background,
                 borderTopRightRadius: 28,
                 borderTopLeftRadius: 28,
               }}
               showsVerticalScrollIndicator={false}
             >
-              <Text className="text-xl font-bold text-center mb-4">
+              <Text
+                className="text-xl font-bold text-center mb-4"
+                style={{ color: themeColors.text }}
+              >
                 Analysis Results
               </Text>
               {Cropresults ? (
@@ -154,10 +162,13 @@ export default function ImageResults() {
               ) : Pestresults ? (
                 <PestResult {...Pestresults} />
               ) : (
-                <View>
-                  <Text>Choose what you want to analyse in the image</Text>
+                <View className="space-y-1">
+                  <Text style={{ color: themeColors.text }}>
+                    Choose what you want to analyse in the image
+                  </Text>
                   <View className="flex w-full flex-row justify-start gap-7">
                     <TouchableOpacity
+                      className="px-6 py-2 mb-4"
                       style={[
                         styles.button,
                         whatTofetch === "pest"
@@ -170,6 +181,7 @@ export default function ImageResults() {
                     </TouchableOpacity>
 
                     <TouchableOpacity
+                      className="px-6 py-2 mb-4"
                       style={[
                         styles.button,
                         whatTofetch === "disease"
@@ -203,34 +215,6 @@ export default function ImageResults() {
 }
 
 const styles = StyleSheet.create({
-  majorInfo: {
-    backgroundColor: "#f0f0f0",
-    paddingVertical: 10,
-    marginTop: 10,
-    borderRadius: 10,
-    flexDirection: "column",
-    gap: 10,
-    paddingHorizontal: 5,
-  },
-  majorInfoText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: Colors.light.tabIconSelected,
-  },
-  resultsSubHeading: {
-    fontSize: 16,
-    fontWeight: "semibold",
-    color: Colors.light.tabIconSelected,
-    textDecorationColor: Colors.light.tabIconSelected,
-    textDecorationLine: "underline",
-  },
-  resultsContainer: {
-    backgroundColor: "#f0f0f0",
-    padding: 10,
-    borderRadius: 10,
-    marginTop: 10,
-    flexDirection: "column",
-  },
   button: {
     padding: 10,
     paddingHorizontal: 16,
