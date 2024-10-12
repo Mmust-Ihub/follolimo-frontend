@@ -137,7 +137,7 @@ export default function TabLayout() {
           name="inventory"
           options={{
             headerTitle: "My inventory",
-            
+            headerTitleAlign: 'center',
             tabBarIcon: ({ color }) => (
               <FontAwesome name="folder-open" size={28} color={color} />
             ),

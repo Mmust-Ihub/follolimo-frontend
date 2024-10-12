@@ -4,12 +4,18 @@ import { Stack } from 'expo-router/stack'
 
 export default function modals() {
   return (
-    <Stack >
+    <Stack screenOptions={{presentation: "modal"}}>
       <Stack.Screen
         name="ImageResults"
         options={{
-          presentation: "modal",
           title: "Image Results",
+        }}
+      />
+      <Stack.Screen
+        name="Chat"
+        options={{
+          title: "Chat with Dr. Shamba",
+          headerTitleAlign: "center",
         }}
       />
     </Stack>
