@@ -1,12 +1,14 @@
 import { Pressable, StyleSheet, Text, View} from "react-native";
 import React from "react";
 import { Colors } from "@/constants/Colors";
+import { useRouter } from "expo-router";
 
 interface MyTasksProps {
   textColor: string;
 }
 
 export default function MyTasks({ textColor }: MyTasksProps) {
+  const router = useRouter()
   const tasks = [
     {
       date: "12 May 2021",
@@ -39,9 +41,11 @@ export default function MyTasks({ textColor }: MyTasksProps) {
     <View className="mb-8">
       <View className="flex-row justify-between p-2">
         <Text className="font-semibold " style={{ color: textColor }}>
-          My Farms
+          My Activities
         </Text>
-        <Pressable>
+        <Pressable
+        onPress={()=> router.replace('/(tabs)/inventory/Calendar')}
+        >
           <Text
             style={{
               color: Colors.light.tabIconSelected,
