@@ -45,7 +45,7 @@ export default function ImagePickerExample() {
 
     try {
       const res = await fetch(
-        `${process.env.EXPO_PUBLIC_NODEAPI_URL}/model/pest`,
+        `https://fololimo-api.vercel.app/api/v1/model/pest`,
         {
           method: "POST",
           headers: {

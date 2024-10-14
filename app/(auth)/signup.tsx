@@ -106,7 +106,7 @@ export default function SignUp() {
               style={{ color: textColor }}
               className="font-extrabold text-xl uppercase text-center mb-4"
             >
-              Register To Follolimo
+              Register To Fololimo
             </Text>
 
             {/* Username input with icon */}
