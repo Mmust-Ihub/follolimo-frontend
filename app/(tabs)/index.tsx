@@ -27,9 +27,8 @@ export default function Index() {
     ? Colors.dark.background
     : Colors.light.background;
   const textColor = isDarkMode ? Colors.dark.text : Colors.light.text;
-const router = useRouter();
+  const router = useRouter();
   useEffect(() => {
-    
     const getGreeting = () => {
       const currentHour = new Date().getHours();
       if (currentHour < 12) {
@@ -46,37 +45,41 @@ const router = useRouter();
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
-      <View style={styles.header}>
-        <View style={styles.userInfo}>
-          <Image
-            style={styles.userImage}
-            source={require("@/assets/images/splash.png")}
-          />
-          <View>
-            <Text style={[styles.greetingText, { color: textColor }]}>
-              {greetingType}👋,
-            </Text>
-            <Text style={[styles.usernameText, { color: textColor }]}>
-              Muchael123
-            </Text>
-          </View>
-        </View>
-        <MaterialIcons
-          name="notifications-on"
-          size={28}
-          color={Colors.light.tabIconSelected}
-        />
-      </View>
-      <WeatherInfo />
       <ScrollView
         contentContainerStyle={styles.scrollViewStyle}
         showsVerticalScrollIndicator={false}
       >
+        <View style={styles.header}>
+          <View style={styles.userInfo}>
+            <Image
+              style={styles.userImage}
+              source={require("@/assets/images/splash.png")}
+            />
+            <View>
+              <Text style={[styles.greetingText, { color: textColor }]}>
+                {greetingType}👋,
+              </Text>
+              <Text style={[styles.usernameText, { color: textColor }]}>
+                Muchael123
+              </Text>
+            </View>
+          </View>
+          <MaterialIcons
+            name="notifications-on"
+            size={28}
+            color={Colors.light.tabIconSelected}
+          />
+        </View>
+        <WeatherInfo textColor={textColor} />
+
         <MyFarms textColor={textColor} />
 
         <MyTasks textColor={textColor} />
       </ScrollView>
-      <Pressable style={styles.Chat} onPress={() => router.push("/(modals)/Chat")}>
+      <Pressable
+        style={styles.Chat}
+        onPress={() => router.push("/(modals)/Chat")}
+      >
         <Text style={styles.chatText}>Chat with Dr Shamba</Text>
       </Pressable>
     </SafeAreaView>
@@ -87,13 +90,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: Platform.OS === "android" ? screenHeight * 0.06 : 0,
-    paddingHorizontal: 20,
+    paddingHorizontal: 5,
     gap: 20,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    paddingHorizontal: 20,
   },
   userInfo: {
     flexDirection: "row",
