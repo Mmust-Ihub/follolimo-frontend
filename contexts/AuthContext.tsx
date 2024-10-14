@@ -52,7 +52,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       // Call your authentication API here to get the token
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_DJANGOAPI_URL}/users/login/`,
+        `https://fololimo-api-eight.vercel.app/api/v1/users/login/`,
         {
           method: "POST",
           headers: {
@@ -66,7 +66,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       );
       console.log(response);
       if (!response.ok) {
-        
         setIsLoading(false);
         Alert.alert("Login failed", "Invalid credentials");
         // console.log(response);
@@ -126,7 +125,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       // Call your authentication API here to get the token
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_DJANGOAPI_URL}/users/register/ `,
+        `https://fololimo-api-eight.vercel.app/api/v1/users/register/ `,
         {
           method: "POST",
           headers: {

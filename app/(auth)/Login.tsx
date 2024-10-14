@@ -84,7 +84,7 @@ export default function Login() {
               style={{ color: textColor }}
               className="font-extrabold text-xl uppercase text-center mb-4"
             >
-              Login To Follolimo
+              Login To Fololimo
             </Text>
 
             {/* Username input with icon */}
