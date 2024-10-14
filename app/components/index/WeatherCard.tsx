@@ -34,7 +34,7 @@ const WeatherCard = ({ city }: WeatherCardProps) => {
     const fetchWeather = async () => {
       try {
         const response = await fetch(
-          `${process.env.EXPO_PUBLIC_DJANGOAPI_URL}/fololimo/weathers/${city}/`,
+          `https://fololimo-api-eight.vercel.app/api/v1/fololimo/weathers/${city}/`,
           {
             method: "GET",
             headers: {

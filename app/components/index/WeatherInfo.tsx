@@ -20,7 +20,7 @@ export default function WeatherInfo({ textColor }: MyweatherProps) {
     const fetchFarms = async () => {
       try {
         const response = await fetch(
-          `${process.env.EXPO_PUBLIC_DJANGOAPI_URL}/insights/farms/`,
+          `https://fololimo-api-eight.vercel.app/api/v1/insights/farms/`,
           {
             method: "GET",
             headers: {
