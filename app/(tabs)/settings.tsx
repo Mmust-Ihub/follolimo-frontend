@@ -104,7 +104,7 @@ export default function Settings() {
 
         {/* Logout */}
         <TouchableOpacity
-          className="flex-row items-center justify-center mt-8 bg-red-600 py-4 px-6 rounded-lg"
+          className="flex-row items-center justify-center mt-8 bg-red-500 py-4 px-6 rounded-lg"
           activeOpacity={0.7}
           onPress={logout}
         >

@@ -149,9 +149,9 @@ export default function AddFarm() {
       location: selectedSubcountyName, // Use subcounty name
       size: farmSize,
     };
-
+    var response;
     try {
-      const response = await fetch(
+      response = await fetch(
         `${process.env.EXPO_PUBLIC_DJANGOAPI_URL}/insights/farms/`,
         {
           method: "POST",
@@ -162,9 +162,8 @@ export default function AddFarm() {
           body: JSON.stringify(farmData),
         }
       );
-
+      const createdFarm = await response.json();
       if (response.status === 201) {
-        const createdFarm = await response.json();
         Alert.alert(
           "Success",
           `Farm ${createdFarm.name} registered successfully!`
@@ -179,8 +178,9 @@ export default function AddFarm() {
       } else {
         Alert.alert("Error", "Farm registration failed. Please try again.");
       }
-      console.log("response", await response.json());
+      console.log("response", response);
     } catch (error) {
+      console.log("response", response);
       console.error("Error registering farm:", error);
       Alert.alert("Error", "An error occurred while registering the farm.");
     } finally {
