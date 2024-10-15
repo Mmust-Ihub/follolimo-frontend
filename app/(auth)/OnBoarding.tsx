@@ -5,6 +5,7 @@ import Onboarding from "react-native-onboarding-swiper";
 import { OnboardingContext } from "@/contexts/OnBoardingContext"; // Import the context
 import { router } from "expo-router";
 import { AuthContext } from "@/contexts/AuthContext";
+import Login from "./Login";
 
 const OnBoarding = () => {
   const authContext = useContext(AuthContext);
@@ -18,11 +19,12 @@ const OnBoarding = () => {
   const { userToken, isLoading: isAuthLoading } = authContext;
   const { isOnboardingCompleted, completeOnboarding } = onboardingContext;
 
-  useEffect(() => {
-    if (isOnboardingCompleted && !isAuthLoading && !userToken) {
-      router.replace("/(auth)/Login"); // Redirect to login if onboarding was completed
-    }
-  }, [isOnboardingCompleted, isAuthLoading, userToken]);
+  // useEffect(() => {
+  if (isOnboardingCompleted && !userToken) {
+    return <Login />;
+    // router.replace("/(auth)/Login"); // Redirect to login if onboarding was completed
+  }
+  // }, [isOnboardingCompleted, isAuthLoading, userToken]);
 
   const handleComplete = async () => {
     await completeOnboarding(); // Mark onboarding as complete in context
@@ -33,7 +35,7 @@ const OnBoarding = () => {
   if (isOnboardingCompleted) {
     return null; // Prevent showing the onboarding screen if already completed
   }
-console.log("Onboarding", isOnboardingCompleted);
+  console.log("Onboarding", isOnboardingCompleted);
   return (
     <SafeAreaView style={styles.container}>
       <Onboarding

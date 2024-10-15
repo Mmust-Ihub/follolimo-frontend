@@ -66,42 +66,44 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       );
       console.log(response);
       if (!response.ok) {
-        setIsLoading(false);
-        Alert.alert("Login failed", "Invalid credentials");
         // console.log(response);
         const data = await response.json();
         console.log(data);
+
+        setIsLoading(false);
+        Alert.alert("Login failed", "Invalid credentials");
         throw new Error("Login failed"); // Handle failed login
       }
 
       if (response.status === 200) {
-        setIsLoading(false);
         const data = await response.json();
         const token = data.key; // Assuming your API returns the token in this format
         console.log(token);
         await SecureStore.setItemAsync("Token", token);
         setUserToken(token);
-        Alert.alert("Login Successful", "You are now logged in");
+
         router.replace("/(tabs)");
+        setIsLoading(false);
+        Alert.alert("Login Successful", "You are now logged in");
         console.log("Logged in, token:", token);
       }
       if (response.status === 401) {
-        setIsLoading(false);
-        Alert.alert("Login failed", "Invalid credentials");
         const data = await response.json();
         console.log(data);
-        throw new Error("Login failed"); // Handle failed login
+        setIsLoading(false);
+        Alert.alert("Login failed", "Invalid credentials"); // Handle failed login
+        throw new Error("Login failed");
       }
       if (response.status !== 200 && response.status !== 401) {
-        setIsLoading(false);
-        Alert.alert("Login failed", "Invalid credentials");
         const data = await response.json();
         console.log(data);
-        throw new Error("Login failed"); // Handle failed login
+        setIsLoading(false);
+        Alert.alert("Login failed", "Invalid credentials");
+        throw new Error("Login failed");
       }
     } catch (error) {
       setIsLoading(false);
-      Alert.alert("Login failed " + error + " Invalid credentials");
+      Alert.alert("Login failed " + error);
       console.error("Login failed:", error);
     } finally {
       setIsLoading(false);
@@ -141,22 +143,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       );
 
       if (!response.ok) {
-        setIsLoading(false);
-        Alert.alert("Registration failed");
         const data = await response.json();
         console.log(data);
         console.log(response);
+        setIsLoading(false);
+        Alert.alert("Registration failed");
         throw new Error("Register failed"); // Handle failed login
       }
 
       if (response.status === 201) {
-        setIsLoading(false);
         const data = await response.json();
+
+        router.replace("/(auth)/Login");
+        setIsLoading(false);
         Alert.alert(
           "Registration Successful",
           "You can now login with your credentials"
         );
-        router.replace("/(auth)/Login");
         console.log("Logged in, token:", data);
       }
     } catch (error) {

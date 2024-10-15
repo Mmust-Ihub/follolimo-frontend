@@ -1,6 +1,12 @@
 import { useContext, useEffect } from "react";
 import { router, Tabs } from "expo-router";
-import { View, ActivityIndicator, StatusBar, StyleSheet } from "react-native";
+import {
+  View,
+  ActivityIndicator,
+  StatusBar,
+  StyleSheet,
+  Text,
+} from "react-native";
 import { AuthContext } from "@/contexts/AuthContext"; // For user authentication
 import { OnboardingContext } from "@/contexts/OnBoardingContext"; // For onboarding status
 import { ThemeContext } from "@/contexts/ThemeContext"; // For theme management
@@ -9,6 +15,8 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Image } from "react-native";
+import OnBoarding from "../(auth)/OnBoarding";
+import Login from "../(auth)/Login";
 
 export default function TabLayout() {
   const authContext = useContext(AuthContext);
@@ -41,33 +49,49 @@ export default function TabLayout() {
   const headerTextColor = isDarkMode
     ? Colors.dark.headerText
     : Colors.light.headerText;
-
-  useEffect(() => {
-    // Navigate to onboarding if not completed and user is not authenticated
-    if (!isAuthLoading && !userToken && !isOnboardingCompleted) {
-      console.log("Navigating to OnBoarding...");
-      router.replace("/(auth)/OnBoarding");
-    }
-    if (isOnboardingCompleted && !isAuthLoading && !userToken) {
-      console.log("Navigating to Login...");
-      router.replace("/(auth)/Login");
-    }
-  }, [isAuthLoading, userToken, isOnboardingCompleted]);
-
-  if (isAuthLoading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor,
-        }}
-      >
-        <ActivityIndicator size="large" color={activeTintColor} />
-      </View>
-    );
+ if (isAuthLoading) {
+   return (
+     <View
+       style={{
+         flex: 1,
+         justifyContent: "center",
+         alignItems: "center",
+         backgroundColor,
+       }}
+     >
+       <ActivityIndicator size="large" color={activeTintColor} />
+     </View>
+   );
+ }
+  if (!userToken && !isOnboardingCompleted) {
+    // setIsLoading(false);
+    console.log("Navigating to OnBoarding...");
+    return <OnBoarding />;
+    // router.replace("/(auth)/OnBoarding");
   }
+  if (isOnboardingCompleted && !userToken) {
+    console.log("Navigating to Login...");
+    return <Login />;
+    // router.replace("/(auth)/Login");
+  }
+  // setIsLoading(false);
+  // useEffect(() => {
+  //   setIsLoading(false);
+  //   // Navigate to onboarding if not completed and user is not authenticated
+  //   if (!isAuthLoading && !userToken && !isOnboardingCompleted) {
+  //     setIsLoading(false);
+  //     console.log("Navigating to OnBoarding...");
+  //     router.replace("/(auth)/OnBoarding");
+  //   }
+  //   if (isOnboardingCompleted && !isAuthLoading && !userToken) {
+  //     setIsLoading(false);
+
+  //     console.log("Navigating to Login...");
+  //     router.replace("/(auth)/Login");
+  //   }
+  // }, [isAuthLoading, userToken, isOnboardingCompleted]);
+  console.log(isAuthLoading + "layout");
+ 
 
   return (
     <>
@@ -133,11 +157,10 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-
           name="inventory"
           options={{
             headerTitle: "My inventory",
-            headerTitleAlign: 'center',
+            headerTitleAlign: "center",
             tabBarIcon: ({ color }) => (
               <FontAwesome name="folder-open" size={28} color={color} />
             ),
