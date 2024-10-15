@@ -1,42 +1,32 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import FarmCard from "./FarmCard";
 import { Colors } from "@/constants/Colors";
 import { useRouter } from "expo-router";
 import { AuthContext } from "@/contexts/AuthContext";
+import { useFetch } from "@/contexts/usefetchData";
 
 interface MyFarmsProps {
   textColor: string;
 }
 
 export default function MyFarms({ textColor }: MyFarmsProps) {
-  const [farmData, setFarmData] = useState([]);
   const router = useRouter();
-  const authContext = useContext(AuthContext);
-  if (!authContext) {
-    throw new Error("AuthContext must be used within its provider");
-  }
-  const { userToken } = authContext;
-  useEffect(() => {
-    const fetchFarms = async () => {
-      try {
-        const response = await fetch(
-          `https://fololimo-api-eight.vercel.app/api/v1/insights/farms/`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Token ${userToken}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const data = await response.json();
-        setFarmData(data);
-      } catch (error) {
-        console.error("Error fetching regions:", error);
-      }
-    };
 
+  const {
+    farmData,
+    loading,
+    fetchFarms,
+  } = useFetch();
+
+  useEffect(() => {
     fetchFarms();
   }, []);
 
@@ -44,19 +34,33 @@ export default function MyFarms({ textColor }: MyFarmsProps) {
     <View>
       <View style={styles.header}>
         <Text style={[styles.title, { color: textColor }]}>My Farms</Text>
-        <Pressable onPress={() => router.replace("/(tabs)/inventory/MyFarms")}>
-          <Text
-            style={{
-              color: Colors.light.tabIconSelected,
-              textDecorationLine: "underline",
-            }}
+        {farmData && (
+          <Pressable
+            onPress={() => router.replace("/(tabs)/inventory/MyFarms")}
           >
-            View all
-          </Text>
-        </Pressable>
+            <Text
+              style={{
+                color: Colors.light.tabIconSelected,
+                textDecorationLine: "underline",
+              }}
+            >
+              View all
+            </Text>
+          </Pressable>
+        )}
       </View>
       <ScrollView showsHorizontalScrollIndicator={false} horizontal>
-        {farmData?.length > 0 ? (
+        {loading ? (
+          <View className="w-screen flex flex-col justify-center items-center">
+            <ActivityIndicator size="large" color={Colors.light.tint} />
+            <Text
+              style={{ color: textColor }}
+              className="text-lg mt-4 w-full text-center"
+            >
+              Loading...
+            </Text>
+          </View>
+        ) : farmData?.length > 0 ? (
           farmData?.map(({ name, location, city_name, size }, index) => (
             <FarmCard
               key={index}

@@ -19,6 +19,7 @@ import {
 } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { AuthContext } from "@/contexts/AuthContext";
+import { useFetch } from "@/contexts/usefetchData";
 
 // Define types for regions, counties, and subcounties
 interface Region {
@@ -71,6 +72,7 @@ export default function AddFarm() {
   const [farmName, setFarmName] = useState<string>("");
   const [farmSize, setFarmSize] = useState<number | null>(null);
 
+  const { fetchFarms, fetchWeather } = useFetch();
   // Fetch regions
   useEffect(() => {
     const fetchRegions = async () => {
@@ -168,6 +170,8 @@ export default function AddFarm() {
           "Success",
           `Farm ${createdFarm.name} registered successfully!`
         );
+        fetchFarms();
+        fetchWeather(selectedSubcounty); // Fetch weather for the new farm
         // Reset fields
         setFarmName("");
         setFarmSize(null);

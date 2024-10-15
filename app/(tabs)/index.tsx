@@ -17,11 +17,24 @@ import WeatherInfo from "../components/index/WeatherInfo";
 import MyFarms from "../components/index/MyFarms";
 import MyTasks from "../components/index/MyTasks";
 import { useRouter } from "expo-router";
+import { AuthContext } from "@/contexts/AuthContext";
 
 export default function Index() {
+  interface UserData {
+    username: string;
+    // Add other properties if needed
+  }
+
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [greetingType, setGreetingType] = useState("Hello");
   const themeContext = useContext(ThemeContext); // Access theme mode
   const isDarkMode = themeContext?.isDarkMode ?? false;
+
+  const authContext = useContext(AuthContext);
+  if (!authContext) {
+    throw new Error("AuthContext must be used within its provider");
+  }
+  const { userToken } = authContext;
   // Dynamic theme-based styles
   const backgroundColor = isDarkMode
     ? Colors.dark.background
@@ -42,7 +55,28 @@ export default function Index() {
 
     setGreetingType(getGreeting());
   }, []);
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(
+          `https://fololimo-api-eight.vercel.app/api/v1/users/user/`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Token ${userToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = await response.json();
+        setUserData(data);
+      } catch (error) {
+        console.error("Error fetching regions:", error);
+      }
+    };
 
+    fetchUser();
+  }, []);
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
       <ScrollView
@@ -60,7 +94,7 @@ export default function Index() {
                 {greetingType}👋,
               </Text>
               <Text style={[styles.usernameText, { color: textColor }]}>
-                Muchael123
+                {userData?.username}
               </Text>
             </View>
           </View>
@@ -90,7 +124,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: Platform.OS === "android" ? screenHeight * 0.06 : 0,
-    paddingHorizontal: 5,
+    paddingHorizontal: 8,
     gap: 20,
   },
   header: {
