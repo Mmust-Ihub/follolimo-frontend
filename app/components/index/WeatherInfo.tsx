@@ -36,10 +36,10 @@ export default function WeatherInfo({ textColor }: MyweatherProps) {
                 style={styles.shimmer}
                 shimmerColors={["#f0f0f0", "#e0e0e0", "#f0f0f0"]}
               />
-              <ShimmerPlaceholder
+              {/* <ShimmerPlaceholder
                 style={styles.shimmerText}
                 shimmerColors={["#f0f0f0", "#e0e0e0", "#f0f0f0"]}
-              />
+              /> */}
             </View>
           ))}
         </View>
