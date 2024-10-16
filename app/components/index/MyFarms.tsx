@@ -1,16 +1,9 @@
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { ScrollView, Text, View, Pressable, StyleSheet } from "react-native";
+import ShimmerPlaceholder from "react-native-shimmer-placeholder"; // Import shimmer placeholder
 import FarmCard from "./FarmCard";
 import { Colors } from "@/constants/Colors";
 import { useRouter } from "expo-router";
-import { AuthContext } from "@/contexts/AuthContext";
 import { useFetch } from "@/contexts/usefetchData";
 
 interface MyFarmsProps {
@@ -20,15 +13,14 @@ interface MyFarmsProps {
 export default function MyFarms({ textColor }: MyFarmsProps) {
   const router = useRouter();
 
-  const {
-    farmData,
-    loading,
-    fetchFarms,
-  } = useFetch();
+  const { farmData, loading, fetchFarms } = useFetch();
 
   useEffect(() => {
     fetchFarms();
   }, []);
+
+  // Number of shimmer placeholders to display while loading
+  const shimmerPlaceholders = Array.from({ length: 3 });
 
   return (
     <View>
@@ -49,19 +41,24 @@ export default function MyFarms({ textColor }: MyFarmsProps) {
           </Pressable>
         )}
       </View>
+
       <ScrollView showsHorizontalScrollIndicator={false} horizontal>
         {loading ? (
-          <View className="w-screen flex flex-col justify-center items-center">
-            <ActivityIndicator size="large" color={Colors.light.tint} />
-            <Text
-              style={{ color: textColor }}
-              className="text-lg mt-4 w-full text-center"
-            >
-              Loading...
-            </Text>
-          </View>
+          // Shimmer placeholders during loading
+          shimmerPlaceholders.map((_, index) => (
+            <View key={index} style={styles.shimmerCard}>
+              <ShimmerPlaceholder
+                style={styles.shimmer}
+                shimmerColors={["#f0f0f0", "#e0e0e0", "#f0f0f0"]}
+              />
+              <ShimmerPlaceholder
+                style={styles.shimmerText}
+                shimmerColors={["#f0f0f0", "#e0e0e0", "#f0f0f0"]}
+              />
+            </View>
+          ))
         ) : farmData?.length > 0 ? (
-          farmData?.map(({ name, location, city_name, size }, index) => (
+          farmData.map(({ name, location, city_name, size }, index) => (
             <FarmCard
               key={index}
               name={name}
@@ -72,11 +69,8 @@ export default function MyFarms({ textColor }: MyFarmsProps) {
             />
           ))
         ) : (
-          <View className="flex  items-center justify-center w-screen">
-            <Text
-              className="text-lg font-bold  text-center"
-              style={{ color: textColor }}
-            >
+          <View style={styles.noDataContainer}>
+            <Text style={[styles.noDataText, { color: textColor }]}>
               No farms found...
             </Text>
             <Pressable onPress={() => router.replace("/(tabs)/add")}>
@@ -85,7 +79,7 @@ export default function MyFarms({ textColor }: MyFarmsProps) {
                   color: Colors.light.tabIconSelected,
                   textDecorationLine: "underline",
                 }}
-                className="text-lg font-bold  text-center"
+                className="text-lg font-bold text-center"
               >
                 Create one{" "}
               </Text>
@@ -106,5 +100,32 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: "600",
     fontSize: 16,
+  },
+  shimmerCard: {
+    width: 200,
+    height: 150,
+    marginRight: 10,
+    borderRadius: 10,
+    overflow: "hidden",
+  },
+  shimmer: {
+    width: "100%",
+    height: "70%",
+    borderRadius: 10,
+  },
+  shimmerText: {
+    width: "60%",
+    height: 20,
+    marginTop: 10,
+    borderRadius: 5,
+  },
+  noDataContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noDataText: {
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });

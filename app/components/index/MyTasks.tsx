@@ -14,24 +14,11 @@ import { useFetch } from "@/contexts/usefetchData";
 interface MyTasksProps {
   textColor: string;
 }
-// "activity": "Planting",
-// "date": "2024-10-25",
-// "cost": 20000.0,
-// "duration": 12,
-// "status":"pending",
-// "id": 1,
-// "farm": "Kariosh"
 
 export default function MyTasks({ textColor }: MyTasksProps) {
-  const {
-    tasks,
-
-    loading,
-
-    fetchTasks,
-  } = useFetch();
+  const { tasks, loading, fetchFarms } = useFetch();
   useEffect(() => {
-    fetchTasks();
+    fetchFarms();
   }, []);
 
   const router = useRouter();

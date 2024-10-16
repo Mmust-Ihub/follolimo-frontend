@@ -14,8 +14,6 @@ interface FetchContextType {
   weatherData: WeatherData | null;
   loading: boolean;
   fetchFarms: () => Promise<void>;
-  fetchTasks: () => Promise<void>;
-  fetchWeather: (city: number) => Promise<void>;
 }
 
 // Define types for the data structures (these can be expanded as needed)
@@ -79,7 +77,7 @@ export const FetchProvider: React.FC<FetchProviderProps> = ({ children }) => {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://fololimo-api-eight.vercel.app/api/v1/insights/farms/`,
+        `https://fololimo-api-eight.vercel.app/api/v1/details/`,
         {
           method: "GET",
           headers: {
@@ -89,56 +87,11 @@ export const FetchProvider: React.FC<FetchProviderProps> = ({ children }) => {
         }
       );
       const data = await response.json();
-      setFarmData(data);
+      setFarmData(data.farms);
+      setWeatherData(data.weather);
+      setTasks(data.activities);
     } catch (error) {
       console.error("Error fetching farms:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Fetch Tasks
-  const fetchTasks = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(
-        `https://fololimo-api-eight.vercel.app/api/v1/insights/activities/`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Token ${userToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
-      setTasks(data);
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Fetch Weather
-  const fetchWeather = async (city: number) => {
-    console.log("fetching weather for", city);
-    setLoading(true);
-    try {
-      const response = await fetch(
-        `https://fololimo-api-eight.vercel.app/api/v1/fololimo/weathers/${city}/`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Token ${userToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
-      setWeatherData(data);
-    } catch (error) {
-      console.error("Error fetching weather:", error);
     } finally {
       setLoading(false);
     }
@@ -153,8 +106,6 @@ export const FetchProvider: React.FC<FetchProviderProps> = ({ children }) => {
         weatherData,
         loading,
         fetchFarms,
-        fetchTasks,
-        fetchWeather,
       }}
     >
       {children}
