@@ -1,8 +1,7 @@
-// OnBoarding.js
 import React, { useContext, useEffect } from "react";
 import { SafeAreaView, Image, StyleSheet, Alert } from "react-native";
 import Onboarding from "react-native-onboarding-swiper";
-import { OnboardingContext } from "@/contexts/OnBoardingContext"; // Import the context
+import { OnboardingContext } from "@/contexts/OnBoardingContext";
 import { router } from "expo-router";
 import { AuthContext } from "@/contexts/AuthContext";
 import Login from "./Login";
@@ -19,28 +18,25 @@ const OnBoarding = () => {
   const { userToken, isLoading: isAuthLoading } = authContext;
   const { isOnboardingCompleted, completeOnboarding } = onboardingContext;
 
-  // useEffect(() => {
   if (isOnboardingCompleted && !userToken) {
     return <Login />;
-    // router.replace("/(auth)/Login"); // Redirect to login if onboarding was completed
   }
-  // }, [isOnboardingCompleted, isAuthLoading, userToken]);
 
   const handleComplete = async () => {
-    await completeOnboarding(); // Mark onboarding as complete in context
-    Alert.alert("Onboarding Complete", "Redirecting to login...");
-    router.replace("/(auth)/Login"); // Redirect to login
+    await completeOnboarding();
+    // Alert.alert("Onboarding Complete", "Redirecting to login...");
+    router.replace("/(auth)/Login");
   };
 
   if (isOnboardingCompleted) {
-    return null; // Prevent showing the onboarding screen if already completed
+    return null;
   }
-  console.log("Onboarding", isOnboardingCompleted);
+
   return (
     <SafeAreaView style={styles.container}>
       <Onboarding
-        onSkip={handleComplete} // Handle skip action
-        onDone={handleComplete} // Handle completion action
+        onSkip={handleComplete}
+        onDone={handleComplete}
         pages={[
           {
             backgroundColor: "rgba(197, 131, 67, 0.8)",
@@ -51,8 +47,9 @@ const OnBoarding = () => {
                 resizeMode="cover"
               />
             ),
-            title: "Onboarding",
-            subtitle: "Done with React Native Onboarding Swiper",
+            title: "Real-Time Climate Data",
+            subtitle:
+              "Get accurate and timely weather insights to help you plan and protect your crops.",
             titleStyles: styles.title,
             subTitleStyles: styles.subtitle,
           },
@@ -65,8 +62,9 @@ const OnBoarding = () => {
                 resizeMode="cover"
               />
             ),
-            title: "The Title",
-            subtitle: "This is the subtitle that supplements the title.",
+            title: "Pest and Disease Management",
+            subtitle:
+              "Identify pests and diseases instantly with AI-powered image recognition.",
             titleStyles: styles.title,
             subTitleStyles: styles.subtitle,
           },
@@ -79,8 +77,24 @@ const OnBoarding = () => {
                 resizeMode="cover"
               />
             ),
-            title: "Triangle",
-            subtitle: "Beautiful, isn’t it?",
+            title: "Soil Property Monitoring",
+            subtitle:
+              "Measure soil moisture, pH levels, and more with IoT devices for better crop management.",
+            titleStyles: styles.title,
+            subTitleStyles: styles.subtitle,
+          },
+          {
+            backgroundColor: "rgba(143, 200, 89, 0.8)",
+            image: (
+              <Image
+                source={require("../../assets/img/crop.jpg")}
+                style={styles.image}
+                resizeMode="cover"
+              />
+            ),
+            title: "Crop Suitability Prediction",
+            subtitle:
+              "Get recommendations on the best crops to grow based on your location and soil data.",
             titleStyles: styles.title,
             subTitleStyles: styles.subtitle,
           },
@@ -101,12 +115,13 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   title: {
+    fontWeight: "600", 
     color: "#000",
     fontSize: 24,
   },
   subtitle: {
-    color: "#555",
-    fontSize: 16,
+    color: "#333",
+    fontSize: 18,
   },
 });
 

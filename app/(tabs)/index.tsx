@@ -8,6 +8,8 @@ import {
   View,
   Image,
 } from "react-native";
+import { onSnapshot, collection } from "firebase/firestore";
+import { db } from "./../../firebase";
 import { useContext, useEffect, useState } from "react";
 import { screenHeight } from "@/constants/AppDimensions";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -17,11 +19,30 @@ import WeatherInfo from "../components/index/WeatherInfo";
 import MyFarms from "../components/index/MyFarms";
 import MyTasks from "../components/index/MyTasks";
 import { useRouter } from "expo-router";
+import { AuthContext } from "@/contexts/AuthContext";
+import Notify from "../components/Notify";
 
 export default function Index() {
+  interface UserData {
+    username: string;
+    // Add other properties if needed
+  }
+  interface AlarmData {
+    id: string;
+    // Add other properties if needed
+  }
+
+  const [alarmUsers, setAlarmUsers] = useState<AlarmData[]>([]);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [greetingType, setGreetingType] = useState("Hello");
   const themeContext = useContext(ThemeContext); // Access theme mode
   const isDarkMode = themeContext?.isDarkMode ?? false;
+
+  const authContext = useContext(AuthContext);
+  if (!authContext) {
+    throw new Error("AuthContext must be used within its provider");
+  }
+  const { userToken } = authContext;
   // Dynamic theme-based styles
   const backgroundColor = isDarkMode
     ? Colors.dark.background
@@ -42,13 +63,62 @@ export default function Index() {
 
     setGreetingType(getGreeting());
   }, []);
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(
+          `https://fololimo-api-eight.vercel.app/api/v1/users/user/`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Token ${userToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = await response.json();
+        setUserData(data);
+      } catch (error) {
+        console.error("Error fetching regions:", error);
+      }
+    };
 
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = getResults();
+    console.log("unsubscribe", unsubscribe);
+    return () => unsubscribe(); // Cleanup function to unsubscribe from real-time updates
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const getResults = () => {
+    const query = collection(db, "Alarms");
+    console.log("query", query);
+    const unsubscribe = onSnapshot(query, (snapshot) => {
+      const alarmsData: AlarmData[] = [];
+      snapshot.forEach((doc) => {
+        alarmsData.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+
+      setAlarmUsers(alarmsData);
+    });
+
+    return unsubscribe;
+  };
+  console.log("alarmusers " + alarmUsers);
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
       <ScrollView
         contentContainerStyle={styles.scrollViewStyle}
         showsVerticalScrollIndicator={false}
       >
+        <Notify />
         <View style={styles.header}>
           <View style={styles.userInfo}>
             <Image
@@ -60,7 +130,7 @@ export default function Index() {
                 {greetingType}👋,
               </Text>
               <Text style={[styles.usernameText, { color: textColor }]}>
-                Muchael123
+                {userData?.username}
               </Text>
             </View>
           </View>
@@ -90,7 +160,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: Platform.OS === "android" ? screenHeight * 0.06 : 0,
-    paddingHorizontal: 5,
+    paddingHorizontal: 8,
     gap: 20,
   },
   header: {

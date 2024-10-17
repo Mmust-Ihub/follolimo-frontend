@@ -4,7 +4,8 @@ import { Colors } from "@/constants/Colors";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 type WeatherCardProps = {
-  city: string;
+  city: number;
+  name: string;
 };
 type WeatherData = {
   temperature: number;
@@ -23,7 +24,7 @@ import {
   ImageBackground,
 } from "react-native";
 import { AuthContext } from "@/contexts/AuthContext";
-const WeatherCard = ({ city }: WeatherCardProps) => {
+const WeatherCard = ({ city, name }: WeatherCardProps) => {
   const [weatherData, setWeatherData] = useState<WeatherData>();
   const authContext = useContext(AuthContext);
   if (!authContext) {
@@ -55,16 +56,17 @@ const WeatherCard = ({ city }: WeatherCardProps) => {
 
   return (
     <View style={styles.container}>
-      <View className="gap-4">
+      <View className="gap-3">
+        <Text className="text-white font-extrabold capitalize ">{name}</Text>
         <Text className="text-white ">{weatherData?.temperature} °C</Text>
         <Text className="text-white ">Humidity {weatherData?.humidity}%</Text>
         <Text className="text-white font-semibold capitalize">
           {weatherData?.description}
         </Text>
-        <Text className="text-white ">
-          <Ionicons name="location-sharp" size={24} color="white" />{" "}
-          {weatherData?.city}, Kenya
-        </Text>
+        <View className="flex flex-row items-center">
+          <Ionicons name="location-sharp" size={18} color="white" />
+          <Text className="text-white">{weatherData?.city}, Kenya</Text>
+        </View>
         <Text className="text-white ">Soil p.H 6.5 (Neutral)</Text>
       </View>
       <View className="justify-center items-center">
