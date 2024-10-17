@@ -12,6 +12,7 @@ export const Colors = {
     tabIconSelected: tintColorLight,
     headerBackground: "#fff",
     headerText: "#11181C",
+    cardBg: "#f9f9f9",
   },
   dark: {
     text: "#ECEDEE",
@@ -22,6 +23,7 @@ export const Colors = {
     tabIconSelected: tintColorDark,
     headerBackground: "#151718",
     headerText: "#ECEDEE",
+    cardBg: "#1C1C1C",
   },
   darkGreen: "#235357",
   lightGreen: "#C3FBA9",

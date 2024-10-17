@@ -74,22 +74,6 @@ export default function TabLayout() {
     return <Login />;
     // router.replace("/(auth)/Login");
   }
-  // setIsLoading(false);
-  // useEffect(() => {
-  //   setIsLoading(false);
-  //   // Navigate to onboarding if not completed and user is not authenticated
-  //   if (!isAuthLoading && !userToken && !isOnboardingCompleted) {
-  //     setIsLoading(false);
-  //     console.log("Navigating to OnBoarding...");
-  //     router.replace("/(auth)/OnBoarding");
-  //   }
-  //   if (isOnboardingCompleted && !isAuthLoading && !userToken) {
-  //     setIsLoading(false);
-
-  //     console.log("Navigating to Login...");
-  //     router.replace("/(auth)/Login");
-  //   }
-  // }, [isAuthLoading, userToken, isOnboardingCompleted]);
   console.log(isAuthLoading + "layout");
  
 
