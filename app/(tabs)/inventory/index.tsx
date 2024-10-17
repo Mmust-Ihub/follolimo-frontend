@@ -1,60 +1,155 @@
-import { Text, View } from "react-native";
+import { Colors } from "@/constants/Colors";
+import React from "react";
+import { View, Text } from "react-native";
 import { BarChart } from "react-native-gifted-charts";
 
-const index = () => {
-     const data = [
-    {value: 2500, frontColor: '#006DFF', gradientColor: '#009FFF', spacing: 6, label:'Jan'},
-    {value: 2400, frontColor: '#3BE9DE', gradientColor: '#93FCF8'},
-    {value: 3500, frontColor: '#006DFF', gradientColor: '#009FFF', spacing: 6, label:'Feb'},
-    {value: 3000, frontColor: '#3BE9DE', gradientColor: '#93FCF8'},
-    {value: 4500, frontColor: '#006DFF', gradientColor: '#009FFF', spacing: 6, label:'Mar'},
-    {value: 4000, frontColor: '#3BE9DE', gradientColor: '#93FCF8'},
-    {value: 5200, frontColor: '#006DFF', gradientColor: '#009FFF', spacing: 6, label:'Apr'},
-    {value: 4900, frontColor: '#3BE9DE', gradientColor: '#93FCF8'},
-    {value: 3000, frontColor: '#006DFF', gradientColor: '#009FFF', spacing: 6, label:'May'},
-    {value: 2800, frontColor: '#3BE9DE', gradientColor: '#93FCF8'},
+export default function index() {
+  const barData = [
+    {
+      value: 40,
+      label: "Jan",
+      spacing: 2,
+      labelWidth: 30,
+      labelTextStyle: { color: "gray" },
+      frontColor: Colors.light.tabIconSelected,
+    },
+    { value: 20, frontColor: "#ED6665" },
+    {
+      value: 50,
+      label: "Feb",
+      spacing: 2,
+      labelWidth: 30,
+      labelTextStyle: { color: "gray" },
+      frontColor: Colors.light.tabIconSelected,
+    },
+    { value: 40, frontColor: "#ED6665" },
+    {
+      value: 75,
+      label: "Mar",
+      spacing: 2,
+      labelWidth: 30,
+      labelTextStyle: { color: "gray" },
+      frontColor: Colors.light.tabIconSelected,
+    },
+    { value: 25, frontColor: "#ED6665" },
+    {
+      value: 30,
+      label: "Apr",
+      spacing: 2,
+      labelWidth: 30,
+      labelTextStyle: { color: "gray" },
+      frontColor: Colors.light.tabIconSelected,
+    },
+    { value: 20, frontColor: "#ED6665" },
+    {
+      value: 60,
+      label: "May",
+      spacing: 2,
+      labelWidth: 30,
+      labelTextStyle: { color: "gray" },
+      frontColor: Colors.light.tabIconSelected,
+    },
+    { value: 40, frontColor: "#ED6665" },
+    {
+      value: 65,
+      label: "Jun",
+      spacing: 2,
+      labelWidth: 30,
+      labelTextStyle: { color: "gray" },
+      frontColor: Colors.light.tabIconSelected,
+    },
+    { value: 30, frontColor: "#ED6665" },
   ];
-  return(
+
+  const renderTitle = () => {
+    return (
+      <View style={{ marginVertical: 30 }}>
+        <Text
+          style={{
+            color: "white",
+            fontSize: 20,
+            fontWeight: "bold",
+            textAlign: "center",
+          }}
+        >
+         My Spending
+        </Text>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "space-evenly",
+            marginTop: 24,
+            backgroundColor: "yellow",
+          }}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View
+              style={{
+                height: 12,
+                width: 12,
+                borderRadius: 6,
+                backgroundColor: Colors.light.tabIconSelected,
+                marginRight: 8,
+              }}
+            />
+            <Text
+              style={{
+                width: 60,
+                height: 16,
+                color: "lightgray",
+              }}
+            >
+              Debits
+            </Text>
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View
+              style={{
+                height: 12,
+                width: 12,
+                borderRadius: 6,
+                backgroundColor: "#ED6665",
+                marginRight: 8,
+              }}
+            />
+            <Text
+              style={{
+                width: 60,
+                height: 16,
+                color: "lightgray",
+              }}
+            >
+              Credits
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
+  return (
     <View
       style={{
-        margin: 10,
-        padding: 16,
-        borderRadius: 20,
-        backgroundColor: '#232B5D',
-      }}>
-      <Text style={{color: 'white', fontSize: 16, fontWeight: 'bold'}}>
-        Overview
-      </Text>
-      <View style={{padding: 20, alignItems: 'center'}}>
-        <BarChart
-          data={data}
-          barWidth={16}
-          initialSpacing={10}
-          spacing={14}
-          barBorderRadius={4}
-          showGradient
-          yAxisThickness={0}
-          xAxisType={'dashed'}
-          xAxisColor={'lightgray'}
-          yAxisTextStyle={{color: 'lightgray'}}
-          stepValue={1000}
-          maxValue={6000}
-          noOfSections={6}
-          yAxisLabelTexts={['0', '1k', '2k', '3k', '4k', '5k', '6k']}
-          labelWidth={40}
-          xAxisLabelTextStyle={{color: 'lightgray', textAlign: 'center'}}
-          showLine
-          lineConfig={{
-            color: '#F29C6E',
-            thickness: 3,
-            curved: true,
-            hideDataPoints: true,
-            shiftY: 20,
-            initialSpacing: -30,
-          }}
-        />
-      </View>
+        backgroundColor: "#333340",
+        paddingBottom: 40,
+        borderRadius: 10,
+      }}
+    >
+      {renderTitle()}
+      <BarChart
+        data={barData}
+        barWidth={8}
+        spacing={24}
+        roundedTop
+        roundedBottom
+        hideRules
+        xAxisThickness={0}
+        yAxisThickness={0}
+        yAxisTextStyle={{ color: "gray" }}
+        noOfSections={3}
+        maxValue={75}
+      />
     </View>
   );
-}
-export default index;
+};
