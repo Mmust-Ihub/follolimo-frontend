@@ -119,7 +119,7 @@ export default function Page() {
                     Size: {farm.size} acres
                   </Text>
                   <Link
-                    href={`/tabs/farms/${farm.id}`}
+                    href={`/(modals)/ViewFarm`}
                     style={{
                       color: currentColors.tabIconSelected,
                       textDecorationLine: "underline",
