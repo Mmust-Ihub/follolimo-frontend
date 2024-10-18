@@ -1,63 +1,64 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { ScrollView, Text, View, Pressable, StyleSheet } from "react-native";
+import ShimmerPlaceholder from "react-native-shimmer-placeholder"; // Import shimmer placeholder
 import FarmCard from "./FarmCard";
 import { Colors } from "@/constants/Colors";
 import { useRouter } from "expo-router";
-import { AuthContext } from "@/contexts/AuthContext";
+import { useFetch } from "@/contexts/usefetchData";
 
 interface MyFarmsProps {
   textColor: string;
 }
 
 export default function MyFarms({ textColor }: MyFarmsProps) {
-  const [farmData, setFarmData] = useState([]);
   const router = useRouter();
-  const authContext = useContext(AuthContext);
-  if (!authContext) {
-    throw new Error("AuthContext must be used within its provider");
-  }
-  const { userToken } = authContext;
-  useEffect(() => {
-    const fetchFarms = async () => {
-      try {
-        const response = await fetch(
-          `https://fololimo-api-eight.vercel.app/api/v1/insights/farms/`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Token ${userToken}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const data = await response.json();
-        setFarmData(data);
-      } catch (error) {
-        console.error("Error fetching regions:", error);
-      }
-    };
 
+  const { farmData, loading, fetchFarms } = useFetch();
+
+  useEffect(() => {
     fetchFarms();
   }, []);
+
+  // Number of shimmer placeholders to display while loading
+  const shimmerPlaceholders = Array.from({ length: 3 });
 
   return (
     <View>
       <View style={styles.header}>
         <Text style={[styles.title, { color: textColor }]}>My Farms</Text>
-        <Pressable onPress={() => router.replace("/(tabs)/inventory/MyFarms")}>
-          <Text
-            style={{
-              color: Colors.light.tabIconSelected,
-              textDecorationLine: "underline",
-            }}
+        {farmData && (
+          <Pressable
+            onPress={() => router.replace("/(tabs)/inventory/MyFarms")}
           >
-            View all
-          </Text>
-        </Pressable>
+            <Text
+              style={{
+                color: Colors.light.tabIconSelected,
+                textDecorationLine: "underline",
+              }}
+            >
+              View all
+            </Text>
+          </Pressable>
+        )}
       </View>
+
       <ScrollView showsHorizontalScrollIndicator={false} horizontal>
-        {farmData?.length > 0 ? (
-          farmData?.map(({ name, location, city_name, size }, index) => (
+        {loading ? (
+          // Shimmer placeholders during loading
+          shimmerPlaceholders.map((_, index) => (
+            <View key={index} style={styles.shimmerCard}>
+              <ShimmerPlaceholder
+                style={styles.shimmer}
+                shimmerColors={["#f0f0f0", "#e0e0e0", "#f0f0f0"]}
+              />
+              <ShimmerPlaceholder
+                style={styles.shimmerText}
+                shimmerColors={["#f0f0f0", "#e0e0e0", "#f0f0f0"]}
+              />
+            </View>
+          ))
+        ) : farmData?.length > 0 ? (
+          farmData.map(({ name, location, city_name, size }, index) => (
             <FarmCard
               key={index}
               name={name}
@@ -68,11 +69,8 @@ export default function MyFarms({ textColor }: MyFarmsProps) {
             />
           ))
         ) : (
-          <View className="flex  items-center justify-center w-screen">
-            <Text
-              className="text-lg font-bold  text-center"
-              style={{ color: textColor }}
-            >
+          <View style={styles.noDataContainer}>
+            <Text style={[styles.noDataText, { color: textColor }]}>
               No farms found...
             </Text>
             <Pressable onPress={() => router.replace("/(tabs)/add")}>
@@ -81,7 +79,7 @@ export default function MyFarms({ textColor }: MyFarmsProps) {
                   color: Colors.light.tabIconSelected,
                   textDecorationLine: "underline",
                 }}
-                className="text-lg font-bold  text-center"
+                className="text-lg font-bold text-center"
               >
                 Create one{" "}
               </Text>
@@ -102,5 +100,32 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: "600",
     fontSize: 16,
+  },
+  shimmerCard: {
+    width: 200,
+    height: 150,
+    marginRight: 10,
+    borderRadius: 10,
+    overflow: "hidden",
+  },
+  shimmer: {
+    width: "100%",
+    height: "70%",
+    borderRadius: 10,
+  },
+  shimmerText: {
+    width: "60%",
+    height: 20,
+    marginTop: 10,
+    borderRadius: 5,
+  },
+  noDataContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noDataText: {
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });

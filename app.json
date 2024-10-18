@@ -20,6 +20,7 @@
         "foregroundImage": "./assets/images/ic.png",
         "backgroundColor": "#ffffff"
       },
+      "googleServicesFile": "google-services.json",
       "package": "com.wabunifu.fololimo"
     },
     "web": {
@@ -35,7 +36,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "2a9ce931-71de-401f-a189-3592d072312b"
+        "projectId": "7758b083-57a6-4787-8a55-03befd0f9225"
       }
     }
   }

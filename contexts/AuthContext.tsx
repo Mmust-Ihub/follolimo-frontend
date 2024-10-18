@@ -84,7 +84,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         router.replace("/(tabs)");
         setIsLoading(false);
-        Alert.alert("Login Successful", "You are now logged in");
+        // Alert.alert("Login Successful", "You are now logged in");
         console.log("Logged in, token:", token);
       }
       if (response.status === 401) {
@@ -156,10 +156,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         router.replace("/(auth)/Login");
         setIsLoading(false);
-        Alert.alert(
-          "Registration Successful",
-          "You can now login with your credentials"
-        );
+        // Alert.alert(
+        //   "Registration Successful",
+        //   "You can now login with your credentials"
+        // );
         console.log("Logged in, token:", data);
       }
     } catch (error) {

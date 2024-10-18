@@ -22,7 +22,7 @@ export default function FarmCard({
     <View style={styles.container}>
       <Image style={styles.image} source={{ uri: image }} />
       <View style={styles.name}>
-        <Text className="font-bold text-lg">{name}</Text>
+        <Text className="font-bold text-lg">{name.slice(0,15)}...</Text>
         <Text className="font-bold">{size} acres</Text>
       </View>
       <View style={styles.location}>
