@@ -15,7 +15,7 @@ export default function Modals() {
         presentation: "modal",
         animation: "slide_from_bottom",
         headerStyle: {
-          backgroundColor: themeColors.headerBackground, 
+          backgroundColor: themeColors.headerBackground,
         },
         headerTintColor: themeColors.headerText, 
       }}
