@@ -5,13 +5,15 @@ import {
   RefreshControl,
   SafeAreaView,
   ScrollView,
+  Button,
+  TouchableOpacity,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { Colors } from "@/constants/Colors";
 import { ThemeContext } from "@/contexts/ThemeContext";
 import { AuthContext } from "@/contexts/AuthContext";
-import { screenHeight } from "@/constants/AppDimensions";
-import { Link } from "expo-router";
+import { screenHeight, screenWidth } from "@/constants/AppDimensions";
+import { Link, useRouter } from "expo-router";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 type Farm = {
@@ -32,7 +34,7 @@ export default function Page() {
   if (!authContext) {
     throw new Error("AuthContext must be used within its provider");
   }
-
+  const router = useRouter();
   const { userToken } = authContext;
 
   const fetchFarms = async () => {
@@ -122,15 +124,20 @@ export default function Page() {
                   <Text style={{ color: currentColors.text }}>
                     farmid: {farm.id}
                   </Text>
-                  <Link
-                    href={`/tabs/farms/${farm?.id}`}
+                  <TouchableOpacity
+                    onPress={() => {router.push(`/(modals)/${farm.id}`)}}
                     style={{
-                      color: currentColors.tabIconSelected,
-                      textDecorationLine: "underline",
+                      backgroundColor: currentColors.tabIconSelected,
+                      padding: 10,
+                      borderRadius: 5,
+                      marginTop: 10,
+                      width: screenWidth * .6,
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
                   >
-                    View Details
-                  </Link>
+                    <Text style= {styles.ViewText}>View Farm Details</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             ))
@@ -181,5 +188,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textDecorationLine: "underline",
     textDecorationColor: Colors.light.tabIconSelected,
+  },
+  ViewText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });
