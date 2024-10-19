@@ -103,8 +103,8 @@ export default function Index() {
             const newTodo = change.doc.data();
 
             const notificationMessage = {
-              title: "New Todo Added",
-              body: `A new task named ${newTodo.name} has been added.`,
+              title: "New Farm Results",
+              body: `Farm data named ${newTodo.name} has been added.`,
             };
 
             // Send notification using the custom hook's function
@@ -218,19 +218,19 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   Chat: {
-    width: 70, // Make width and height equal for a circular button
+    width: 70,
     height: 70,
-    borderRadius: 35, // Half of the width/height to make it circular
+    borderRadius: 35,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: Colors.dark.tint,
-    position: "absolute", // Optional: to fix its position on the screen
-    bottom: 30, // Adjust positioning as needed
+    position: "absolute",
+    bottom: 30,
     right: 30,
   },
   chatText: {
     color: "white",
-    fontSize: 12, // Adjust font size for circular button
-    textAlign: "center", // Center the text
+    fontSize: 12,
+    textAlign: "center",
   },
 });

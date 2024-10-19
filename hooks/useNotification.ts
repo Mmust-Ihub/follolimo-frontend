@@ -21,7 +21,7 @@ async function sendPushNotification(
     sound: "default",
     title: message.title,
     body: message.body,
-    data: { someData: "goes here" }, // Optional additional data
+    data: { someData: "goes here" },
   };
 
   await fetch("https://exp.host/--/api/v2/push/send", {
@@ -76,45 +76,28 @@ async function registerForPushNotificationsAsync() {
     ).data;
     return pushTokenString;
   } else {
-    throw new Error("Must use physical device for push notifications");
+    throw new Error("Must use physical device for Push Notifications!");
   }
 }
 
 export function useNotifications() {
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
-  const [notification, setNotification] = useState<
-    Notifications.Notification | undefined
-  >(undefined);
-  const notificationListener = useRef<Notifications.Subscription>();
-  const responseListener = useRef<Notifications.Subscription>();
 
   useEffect(() => {
-    registerForPushNotificationsAsync()
-      .then((token) => setExpoPushToken(token ?? null))
-      .catch((error) =>
-        console.error("Failed to register for notifications:", error)
-      );
-
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification) => {
-        setNotification(notification);
-      });
-
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log("Notification clicked:", response);
-        // Handle any additional actions upon notification click if needed
-      });
-
-    return () => {
-      notificationListener.current &&
-        Notifications.removeNotificationSubscription(
-          notificationListener.current
-        );
-      responseListener.current &&
-        Notifications.removeNotificationSubscription(responseListener.current);
+    const registerForPushNotifications = async () => {
+      try {
+        const token = await registerForPushNotificationsAsync();
+        setExpoPushToken(token);
+      } catch (error) {
+        console.error("Error registering for push notifications:", error);
+      }
     };
+
+    registerForPushNotifications();
   }, []);
 
-  return { expoPushToken, notification, sendPushNotification };
+  return {
+    expoPushToken,
+    sendPushNotification,
+  };
 }
