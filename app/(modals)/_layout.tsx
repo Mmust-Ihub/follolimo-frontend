@@ -13,10 +13,11 @@ export default function Modals() {
     <Stack
       screenOptions={{
         presentation: "modal",
+        animation: "slide_from_bottom",
         headerStyle: {
-          backgroundColor: themeColors.headerBackground, // Dynamic header background
+          backgroundColor: themeColors.headerBackground, 
         },
-        headerTintColor: themeColors.headerText, // Dynamic header text color
+        headerTintColor: themeColors.headerText, 
       }}
     >
       <Stack.Screen
@@ -32,6 +33,7 @@ export default function Modals() {
           headerTitleAlign: "center",
         }}
       />
+      
     </Stack>
   );
 }

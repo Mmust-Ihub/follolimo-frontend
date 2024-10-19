@@ -1,12 +1,20 @@
-import { StyleSheet, Text, View, RefreshControl, SafeAreaView, ScrollView } from "react-native";
-import React, { useContext, useEffect, useState } from 'react'
-import { Colors } from '@/constants/Colors';
-import { ThemeContext } from '@/contexts/ThemeContext';
-import { AuthContext } from '@/contexts/AuthContext';
-import { screenHeight } from "@/constants/AppDimensions";
-import { Link } from "expo-router";
+import {
+  StyleSheet,
+  Text,
+  View,
+  RefreshControl,
+  SafeAreaView,
+  ScrollView,
+  Button,
+  TouchableOpacity,
+} from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { Colors } from "@/constants/Colors";
+import { ThemeContext } from "@/contexts/ThemeContext";
+import { AuthContext } from "@/contexts/AuthContext";
+import { screenHeight, screenWidth } from "@/constants/AppDimensions";
+import { Link, useRouter } from "expo-router";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-
 
 type Farm = {
   id: number;
@@ -19,54 +27,49 @@ type Farm = {
   longitude?: number | null; // Optional property
 };
 
-
-
 export default function Page() {
   const [farmData, setFarmData] = useState<Array<Farm> | null>();
-    const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const authContext = useContext(AuthContext);
   if (!authContext) {
     throw new Error("AuthContext must be used within its provider");
   }
-
+  const router = useRouter();
   const { userToken } = authContext;
 
+  const fetchFarms = async () => {
+    try {
+      setRefreshing(true);
+      const response = await fetch(
+        `https://fololimo-api-eight.vercel.app/api/v1/insights/farms/`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Token ${userToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      setFarmData(data);
+      console.log(data);
+    } catch (error) {
+      console.error("Error fetching regions:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
-   const fetchFarms = async () => {
-     try {
-       setRefreshing(true);
-       const response = await fetch(
-         `https://fololimo-api-eight.vercel.app/api/v1/insights/farms/`,
-         {
-           method: "GET",
-           headers: {
-             Authorization: `Token ${userToken}`,
-             "Content-Type": "application/json",
-           },
-         }
-       );
-       const data = await response.json();
-       setFarmData(data);
-       console.log(data)
-     } catch (error) {
-       console.error("Error fetching regions:", error);
-     } finally {
-        setRefreshing(false);
-      }
-   };
-
-  
-  
   useEffect(() => {
     fetchFarms();
   }, []);
 
-  const themeContext = useContext(ThemeContext)
+  const themeContext = useContext(ThemeContext);
   const isDarkMode = themeContext?.isDarkMode ?? false;
   const backgroundColor = isDarkMode
     ? Colors.dark.background
     : Colors.light.background;
-      const currentColors = isDarkMode ? Colors.dark : Colors.light;
+  const currentColors = isDarkMode ? Colors.dark : Colors.light;
 
   return (
     <SafeAreaView>
@@ -118,29 +121,41 @@ export default function Page() {
                   <Text style={{ color: currentColors.text }}>
                     Size: {farm.size} acres
                   </Text>
-                  <Link
-                    href={`/(modals)/ViewFarm`}
+                  <Text style={{ color: currentColors.text }}>
+                    farmid: {farm.id}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {router.push(`/(modals)/${farm.id}`)}}
                     style={{
-                      color: currentColors.tabIconSelected,
-                      textDecorationLine: "underline",
+                      backgroundColor: currentColors.tabIconSelected,
+                      padding: 10,
+                      borderRadius: 5,
+                      marginTop: 10,
+                      width: screenWidth * .6,
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
                   >
-                    View Details
-                  </Link>
-                  </View>
+                    <Text style= {styles.ViewText}>View Farm Details</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             ))
           ) : (
             <View>
               <Text style={{ color: currentColors.tabIconSelected }}>
-                  No farms Data found...
-                  Pull down to refresh {"\n"} or 
+                No farms Data found... Pull down to refresh {"\n"} or
               </Text>
 
-                <Link href="/(tabs)/add" style={{
+              <Link
+                href="/(tabs)/add"
+                style={{
                   textDecorationLine: "underline",
                   color: currentColors.tabIconSelected,
-              }}>Create your farm</Link>
+                }}
+              >
+                Create your farm
+              </Link>
             </View>
           )}
         </View>
@@ -153,7 +168,6 @@ const styles = StyleSheet.create({
   MyFarmsTitle: {
     fontSize: 24,
     fontWeight: "bold",
-
   },
   scrollViewStyle: {
     padding: 20,
@@ -174,6 +188,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textDecorationLine: "underline",
     textDecorationColor: Colors.light.tabIconSelected,
-
   },
-})
+  ViewText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+});
