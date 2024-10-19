@@ -131,12 +131,12 @@ export default function Page() {
                       padding: 10,
                       borderRadius: 5,
                       marginTop: 10,
-                      width: screenWidth * .6,
+                      width: screenWidth * 0.6,
                       justifyContent: "center",
                       alignItems: "center",
                     }}
                   >
-                    <Text style= {styles.ViewText}>View Farm Details</Text>
+                    <Text style={styles.ViewText}>View Farm Details</Text>
                   </TouchableOpacity>
                 </View>
               </View>
