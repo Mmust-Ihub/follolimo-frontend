@@ -125,18 +125,20 @@ export default function Page() {
                     farmid: {farm.id}
                   </Text>
                   <TouchableOpacity
-                    onPress={() => {router.push(`/(modals)/${farm.id}`)}}
+                    onPress={() => {
+                      router.push(`/(modals)/${farm.id}`);
+                    }}
                     style={{
                       backgroundColor: currentColors.tabIconSelected,
                       padding: 10,
                       borderRadius: 5,
                       marginTop: 10,
-                      width: screenWidth * .6,
+                      width: screenWidth * 0.6,
                       justifyContent: "center",
                       alignItems: "center",
                     }}
                   >
-                    <Text style= {styles.ViewText}>View Farm Details</Text>
+                    <Text style={styles.ViewText}>View Farm Details</Text>
                   </TouchableOpacity>
                 </View>
               </View>
