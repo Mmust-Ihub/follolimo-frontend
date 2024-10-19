@@ -3,6 +3,7 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
 import { Platform } from "react-native";
+import { useRouter } from "expo-router";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -21,7 +22,7 @@ async function sendPushNotification(
     sound: "default",
     title: message.title,
     body: message.body,
-    data: { someData: "goes here" },
+    data: { someData: "goes here" }, // Optional additional data
   };
 
   await fetch("https://exp.host/--/api/v2/push/send", {
@@ -76,28 +77,52 @@ async function registerForPushNotificationsAsync() {
     ).data;
     return pushTokenString;
   } else {
-    throw new Error("Must use physical device for Push Notifications!");
+    throw new Error("Must use physical device for push notifications");
   }
 }
 
 export function useNotifications() {
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
+  const [notification, setNotification] = useState<
+    Notifications.Notification | undefined
+  >(undefined);
+  const notificationListener = useRef<Notifications.Subscription>();
+  const responseListener = useRef<Notifications.Subscription>();
 
   useEffect(() => {
-    const registerForPushNotifications = async () => {
-      try {
-        const token = await registerForPushNotificationsAsync();
-        setExpoPushToken(token);
-      } catch (error) {
-        console.error("Error registering for push notifications:", error);
-      }
-    };
+    registerForPushNotificationsAsync()
+      .then((token) => setExpoPushToken(token ?? null))
+      .catch((error) =>
+        console.error("Failed to register for notifications:", error)
+      );
 
-    registerForPushNotifications();
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        setNotification(notification);
+      });
+
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        // console.log("Notification clicked:", response);
+        const farmId = response.notification.request.content.data.farmId;
+        const router = useRouter();
+        console.log(farmId);
+        if (farmId) {
+          console.log(farmId);
+          // Navigate to the modals page with the farm ID
+          router.push(`follolimo://(modals)/${farmId}`);
+        }
+      });
+
+    return () => {
+      notificationListener.current &&
+        Notifications.removeNotificationSubscription(
+          notificationListener.current
+        );
+      responseListener.current &&
+        Notifications.removeNotificationSubscription(responseListener.current);
+    };
   }, []);
 
-  return {
-    expoPushToken,
-    sendPushNotification,
-  };
+  return { expoPushToken, notification, sendPushNotification };
 }
