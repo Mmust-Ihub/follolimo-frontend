@@ -116,7 +116,7 @@ export default function Notify() {
 
         // Navigate to the settings tab when the notification is clicked
         if (someData) {
-          router.push("/(tabs)/settings"); // Replace "/(tabs)/settings" with your actual route path
+          router.push("follimo://(tabs)/settings"); // Replace "/(tabs)/settings" with your actual route path
         }
       });
 

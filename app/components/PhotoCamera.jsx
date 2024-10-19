@@ -48,6 +48,7 @@ export default function PhotoCamera() {
       setImageUri(result.assets[0].uri);
       console.log("result", result.assets[0]);
       router.push("/(modals)/ImageResults");
+      
     }
   };
 
@@ -77,6 +78,7 @@ export default function PhotoCamera() {
         console.log("asset...",asset);
         await MediaLibrary.createAlbumAsync("ExpoProject", asset, false);
         setImageUri(photo.uri);
+        setLoading(false)
         router.push("/(modals)/ImageResults");
       } else {
         console.warn("Media library permission not granted");

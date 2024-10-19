@@ -14,7 +14,7 @@ import { useContext, useEffect, useState } from "react";
 import { screenHeight } from "@/constants/AppDimensions";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Colors } from "@/constants/Colors";
-import { ThemeContext } from "@/contexts/ThemeContext"; // For theme management
+import { ThemeContext } from "@/contexts/ThemeContext"; 
 import WeatherInfo from "../components/index/WeatherInfo";
 import MyFarms from "../components/index/MyFarms";
 import MyTasks from "../components/index/MyTasks";
@@ -89,9 +89,8 @@ export default function Index() {
   useEffect(() => {
     const unsubscribe = getResults();
     console.log("unsubscribe", unsubscribe);
-    return () => unsubscribe(); // Cleanup function to unsubscribe from real-time updates
+    return () => unsubscribe(); 
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getResults = () => {
@@ -111,7 +110,8 @@ export default function Index() {
 
     return unsubscribe;
   };
-  console.log("alarmusers " + alarmUsers);
+
+  
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
       <ScrollView
