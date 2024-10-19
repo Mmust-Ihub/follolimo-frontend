@@ -1,4 +1,14 @@
-# Welcome to your Expo app 👋
+# Fololimo - Sustainable Farming Support App 🌾
+
+Fololimo is a comprehensive agricultural support platform designed to empower farmers in developing countries by providing real-time data, AI-driven insights, and IoT solutions to improve productivity and sustainability. The platform helps farmers adapt to changing climate conditions, offering tools for pest and disease management
+
+## Key Features
+
+- **GeoLocation Support**: Use geolocation to identify the location of the user by default.
+- **Soil API Integration**: Send requests to soil APIs to gain insights on soil type and pH levels.
+- **Weather API Integration**: Gain insights on the climate of the area and key factors, such as the onset of rains and seasonal changes.
+- **Farmer Budget & Land Size Input**: Farmers may enter their available budget and land size to receive recommendations on suitable crops.
+- **AI Integration**: Use Gemini AI to generate potential favourable crops based on the area and even suggest possible markets based on those crops.
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
