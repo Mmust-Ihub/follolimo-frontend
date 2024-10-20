@@ -1,4 +1,6 @@
-# Fololimo - Sustainable Farming Support App 🌾
+# WELCOME TO FOLOLIMO
+
+## Fololimo - Sustainable Farming Support App 🌾
 
 Fololimo is a comprehensive agricultural support platform designed to empower farmers in developing countries by providing real-time data, AI-driven insights, and IoT solutions to improve productivity and sustainability. The platform helps farmers adapt to changing climate conditions, offering tools for pest and disease management
 
