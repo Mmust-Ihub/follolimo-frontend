@@ -65,6 +65,16 @@ export interface Crop {
   recommendations: Recommendations;
   suitability_score: number;
 }
+interface NPK {
+  Nitrogen: number;
+  Phosphorus: number;
+  Potassium: number;
+}
+interface soil_data {
+  Moisture: number;
+  pH: number;
+  NPK: NPK;
+}
 
 // Type for Crops for 3 Months (Array of Crops)
 export interface CropsFor3Months extends Array<Crop> {}
@@ -78,5 +88,6 @@ export interface FarmData {
   crops_for_6_months: CropsFor6Months;
   farm_id: number;
   user_id: number;
+  soil_data?: soil_data;
 }
 

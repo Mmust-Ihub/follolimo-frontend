@@ -1,9 +1,14 @@
 import { Colors } from "@/constants/Colors";
-import React from "react";
+import { ThemeContext } from "@/contexts/ThemeContext";
+import React, { useContext } from "react";
 import { View, Text } from "react-native";
 import { BarChart } from "react-native-gifted-charts";
 
 export default function index() {
+  
+  const themeContext = useContext(ThemeContext);
+  const isDarkMode = themeContext?.isDarkMode ?? false;
+  const color = isDarkMode ? Colors.dark : Colors.light;
   const barData = [
     {
       value: 40,
@@ -66,7 +71,8 @@ export default function index() {
       <View style={{ marginVertical: 30 }}>
         <Text
           style={{
-            color: "white",
+            color: color.text,
+
             fontSize: 20,
             fontWeight: "bold",
             textAlign: "center",
@@ -89,7 +95,7 @@ export default function index() {
                 height: 12,
                 width: 12,
                 borderRadius: 6,
-                backgroundColor: Colors.light.tabIconSelected,
+                backgroundColor: color.tabIconSelected,
                 marginRight: 8,
               }}
             />
@@ -97,7 +103,7 @@ export default function index() {
               style={{
                 width: 60,
                 height: 16,
-                color: "lightgray",
+                color: color.textDisabled,
               }}
             >
               Debits
@@ -117,7 +123,7 @@ export default function index() {
               style={{
                 width: 60,
                 height: 16,
-                color: "lightgray",
+                color: color.textDisabled,
               }}
             >
               Credits
@@ -131,9 +137,10 @@ export default function index() {
   return (
     <View
       style={{
-        backgroundColor: "#333340",
+        backgroundColor: color.cardBg,
         paddingBottom: 40,
         borderRadius: 10,
+        flex: 1,
       }}
     >
       {renderTitle()}
@@ -142,11 +149,15 @@ export default function index() {
         barWidth={8}
         spacing={24}
         roundedTop
+        yAxisColor={color.text}
+        xAxisColor={color.text}
+        yAxisTextStyle={{ color: color.text, fontSize: 12 }}
+        xAxisLabelTextStyle={{ color: color.text, fontSize: 12 }}
         roundedBottom
-        hideRules
+        // hideRules
+        backgroundColor={color.cardBg}
         xAxisThickness={0}
         yAxisThickness={0}
-        yAxisTextStyle={{ color: "gray" }}
         noOfSections={3}
         maxValue={75}
       />
