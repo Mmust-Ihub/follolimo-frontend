@@ -13,6 +13,8 @@ export const Colors = {
     headerBackground: "#fff",
     headerText: "#11181C",
     cardBg: "#f9f9f9",
+    scrollBg: "#f9f9f9",
+    textDisabled: "#687076",
   },
   dark: {
     text: "#ECEDEE",
@@ -24,6 +26,8 @@ export const Colors = {
     headerBackground: "#151718",
     headerText: "#ECEDEE",
     cardBg: "#1C1C1C",
+    scrollBg: "#235357",
+    textDisabled: "#9BA1A6",
   },
   darkGreen: "#235357",
   lightGreen: "#C3FBA9",
