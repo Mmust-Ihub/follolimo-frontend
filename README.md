@@ -4,6 +4,34 @@
 
 Fololimo is a comprehensive agricultural support platform designed to empower farmers in developing countries by providing real-time data, AI-driven insights, and IoT solutions to improve productivity and sustainability. The platform helps farmers adapt to changing climate conditions, offering tools for pest and disease management
 
+<style>
+  .image-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Creates responsive columns */
+    gap: 10px; /* Space between images */
+  }
+
+  .image-container img {
+    width: 100%; /* Makes images responsive */
+    height: auto; /* Maintains aspect ratio */
+  }
+</style>
+
+<div class="image-container">
+<img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729669601/fololimo/splash_eylzbe.jpg"/>
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729666264/fololimo/Screenshot_20241019-185849_Expo_Go_gw4cg9.jpg"/>
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729666265/fololimo/Screenshot_20241019-185907_Expo_Go_a5emnb.jpg" />
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729666265/fololimo/Screenshot_20241019-185929_Expo_Go_ggkjma.jpg"/>
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729666265/fololimo/Screenshot_20241019-185934_Expo_Go_pbhmdd.jpg"/>
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729666271/fololimo/Screenshot_20241019-185941_Expo_Go_so2ya3.jpg"/>
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729666265/fololimo/Screenshot_20241019-190000_Expo_Go_kotwxf.jpg"/>
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729666264/fololimo/Screenshot_20241019-190008_Expo_Go_spisj0.jpg"/>
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729666264/fololimo/Screenshot_20241019-190013_Expo_Go_x9hluf.jpg"/>
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729666265/fololimo/Screenshot_20241019-190020_Expo_Go_ejkosq.jpg"/>
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729671372/fololimo/myfarm_chyfc5.jpg"/>
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729666266/fololimo/Screenshot_20241019-190038_Expo_Go_wdvtw9.jpg"/>
+</div>
+
 ## Key Features
 
 - **GeoLocation Support**: Use geolocation to identify the location of the user by default.
