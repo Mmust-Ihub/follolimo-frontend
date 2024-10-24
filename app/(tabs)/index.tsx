@@ -109,7 +109,7 @@ export default function Index() {
             };
 
             // Send notification using the custom hook's function
-            sendPushNotification(expoPushToken!, notificationMessage);
+            // sendPushNotification(expoPushToken!, notificationMessage);
           }
         });
       }
@@ -137,7 +137,7 @@ export default function Index() {
           <View style={styles.userInfo}>
             <Image
               style={styles.userImage}
-              source={require("@/assets/images/splash.png")}
+              source={require("@/assets/images/fav icon.png")}
             />
             <View>
               <Text
@@ -206,8 +206,10 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   userImage: {
-    height: 50,
-    width: 50,
+    height: 60,
+    width: 60,
+    borderColor: "gray",
+    borderWidth: 1,
     borderRadius: 50,
     resizeMode: "cover",
   },

@@ -19,8 +19,6 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useImageContext } from "@/contexts/ImageContext";
 import { router } from "expo-router";
 
-
-
 export default function PhotoCamera() {
   const [facing, setFacing] = useState("back");
   const [flash, setFlash] = useState("off");
@@ -48,7 +46,6 @@ export default function PhotoCamera() {
       setImageUri(result.assets[0].uri);
       console.log("result", result.assets[0]);
       router.push("/(modals)/ImageResults");
-      
     }
   };
 
@@ -56,48 +53,50 @@ export default function PhotoCamera() {
     (async () => {
       if (!mediaLibraryPermission.granted) {
         const { status } = await requestMediaLibraryPermission();
-        if (status !== "granted" | null) {
+        if ((status !== "granted") | null) {
           requestCameraPermission();
           console.warn("Media library permission not granted");
-          router.push("/(tabs)")
+          router.push("/(tabs)");
         }
       }
     })();
   }, [mediaLibraryPermission]);
 
-  
-
   async function capturePhoto() {
     setLoading(true);
     try {
-      let photo = await cameraRef.current.takePictureAsync({ shutterSound : false });
+      let photo = await cameraRef.current.takePictureAsync({
+        shutterSound: false,
+      });
       console.log("photo", photo);
       if (mediaLibraryPermission.granted) {
-        
         const asset = await MediaLibrary.createAssetAsync(photo.uri);
-        console.log("asset...",asset);
+        console.log("asset...", asset);
         await MediaLibrary.createAlbumAsync("ExpoProject", asset, false);
         setImageUri(photo.uri);
-        setLoading(false)
+        setLoading(false);
         router.push("/(modals)/ImageResults");
       } else {
         console.warn("Media library permission not granted");
-        Alert.alert("Permission required", "Please allow media library permission to save photos", [
-          {
-            text: "OK",
-            onPress: () => {
-              requestMediaLibraryPermission();
+        Alert.alert(
+          "Permission required",
+          "Please allow media library permission to save photos",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                requestMediaLibraryPermission();
+              },
             },
-          },
-        ]);
-
+          ]
+        );
       }
     } catch (error) {
-      console.warn("My bad",error);
-    }finally{
+      setLoading(false);
+      console.warn("My bad", error);
+    } finally {
       setLoading(false);
     }
-
   }
 
   function toggleCameraFacing() {
@@ -115,7 +114,13 @@ export default function PhotoCamera() {
         ref={cameraRef}
         autofocus="true"
       >
-        {loading && <ActivityIndicator style={{position: "absolute", top: '50%', left: '50%'}} size="large" color="#fff" />}
+        {loading && (
+          <ActivityIndicator
+            style={{ position: "absolute", top: "50%", left: "50%" }}
+            size="large"
+            color="#fff"
+          />
+        )}
         <View className="absolute flex-row justify-between px-[20%] items-center bottom-[10%] w-screen">
           <Pressable style={styles.ActionButtons} onPress={pickImage}>
             <Entypo name="folder-images" size={24} color="black" />

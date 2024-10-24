@@ -74,7 +74,7 @@ export default function TabLayout() {
     return <Login />;
     // router.replace("/(auth)/Login");
   }
-  console.log(isAuthLoading + "layout");
+  // console.log(isAuthLoading + "layout");
  
 
   return (
