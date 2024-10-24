@@ -4,19 +4,6 @@
 
 Fololimo is a comprehensive agricultural support platform designed to empower farmers in developing countries by providing real-time data, AI-driven insights, and IoT solutions to improve productivity and sustainability. The platform helps farmers adapt to changing climate conditions, offering tools for pest and disease management
 
-<!-- <style>
-  .image-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Creates responsive columns */
-    gap: 10px; /* Space between images */
-  }
-
-  .image-container img {
-    width: 100%; /* Makes images responsive */
-    height: auto; /* Maintains aspect ratio */
-  }
-</style> -->
-
 <div align="center">
   <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729669601/fololimo/splash_eylzbe.jpg" width="250"/>
   <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729666264/fololimo/Screenshot_20241019-185849_Expo_Go_gw4cg9.jpg" width="250"/>

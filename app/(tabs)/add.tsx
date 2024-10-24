@@ -182,9 +182,7 @@ export default function AddFarm() {
       } else {
         Alert.alert("Error", "Farm registration failed. Please try again.");
       }
-      console.log("response", response);
     } catch (error) {
-      console.log("response", response);
       console.error("Error registering farm:", error);
       Alert.alert("Error", "An error occurred while registering the farm.");
     } finally {

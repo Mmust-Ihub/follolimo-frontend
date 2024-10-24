@@ -37,7 +37,6 @@ export default function ImagePickerExample() {
   };
 
   const uploadImage = async (imageUri) => {
-    console.log("Uploading image...", imageUri);
     const data = new FormData();
     data.append("files", {
       uri: imageUri,
@@ -56,13 +55,10 @@ export default function ImagePickerExample() {
         }
       );
       const response = await res.json();
-      console.log(res);
-      console.log(response);
 
       // return response;
     } catch (error) {
       setError(true);
-      console.log("Upload image failed:", error);
     }
   };
 

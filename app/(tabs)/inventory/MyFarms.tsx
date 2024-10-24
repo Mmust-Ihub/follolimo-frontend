@@ -52,7 +52,7 @@ export default function Page() {
       );
       const data = await response.json();
       setFarmData(data);
-      console.log(data);
+     
     } catch (error) {
       console.error("Error fetching regions:", error);
     } finally {

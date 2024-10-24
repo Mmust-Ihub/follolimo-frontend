@@ -32,7 +32,6 @@ export default function ImageResults() {
   if (!imageUri) {
     throw new Error("Image URI not found");
   }
-  console.log(imageUri, token);
 
   const themeContext = useContext(ThemeContext); // Access the theme context
   const isDarkMode = themeContext?.isDarkMode || false; // Get current theme
@@ -51,7 +50,7 @@ export default function ImageResults() {
     }
 
     const url = `https://fololimo-api.vercel.app/api/v1/model/${whatTofetch}`;
-    console.log("Fetching results...", url, imageUri);
+
     try {
       setLoading(true);
       if (!imageUri) {
@@ -60,7 +59,6 @@ export default function ImageResults() {
       }
 
       const fileInfo = await FileSystem.getInfoAsync(imageUri);
-      console.log("File Info:", fileInfo);
 
       const formData = new FormData();
       // @ts-expect-error: special react native format for form data
@@ -79,7 +77,6 @@ export default function ImageResults() {
         body: formData,
       });
 
-      console.log("API Response", apiResponse);
       if (!apiResponse.ok) {
         setError("An error occurred");
         setCropResults(null);
@@ -93,7 +90,7 @@ export default function ImageResults() {
       } else {
         setCropResults(data);
       }
-      console.log("API Response:", data);
+
       setError(null);
     } catch (error) {
       console.error("Error fetching results:", error);

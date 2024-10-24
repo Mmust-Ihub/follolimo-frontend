@@ -32,7 +32,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const loadToken = async () => {
       try {
         const token = await SecureStore.getItemAsync("Token");
-        console.log(token);
+
         if (token) {
           setUserToken(token);
         }
@@ -48,7 +48,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (username: string, password: string) => {
     setIsLoading(true);
-    console.log("Attempting to log in with", username, password);
+
     try {
       // Call your authentication API here to get the token
       const response = await fetch(
@@ -64,11 +64,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }), // Send username and password
         }
       );
-      console.log(response);
+
       if (!response.ok) {
-        // console.log(response);
         const data = await response.json();
-        console.log(data);
 
         setIsLoading(false);
         Alert.alert("Login failed", "Invalid credentials");
@@ -78,25 +76,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (response.status === 200) {
         const data = await response.json();
         const token = data.key; // Assuming your API returns the token in this format
-        console.log(token);
+
         await SecureStore.setItemAsync("Token", token);
         setUserToken(token);
 
         router.replace("/(tabs)");
         setIsLoading(false);
         // Alert.alert("Login Successful", "You are now logged in");
-        console.log("Logged in, token:", token);
       }
       if (response.status === 401) {
         const data = await response.json();
-        console.log(data);
+
         setIsLoading(false);
         Alert.alert("Login failed", "Invalid credentials"); // Handle failed login
         throw new Error("Login failed");
       }
       if (response.status !== 200 && response.status !== 401) {
         const data = await response.json();
-        console.log(data);
+
         setIsLoading(false);
         Alert.alert("Login failed", "Invalid credentials");
         throw new Error("Login failed");
@@ -117,13 +114,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     password2: string
   ) => {
     setIsLoading(true);
-    console.log(
-      "Attempting to register with",
-      email,
-      username,
-      password1,
-      password2
-    );
+
     try {
       // Call your authentication API here to get the token
       const response = await fetch(
@@ -144,8 +135,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (!response.ok) {
         const data = await response.json();
-        console.log(data);
-        console.log(response);
+
         setIsLoading(false);
         Alert.alert("Registration failed");
         throw new Error("Register failed"); // Handle failed login
@@ -156,11 +146,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         router.replace("/(auth)/Login");
         setIsLoading(false);
-        // Alert.alert(
-        //   "Registration Successful",
-        //   "You can now login with your credentials"
-        // );
-        console.log("Logged in, token:", data);
       }
     } catch (error) {
       setIsLoading(false);

@@ -47,9 +47,24 @@ const OnBoarding = () => {
                 resizeMode="cover"
               />
             ),
-            title: "Real-Time Climate Data",
+            title: "Welcome To FOLOLIMO",
             subtitle:
-              "Get accurate and timely weather insights to help you plan and protect your crops.",
+              "FOLOLIMO is a comprehensive agricultural support platform designed to empower farmers by providing inventory and calender management, pest and disease management, soil property monitoring and crop suitability prediction to improve productivity and sustainability.",
+            titleStyles: styles.title,
+            subTitleStyles: styles.subtitle,
+          },
+          {
+            backgroundColor: "rgba(203, 203, 203, 0.7)",
+            image: (
+              <Image
+                source={require("../../assets/img/inv.jpg")}
+                style={styles.image}
+                resizeMode="cover"
+              />
+            ),
+            title: "Inventory Management and Farmer's Calendar",
+            subtitle:
+              "Keep track of your  farm, crops, and track progress with our inventory management system. Plan your farming activities with the farmer's calendar.",
             titleStyles: styles.title,
             subTitleStyles: styles.subtitle,
           },
@@ -113,15 +128,19 @@ const styles = StyleSheet.create({
     height: 300,
     resizeMode: "contain",
     overflow: "hidden",
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
   },
   title: {
-    fontWeight: "600", 
+    fontWeight: "600",
     color: "#000",
     fontSize: 24,
   },
   subtitle: {
     color: "#333",
     fontSize: 18,
+    textAlign: "center",
+    paddingBottom: 10,
   },
 });
 
