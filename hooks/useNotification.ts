@@ -103,12 +103,10 @@ export function useNotifications() {
 
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        // console.log("Notification clicked:", response);
         const farmId = response.notification.request.content.data.farmId;
         const router = useRouter();
-        console.log(farmId);
+
         if (farmId) {
-          console.log(farmId);
           // Navigate to the modals page with the farm ID
           router.push(`follolimo://(modals)/${farmId}`);
         }

@@ -49,33 +49,30 @@ export default function TabLayout() {
   const headerTextColor = isDarkMode
     ? Colors.dark.headerText
     : Colors.light.headerText;
- if (isAuthLoading) {
-   return (
-     <View
-       style={{
-         flex: 1,
-         justifyContent: "center",
-         alignItems: "center",
-         backgroundColor,
-       }}
-     >
-       <ActivityIndicator size="large" color={activeTintColor} />
-     </View>
-   );
- }
+  if (isAuthLoading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor,
+        }}
+      >
+        <ActivityIndicator size="large" color={activeTintColor} />
+      </View>
+    );
+  }
   if (!userToken && !isOnboardingCompleted) {
     // setIsLoading(false);
-    console.log("Navigating to OnBoarding...");
+
     return <OnBoarding />;
     // router.replace("/(auth)/OnBoarding");
   }
   if (isOnboardingCompleted && !userToken) {
-    console.log("Navigating to Login...");
     return <Login />;
     // router.replace("/(auth)/Login");
   }
-  // console.log(isAuthLoading + "layout");
- 
 
   return (
     <>

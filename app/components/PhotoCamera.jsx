@@ -44,7 +44,6 @@ export default function PhotoCamera() {
 
     if (!result.canceled) {
       setImageUri(result.assets[0].uri);
-      console.log("result", result.assets[0]);
       router.push("/(modals)/ImageResults");
     }
   };
@@ -55,7 +54,7 @@ export default function PhotoCamera() {
         const { status } = await requestMediaLibraryPermission();
         if ((status !== "granted") | null) {
           requestCameraPermission();
-          console.warn("Media library permission not granted");
+         
           router.push("/(tabs)");
         }
       }
@@ -68,16 +67,16 @@ export default function PhotoCamera() {
       let photo = await cameraRef.current.takePictureAsync({
         shutterSound: false,
       });
-      console.log("photo", photo);
+
       if (mediaLibraryPermission.granted) {
         const asset = await MediaLibrary.createAssetAsync(photo.uri);
-        console.log("asset...", asset);
+
         await MediaLibrary.createAlbumAsync("ExpoProject", asset, false);
         setImageUri(photo.uri);
         setLoading(false);
         router.push("/(modals)/ImageResults");
       } else {
-        console.warn("Media library permission not granted");
+       
         Alert.alert(
           "Permission required",
           "Please allow media library permission to save photos",
@@ -93,14 +92,13 @@ export default function PhotoCamera() {
       }
     } catch (error) {
       setLoading(false);
-      console.warn("My bad", error);
+    
     } finally {
       setLoading(false);
     }
   }
 
   function toggleCameraFacing() {
-    console.log("toggleCameraFacing");
     setFacing((current) => (current === "back" ? "front" : "back"));
   }
 

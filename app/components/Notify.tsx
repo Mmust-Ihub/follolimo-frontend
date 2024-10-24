@@ -31,11 +31,9 @@ async function sendPushNotification(expoPushToken: string) {
     },
     body: JSON.stringify(message),
   })
-    .then((response) => {
-      console.log(response.json());
-    })
+    .then((response) => {})
     .catch((error) => {
-      console.log(error);
+      console.error(error);
     });
 }
 
@@ -80,7 +78,7 @@ async function registerForPushNotificationsAsync() {
           projectId,
         })
       ).data;
-      console.log(pushTokenString);
+
       return pushTokenString;
     } catch (e: unknown) {
       handleRegistrationError(`${e}`);

@@ -137,7 +137,7 @@ export default function Index() {
           <View style={styles.userInfo}>
             <Image
               style={styles.userImage}
-              source={require("@/assets/images/fav icon.png")}
+              source={require("@/assets/images/favicon.png")}
             />
             <View>
               <Text
@@ -208,8 +208,6 @@ const styles = StyleSheet.create({
   userImage: {
     height: 60,
     width: 60,
-    borderColor: "gray",
-    borderWidth: 1,
     borderRadius: 50,
     resizeMode: "cover",
   },
