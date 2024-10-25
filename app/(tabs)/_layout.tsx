@@ -1,5 +1,5 @@
-import { useContext, useEffect } from "react";
-import { router, Tabs } from "expo-router";
+import { useContext } from "react";
+import {  Tabs } from "expo-router";
 import {
   View,
   ActivityIndicator,

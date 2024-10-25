@@ -1,12 +1,18 @@
-import { StyleSheet, Text, View, ScrollView, ActivityIndicator } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/firebase";
 import { FarmData } from "@/constants/Types";
-import { BarChart } from "react-native-gifted-charts";
+// import { BarChart } from "react-native-gifted-charts";
 import { Colors } from "@/constants/Colors";
-import { title } from "process";
+// import { title } from "process";
 import { ThemeContext } from "@/contexts/ThemeContext";
 
 type Bardata = {
@@ -21,7 +27,7 @@ export default function Page() {
   const [barChartData3Months, setBarChartData3Months] = useState<Bardata[]>([]);
   const [barChartData6Months, setBarChartData6Months] = useState<Bardata[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   const themeContext = useContext(ThemeContext);
   const isDarkMode = themeContext?.isDarkMode ?? false;
   const color = isDarkMode ? Colors.dark : Colors.light;
@@ -142,7 +148,9 @@ export default function Page() {
 
           <View style={[styles.card, { backgroundColor: color.cardBg }]}>
             <Text style={styles.chartTitle}>Crops for 3 Months</Text>
-            <BarChart
+            <Text>barchat</Text>
+
+            {/* <BarChart
               data={barChartData3Months}
               barWidth={35}
               maxValue={100}
@@ -157,7 +165,7 @@ export default function Page() {
               capThickness={4}
               isAnimated
               frontColor={color.tabIconSelected}
-            />
+            /> */}
           </View>
 
           {farmData.crops_for_3_months.map((crop, index) => (
@@ -222,7 +230,8 @@ export default function Page() {
 
           <View style={[styles.card, { backgroundColor: color.cardBg }]}>
             <Text style={styles.chartTitle}>Crops for 6 Months</Text>
-            <BarChart
+            <Text>barchat</Text>
+            {/* <BarChart
               data={barChartData6Months}
               barWidth={35}
               maxValue={100}
@@ -236,7 +245,7 @@ export default function Page() {
               xAxisLabelTextStyle={{ color: color.text, fontSize: 12 }}
               isAnimated
               frontColor={Colors.light.tabIconSelected}
-            />
+            /> */}
           </View>
 
           {farmData.crops_for_6_months.map((crop, index) => (

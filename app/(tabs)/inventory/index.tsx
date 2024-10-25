@@ -2,7 +2,7 @@ import { Colors } from "@/constants/Colors";
 import { ThemeContext } from "@/contexts/ThemeContext";
 import React, { useContext } from "react";
 import { View, Text } from "react-native";
-import { BarChart } from "react-native-gifted-charts";
+// import { BarChart } from "react-native-gifted-charts";
 
 export default function index() {
   
@@ -143,7 +143,12 @@ export default function index() {
         flex: 1,
       }}
     >
-      {renderTitle()}
+      <Text style={{ color: color.text, fontSize: 20, fontWeight: "bold" }}>
+        {" "}
+        My Spending
+      </Text>
+
+      {/* {renderTitle()}
       <BarChart
         data={barData}
         barWidth={8}
@@ -160,7 +165,7 @@ export default function index() {
         yAxisThickness={0}
         noOfSections={3}
         maxValue={75}
-      />
+      /> */}
     </View>
   );
 };
