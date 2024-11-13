@@ -109,7 +109,7 @@ export default function Index() {
             };
 
             // Send notification using the custom hook's function
-            // sendPushNotification(expoPushToken!, notificationMessage);
+            sendPushNotification(expoPushToken!, notificationMessage);
           }
         });
       }
