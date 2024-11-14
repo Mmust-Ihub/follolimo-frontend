@@ -8,7 +8,7 @@
     "scheme": "follolimo",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/bg.png",
+      "image": "./assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/ic.png",
+        "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "googleServicesFile": "google-services.json",

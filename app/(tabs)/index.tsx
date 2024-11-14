@@ -109,7 +109,7 @@ export default function Index() {
             };
 
             // Send notification using the custom hook's function
-            sendPushNotification(expoPushToken!, notificationMessage);
+            // sendPushNotification(expoPushToken!, notificationMessage);
           }
         });
       }
@@ -117,7 +117,7 @@ export default function Index() {
 
     return () => unsubscribe();
   }, [expoPushToken, userData]); // Depend on userData so that it triggers when userData is available
-
+  console.log(userData);
   return (
     <SafeAreaView
       style={[
@@ -135,10 +135,17 @@ export default function Index() {
       >
         <View style={styles.header}>
           <View style={styles.userInfo}>
-            <Image
-              style={styles.userImage}
-              source={require("@/assets/images/favicon.png")}
-            />
+            <View className="py-1">
+              <Image
+                source={{
+                  uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                    userData?.username || ""
+                  )}&background=9BA1A6&color=fff`,
+                }}
+                className="w-12 h-12 rounded-full"
+              />
+            </View>
+
             <View>
               <Text
                 style={[
@@ -189,7 +196,7 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: Platform.OS === "android" ? screenHeight * 0.06 : 0,
+    paddingTop: Platform.OS === "android" ? screenHeight * 0.04 : 0,
     paddingHorizontal: 15,
   },
   scrollViewStyle: {
@@ -212,7 +219,7 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   greetingText: {
-    fontSize: 14,
+    fontSize: 18,
   },
   usernameText: {
     fontSize: 18,

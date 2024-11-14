@@ -108,7 +108,7 @@ export default function PhotoCamera() {
         style={{ height, flex: 1, position: "relative" }}
         facing={facing}
         flash={flash}
-        ratio="16:9"
+        ratio="1:1"
         ref={cameraRef}
         autofocus="on"
       >
