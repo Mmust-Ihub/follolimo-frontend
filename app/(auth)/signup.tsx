@@ -11,6 +11,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ScrollView,
+  Platform,
 } from "react-native";
 import React, { useContext, useState } from "react";
 import Modal from "react-native-modal";
@@ -42,7 +43,7 @@ export default function SignUp() {
   const { isDarkMode } = themeContext;
 
   const handleSubmit = () => {
-     Keyboard.dismiss();
+    Keyboard.dismiss();
     if (!username || !email || !password || !confirmPassword) {
       setModalMessage("All fields are required");
       setIsModalVisible(true);
@@ -99,9 +100,12 @@ export default function SignUp() {
 
   return (
     <SafeAreaView style={{ backgroundColor }} className="flex-1">
-      <ScrollView>
+      <KeyboardAvoidingView
+        className="flex justify-center items-center h-screen px-4 space-y-6"
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <KeyboardAvoidingView className="flex justify-center items-center h-screen px-4 space-y-6">
+          <View className="gap-4">
             <Text
               style={{ color: textColor }}
               className="font-extrabold text-xl uppercase text-center mb-4"
@@ -215,9 +219,9 @@ export default function SignUp() {
                 </Link>
               </TouchableOpacity>
             </View>
-          </KeyboardAvoidingView>
+          </View>
         </TouchableWithoutFeedback>
-      </ScrollView>
+      </KeyboardAvoidingView>
 
       {/* Custom Modal */}
       <Modal isVisible={isModalVisible}>

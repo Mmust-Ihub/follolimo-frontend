@@ -11,7 +11,9 @@
   },
   "include": [
     "**/*.ts",
+    "**/*.js",
     "**/*.tsx",
+    "**/*.jsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
 , "app/components/calendar/MonthPicker.jsx"  ]

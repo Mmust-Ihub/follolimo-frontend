@@ -10,6 +10,7 @@ import {
   ScrollView,
   Keyboard,
   TouchableWithoutFeedback,
+  Platform,
 } from "react-native";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { AuthContext } from "@/contexts/AuthContext";
@@ -74,12 +75,13 @@ export default function Login() {
 
   return (
     <SafeAreaView style={{ backgroundColor }} className="flex-1">
-      <ScrollView>
-        <TouchableWithoutFeedback>
-          <KeyboardAvoidingView
-            className="flex justify-center items-center h-screen px-4 space-y-6"
-            enabled
-          >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex justify-center items-center h-screen px-4 space-y-6"
+        enabled
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View className="gap-4">
             <Text
               style={{ color: textColor }}
               className="font-extrabold text-xl uppercase text-center mb-4"
@@ -88,6 +90,9 @@ export default function Login() {
             </Text>
 
             {/* Username input with icon */}
+            <Text className="font-bold" style={{ color: textColor }}>
+              Username
+            </Text>
             <View
               style={{ borderColor: inputBorderColor }}
               className="border rounded-lg w-full flex flex-row items-center px-4 py-2"
@@ -103,6 +108,9 @@ export default function Login() {
             </View>
 
             {/* Password input with icon */}
+            <Text className="font-bold" style={{ color: textColor }}>
+              Password
+            </Text>
             <View
               style={{ borderColor: inputBorderColor }}
               className="border rounded-lg w-full flex flex-row items-center px-4 py-2"
@@ -169,9 +177,9 @@ export default function Login() {
                 </Text>
               </TouchableOpacity>
             </View>
-          </KeyboardAvoidingView>
+          </View>
         </TouchableWithoutFeedback>
-      </ScrollView>
+      </KeyboardAvoidingView>
 
       {/* Custom Modal */}
       <Modal isVisible={isModalVisible}>
