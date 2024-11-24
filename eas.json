@@ -20,10 +20,6 @@
     "preview4": {
       "distribution": "internal"
     },
-    "production": {
-      "hooks": {
-        "pre-install": "./eas-build-pre-install.sh"
-      }
-    }
+    "production": {}
   }
 }
