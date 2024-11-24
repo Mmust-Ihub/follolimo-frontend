@@ -77,7 +77,7 @@ export default function Login() {
     <SafeAreaView style={{ backgroundColor }} className="flex-1">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="flex justify-center items-center h-screen px-4 space-y-6"
+        className="flex justify-center items-center h-screen px-4 space-y-6 w-screen"
         enabled
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
