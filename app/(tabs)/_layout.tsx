@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import {  Tabs } from "expo-router";
+import { Tabs } from "expo-router";
 import {
   View,
   ActivityIndicator,
@@ -148,7 +148,7 @@ export default function TabLayout() {
             headerLeft: () => (
               <Image
                 style={styles.userImage}
-                source={require("@/assets/images/splash.png")}
+                source={require("@/assets/images/splash-icon.png")}
               />
             ),
           }}
