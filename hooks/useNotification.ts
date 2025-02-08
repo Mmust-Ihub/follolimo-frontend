@@ -4,6 +4,7 @@ import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
 import { Platform } from "react-native";
 import { useRouter } from "expo-router";
+import * as Linking from "expo-linking";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -104,11 +105,28 @@ export function useNotifications() {
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
         const farmId = response.notification.request.content.data.farmId;
+        const userId = response.notification.request.content.data.userId;
+        const userDataId =
+          response.notification.request.content.data.userDataId;
+
         const router = useRouter();
 
-        if (farmId) {
+        if (farmId && userId === userDataId) {
+          // deeplink to the modals page with the farm ID
+
+          const deepLink = `follolimo://modals/${farmId}`;
+          Linking.openURL(deepLink);
+          // router.push({
+          //   pathname: "follolimo://modals",
+          //   params: { id: farmId, farmName: "farm" },
+          // });
+
           // Navigate to the modals page with the farm ID
-          router.push(`follolimo://(modals)/${farmId}`);
+          // router.push({ pathname: "/(modals)", params: { farmId } });
+          // router.push({
+          //   pathname: "/(modals)/[id]",
+          //   params: { id: farmId, farmName: "farm" },
+          // });
         }
       });
 

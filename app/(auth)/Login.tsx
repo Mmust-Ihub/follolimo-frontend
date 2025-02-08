@@ -81,7 +81,7 @@ export default function Login() {
         enabled
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View className="gap-4">
+          <View className="space-y-4 w-full">
             <Text
               style={{ color: textColor }}
               className="font-extrabold text-xl uppercase text-center mb-4"
@@ -150,12 +150,14 @@ export default function Login() {
             </View>
 
             {/* Login button */}
-            <TouchableOpacity
-              className="bg-green-500 rounded-lg w-full px-4 py-3"
-              onPress={handleLogin}
-            >
-              <Text className="text-white text-center font-bold">Login</Text>
-            </TouchableOpacity>
+            <View className="w-full">
+              <TouchableOpacity
+                className="bg-green-500 rounded-lg w-full px-4 py-3"
+                onPress={handleLogin}
+              >
+                <Text className="text-white text-center font-bold">Login</Text>
+              </TouchableOpacity>
+            </View>
 
             {/* Sign Up link */}
             <View className="w-full flex flex-row justify-start mt-2">

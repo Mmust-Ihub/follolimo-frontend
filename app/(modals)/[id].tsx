@@ -33,7 +33,7 @@ export default function Page() {
   const color = isDarkMode ? Colors.dark : Colors.light;
   useEffect(() => {
     navigation.setOptions({
-      title: ` ${farmName}`,
+      title: `Farm ${id} Details`,
     });
     const fetchData = () => {
       const query = collection(db, "fololimo");
@@ -77,7 +77,9 @@ export default function Page() {
   );
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: color.scrollBg }]}>
+    <ScrollView
+      style={[styles.container, { backgroundColor: color.background }]}
+    >
       {loading ? (
         <ActivityIndicator size="large" color={Colors.light.tint} />
       ) : farmData ? (
@@ -148,7 +150,7 @@ export default function Page() {
 
           <View style={[styles.card, { backgroundColor: color.cardBg }]}>
             <Text style={styles.chartTitle}>Crops for 3 Months</Text>
-            <Text>barchat</Text>
+            <Text style={{ color: color.text }}>barchat</Text>
 
             {/* <BarChart
               data={barChartData3Months}
@@ -230,7 +232,7 @@ export default function Page() {
 
           <View style={[styles.card, { backgroundColor: color.cardBg }]}>
             <Text style={styles.chartTitle}>Crops for 6 Months</Text>
-            <Text>barchat</Text>
+            <Text style={{ color: color.text }}>barchat</Text>
             {/* <BarChart
               data={barChartData6Months}
               barWidth={35}
@@ -346,7 +348,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
     marginVertical: 10,
-    color: Colors.light.text,
+    color: Colors.light.tint,
   },
   chartTitle: {
     fontSize: 20,
@@ -439,7 +441,7 @@ const styles = StyleSheet.create({
   },
   recommendationLabel: {
     fontSize: 12,
-    color: Colors.light.text,
+    color: Colors.light.tint,
     marginBottom: 2,
   },
   recommendationValue: {

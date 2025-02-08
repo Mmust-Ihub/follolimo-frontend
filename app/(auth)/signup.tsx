@@ -105,7 +105,7 @@ export default function SignUp() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View className="gap-4">
+          <View className="space-y-4 w-full">
             <Text
               style={{ color: textColor }}
               className="font-extrabold text-xl uppercase text-center mb-4"
@@ -198,12 +198,16 @@ export default function SignUp() {
             </View>
 
             {/* Register button */}
-            <TouchableOpacity
-              className="bg-green-500 rounded-lg w-full px-4 py-3"
-              onPress={handleSubmit}
-            >
-              <Text className="text-white text-center font-bold">Register</Text>
-            </TouchableOpacity>
+            <View className="w-full">
+              <TouchableOpacity
+                className="bg-green-500 rounded-lg w-full px-4 py-3"
+                onPress={handleSubmit}
+              >
+                <Text className="text-white text-center font-bold">
+                  Register
+                </Text>
+              </TouchableOpacity>
+            </View>
 
             {/* Login link below the Register button */}
             <View className="w-full flex flex-row justify-start mt-2">

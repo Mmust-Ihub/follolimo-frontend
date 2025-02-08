@@ -102,14 +102,25 @@ export default function Index() {
           if (change.type === "added") {
             const newFarmData = change.doc.data();
 
-            const notificationMessage = {
-              title: "New Farm Data",
-              body: `New data for farm ${newFarmData.farm_id}`, // Notification body
-              farmId: newFarmData.farm_id, // Send the farm ID
-            };
+            if (!expoPushToken) return;
+            // console.log("New farm data:", newFarmData.user_id === userData.pk);
+            if (newFarmData.user_id === userData.pk) {
+              console.log(newFarmData.name);
+              const notificationMessage = {
+                title: "New Farm Data",
+                body: `New data for farm ${newFarmData.farm_id}`, // Notification body
+                farmId: newFarmData.farm_id, // Send the farm ID
+                farmName: newFarmData.farm_name, // Send the farm name
+                userId: newFarmData.user_id, // Send the user ID
+                userDataId: userData.pk,
+              };
 
-            // Send notification using the custom hook's function
-            // sendPushNotification(expoPushToken!, notificationMessage);
+              // Send notification using the custom hook's function
+              // sendPushNotification(expoPushToken!, notificationMessage);
+            } else {
+              console.log("No new data for your farms");
+              return;
+            }
           }
         });
       }
@@ -117,7 +128,8 @@ export default function Index() {
 
     return () => unsubscribe();
   }, [expoPushToken, userData]); // Depend on userData so that it triggers when userData is available
-  console.log(userData);
+  //  ExponentPushToken[KhADTFKwmEdBGFVWveNjAE];
+  console.log(expoPushToken);
   return (
     <SafeAreaView
       style={[

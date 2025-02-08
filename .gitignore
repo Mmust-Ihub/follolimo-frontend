@@ -30,6 +30,6 @@ expo-env.d.ts
 *.env.test
 *.env.production
 *.env
-firebase.js
+# firebase.js
 application-91b1d-firebase-adminsdk-6a7nf-218701fc31.json
 google-services.json

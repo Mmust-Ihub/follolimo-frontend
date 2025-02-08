@@ -5,7 +5,9 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "follolimo",
+      "scheme": "follolimo",
+    "deeplinking": true,
+  
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
@@ -22,7 +24,19 @@
         "backgroundColor": "#ffffff"
       },
       "googleServicesFile": "google-services.json",
-      "package": "com.wabunifu.fololimo"
+      "package": "com.wabunifu.fololimo",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "https",
+              "host": "com.wabunifu.fololimo"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "bundler": "metro",

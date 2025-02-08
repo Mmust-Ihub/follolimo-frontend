@@ -1,4 +1,3 @@
-import { View, Text } from "react-native";
 import React, { useContext } from "react";
 import { Stack } from "expo-router/stack";
 import { ThemeContext } from "@/contexts/ThemeContext"; // Import ThemeContext
@@ -17,7 +16,7 @@ export default function Modals() {
         headerStyle: {
           backgroundColor: themeColors.headerBackground,
         },
-        headerTintColor: themeColors.headerText, 
+        headerTintColor: themeColors.headerText,
       }}
     >
       <Stack.Screen
@@ -33,7 +32,7 @@ export default function Modals() {
           headerTitleAlign: "center",
         }}
       />
-      
+      <Stack.Screen name="[id]" />
     </Stack>
   );
 }
