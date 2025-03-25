@@ -1,74 +1,256 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { useEffect, useState, useContext, useRef } from "react";
+import {
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  Pressable,
+  Platform,
+} from "react-native";
+import { onSnapshot, collection } from "firebase/firestore";
+import { db } from "./../../firebase";
+import { screenHeight } from "@/constants/AppDimensions";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { Colors } from "@/constants/Colors";
+import { ThemeContext } from "@/contexts/ThemeContext";
+import WeatherInfo from "../components/index/WeatherInfo";
+import MyFarms from "../components/index/MyFarms";
+import MyTasks from "../components/index/MyTasks";
+import { useRouter } from "expo-router";
+import { AuthContext } from "@/contexts/AuthContext";
+import { useNotifications } from "../../hooks/useNotification"; // Custom hook for notifications
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+export default function Index() {
+  interface UserData {
+    username: string;
+    pk: string;
+  }
+  interface AlarmData {
+    id: string;
+  }
 
-export default function HomeScreen() {
+  const [alarmUsers, setAlarmUsers] = useState<AlarmData[]>([]);
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [greetingType, setGreetingType] = useState("Hello");
+  const themeContext = useContext(ThemeContext);
+  const isDarkMode = themeContext?.isDarkMode ?? false;
+
+  const authContext = useContext(AuthContext);
+  const { userToken } = authContext || {};
+
+  const router = useRouter();
+
+  // Custom hook for notifications
+  const { expoPushToken, sendPushNotification } = useNotifications();
+
+  // Ref to track initial snapshot to prevent sending notifications on load
+  const isFirstSnapshot = useRef(true);
+
+  useEffect(() => {
+    const getGreeting = () => {
+      const currentHour = new Date().getHours();
+      if (currentHour < 12) return "Good Morning";
+      if (currentHour >= 12 && currentHour < 16) return "Good Afternoon";
+      return "Good Evening";
+    };
+    setGreetingType(getGreeting());
+  }, []);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(
+          `https://fololimo-api-eight.vercel.app/api/v1/users/user/`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Token ${userToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = await response.json();
+        setUserData(data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUser();
+  }, [userToken]);
+
+  useEffect(() => {
+    if (!userData) return; // Wait until the user data is loaded
+
+    const query = collection(db, "fololimo");
+    const unsubscribe = onSnapshot(query, (snapshot) => {
+      const alarmsData: AlarmData[] = snapshot.docs
+        .filter((doc) => doc.data().user_id === userData.pk) // Filter by user_id
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+      setAlarmUsers(alarmsData);
+
+      if (isFirstSnapshot.current) {
+        isFirstSnapshot.current = false;
+      } else {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === "added") {
+            const newFarmData = change.doc.data();
+
+            if (!expoPushToken) return;
+            // console.log("New farm data:", newFarmData.user_id === userData.pk);
+            if (newFarmData.user_id === userData.pk) {
+              console.log(newFarmData.name);
+              const notificationMessage = {
+                title: "New Farm Data",
+                body: `New data for farm ${newFarmData.farm_id}`, // Notification body
+                farmId: newFarmData.farm_id, // Send the farm ID
+                farmName: newFarmData.farm_name, // Send the farm name
+                userId: newFarmData.user_id, // Send the user ID
+                userDataId: userData.pk,
+              };
+
+              // Send notification using the custom hook's function
+              // sendPushNotification(expoPushToken!, notificationMessage);
+            } else {
+              console.log("No new data for your farms");
+              return;
+            }
+          }
+        });
+      }
+    });
+
+    return () => unsubscribe();
+  }, [expoPushToken, userData]); // Depend on userData so that it triggers when userData is available
+  //  ExponentPushToken[KhADTFKwmEdBGFVWveNjAE];
+  console.log(expoPushToken);
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <SafeAreaView
+      style={[
+        styles.container,
+        {
+          backgroundColor: isDarkMode
+            ? Colors.dark.background
+            : Colors.light.background,
+        },
+      ]}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollViewStyle}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <View style={styles.userInfo}>
+            <View className="py-1">
+              <Image
+                source={{
+                  uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                    userData?.username || ""
+                  )}&background=9BA1A6&color=fff`,
+                }}
+                className="w-12 h-12 rounded-full"
+              />
+            </View>
+
+            <View>
+              <Text
+                style={[
+                  styles.greetingText,
+                  { color: isDarkMode ? Colors.dark.text : Colors.light.text },
+                ]}
+              >
+                {greetingType}👋,
+              </Text>
+              <Text
+                style={[
+                  styles.usernameText,
+                  { color: isDarkMode ? Colors.dark.text : Colors.light.text },
+                ]}
+              >
+                {userData?.username}
+              </Text>
+            </View>
+          </View>
+          <MaterialIcons
+            name="notifications-on"
+            size={28}
+            color={Colors.light.tabIconSelected}
+          />
+        </View>
+
+        <WeatherInfo
+          textColor={isDarkMode ? Colors.dark.text : Colors.light.text}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+        <MyFarms
+          textColor={isDarkMode ? Colors.dark.text : Colors.light.text}
+        />
+        <MyTasks
+          textColor={isDarkMode ? Colors.dark.text : Colors.light.text}
+        />
+      </ScrollView>
+
+      <Pressable
+        style={styles.Chat}
+        onPress={() => router.push("/(modals)/Chat")}
+      >
+        <Text style={styles.chatText}>Talk to Dr Shamba</Text>
+      </Pressable>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    paddingTop: Platform.OS === "android" ? screenHeight * 0.04 : 0,
+    paddingHorizontal: 15,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  scrollViewStyle: {
+    paddingBottom: 20,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  userInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  userImage: {
+    height: 60,
+    width: 60,
+    borderRadius: 50,
+    resizeMode: "cover",
+  },
+  greetingText: {
+    fontSize: 18,
+  },
+  usernameText: {
+    fontSize: 18,
+    fontWeight: "500",
+  },
+  Chat: {
+    width: 70, // Make width and height equal for a circular button
+    height: 70,
+    borderRadius: 35, // Half of the width/height to make it circular
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.dark.tint,
+    position: "absolute", // Optional: to fix its position on the screen
+    bottom: 30, // Adjust positioning as needed
+    right: 30,
+  },
+  chatText: {
+    color: "white",
+    fontSize: 12, // Adjust font size for circular button
+    textAlign: "center", // Center the text
   },
 });
