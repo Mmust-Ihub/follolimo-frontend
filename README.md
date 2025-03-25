@@ -1,4 +1,31 @@
-# Welcome to your Expo app 👋
+# WELCOME TO FOLOLIMO
+
+## Fololimo - Sustainable Farming Support App 🌾
+
+Fololimo is a comprehensive agricultural support platform designed to empower farmers in developing countries by providing real-time data, AI-driven insights, and IoT solutions to improve productivity and sustainability. The platform helps farmers adapt to changing climate conditions, offering tools for pest and disease management
+
+<div align="center">
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729669601/fololimo/splash_eylzbe.jpg" width="250"/>
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729666264/fololimo/Screenshot_20241019-185849_Expo_Go_gw4cg9.jpg" width="250"/>
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729666265/fololimo/Screenshot_20241019-185907_Expo_Go_a5emnb.jpg" width="250"/>
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729666265/fololimo/Screenshot_20241019-185929_Expo_Go_ggkjma.jpg" width="250"/>
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729666265/fololimo/Screenshot_20241019-185934_Expo_Go_pbhmdd.jpg" width="250"/>
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729666271/fololimo/Screenshot_20241019-185941_Expo_Go_so2ya3.jpg" width="250"/>
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729666265/fololimo/Screenshot_20241019-190000_Expo_Go_kotwxf.jpg" width="250"/>
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729666264/fololimo/Screenshot_20241019-190008_Expo_Go_spisj0.jpg" width="250"/>
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729666264/fololimo/Screenshot_20241019-190013_Expo_Go_x9hluf.jpg" width="250"/>
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729666265/fololimo/Screenshot_20241019-190020_Expo_Go_ejkosq.jpg" width="250"/>
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729671372/fololimo/myfarm_chyfc5.jpg" width="250"/>
+  <img src="https://res.cloudinary.com/dlio7cpjo/image/upload/v1729666266/fololimo/Screenshot_20241019-190038_Expo_Go_wdvtw9.jpg" width="250"/>
+</div>
+
+## Key Features
+
+- **GeoLocation Support**: Use geolocation to identify the location of the user by default.
+- **Soil API Integration**: Send requests to soil APIs to gain insights on soil type and pH levels.
+- **Weather API Integration**: Gain insights on the climate of the area and key factors, such as the onset of rains and seasonal changes.
+- **Farmer Budget & Land Size Input**: Farmers may enter their available budget and land size to receive recommendations on suitable crops.
+- **AI Integration**: Use Gemini AI to generate potential favourable crops based on the area and even suggest possible markets based on those crops.
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
