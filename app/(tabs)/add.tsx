@@ -78,7 +78,7 @@ export default function AddFarm() {
     const fetchRegions = async () => {
       try {
         const response = await fetch(
-          `https://fololimo-api-eight.vercel.app/api/v1/fololimo/regions/`,
+          `${process.env.EXPO_PUBLIC_BACKEND_URL}/fololimo/regions/`,
           {
             method: "GET",
             headers: {
@@ -103,7 +103,7 @@ export default function AddFarm() {
       if (selectedRegion) {
         try {
           const response = await fetch(
-            `https://fololimo-api-eight.vercel.app/api/v1/fololimo/cities/?region=${selectedRegion}`
+            `${process.env.EXPO_PUBLIC_BACKEND_URL}/fololimo/cities/?region=${selectedRegion}`
           );
           const data = await response.json();
           setCounties(data);
@@ -124,7 +124,7 @@ export default function AddFarm() {
       if (selectedCounty) {
         try {
           const response = await fetch(
-            `https://fololimo-api-eight.vercel.app/api/v1/fololimo/subcounties/?city=${selectedCounty}`
+            `${process.env.EXPO_PUBLIC_BACKEND_URL}/fololimo/subcounties/?city=${selectedCounty}`
           );
           const data = await response.json();
           setSubcounties(data);
@@ -154,7 +154,7 @@ export default function AddFarm() {
     var response;
     try {
       const response = await fetch(
-        `https://fololimo-api-eight.vercel.app/api/v1/insights/farms/`,
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/insights/farms/`,
         {
           method: "POST",
           headers: {

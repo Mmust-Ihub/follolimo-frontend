@@ -41,7 +41,7 @@ export default function Page() {
     try {
       setRefreshing(true);
       const response = await fetch(
-        `https://fololimo-api-eight.vercel.app/api/v1/insights/farms/`,
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/insights/farms/`,
         {
           method: "GET",
           headers: {
@@ -85,16 +85,6 @@ export default function Page() {
         }
       >
         <View>
-          <Text
-            style={[
-              styles.MyFarmsTitle,
-              { color: currentColors.tabIconSelected },
-            ]}
-          >
-            My Farms' Details
-          </Text>
-        </View>
-        <View>
           {farmData && farmData.length > 0 ? (
             farmData?.map((farm: Farm, index) => (
               <View
@@ -125,7 +115,7 @@ export default function Page() {
                     farmid: {farm.id}
                   </Text>
                   <TouchableOpacity
-                    onPress={() => { router.push({ pathname: "/(modals)/[id]", params: { id: farm.id, farmName: farm.name } }) }}
+                    onPress={() => { router.push({ pathname: "/(tabs)/myfarms/[farmdet]/farmdetail", params: { id: farm.id, farmName: farm.name } }) }}
                     style={{
                       backgroundColor: currentColors.tabIconSelected,
                       padding: 10,

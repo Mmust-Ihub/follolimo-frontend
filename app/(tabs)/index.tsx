@@ -62,7 +62,7 @@ export default function Index() {
     const fetchUser = async () => {
       try {
         const response = await fetch(
-          `https://fololimo-api-eight.vercel.app/api/v1/users/user/`,
+          `${process.env.EXPO_PUBLIC_BACKEND_URL}/users/user/`,
           {
             method: "GET",
             headers: {
