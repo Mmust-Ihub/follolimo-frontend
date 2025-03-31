@@ -52,7 +52,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       // Call your authentication API here to get the token
       const response = await fetch(
-        `https://fololimo-api-eight.vercel.app/api/v1/users/login/`,
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/users/login/`,
         {
           method: "POST",
           headers: {
@@ -118,7 +118,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       // Call your authentication API here to get the token
       const response = await fetch(
-        `https://fololimo-api-eight.vercel.app/api/v1/users/register/ `,
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/users/register/ `,
         {
           method: "POST",
           headers: {

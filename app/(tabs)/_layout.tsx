@@ -17,6 +17,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Image } from "react-native";
 import OnBoarding from "../(auth)/OnBoarding";
 import Login from "../(auth)/Login";
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 export default function TabLayout() {
   const authContext = useContext(AuthContext);
@@ -73,6 +74,7 @@ export default function TabLayout() {
     return <Login />;
     // router.replace("/(auth)/Login");
   }
+  console.log("backend urr  = " , process.env.EXPO_PUBLIC_BACKEND_URL)
 
   return (
     <>
@@ -109,7 +111,7 @@ export default function TabLayout() {
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons
                 name="leaf-circle-outline"
-                size={34}
+                size={28}
                 color={color}
               />
             ),
@@ -132,18 +134,19 @@ export default function TabLayout() {
                   marginBottom: 26,
                 }}
               >
-                <FontAwesome6 name="add" size={28} color={"#fff"} />
+                <FontAwesome6 name="add" size={24} color={"#fff"} />
               </View>
             ),
           }}
         />
         <Tabs.Screen
-          name="inventory"
+          name="myfarms"
+          
           options={{
-            headerTitle: "My inventory",
-            headerTitleAlign: "center",
+            title: "My Farms",
+            headerShown: false,
             tabBarIcon: ({ color }) => (
-              <FontAwesome name="folder-open" size={28} color={color} />
+              <FontAwesome6 name="tractor" size={24} color={color} />
             ),
             headerLeft: () => (
               <Image

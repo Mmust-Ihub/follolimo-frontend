@@ -77,7 +77,7 @@ export const FetchProvider: React.FC<FetchProviderProps> = ({ children }) => {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://fololimo-api-eight.vercel.app/api/v1/details/`,
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/details/`,
         {
           method: "GET",
           headers: {

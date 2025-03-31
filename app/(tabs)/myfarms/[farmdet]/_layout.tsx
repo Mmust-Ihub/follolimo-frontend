@@ -3,9 +3,8 @@ import {
   MaterialTopTabNavigationOptions,
   MaterialTopTabNavigationEventMap,
 } from "@react-navigation/material-top-tabs";
-import { withLayoutContext } from "expo-router";
-import React, { useContext } from "react";
-import { Stack } from "expo-router";
+import { useLocalSearchParams, useNavigation, withLayoutContext } from "expo-router";
+import React, { useContext, useEffect } from "react";
 import { ParamListBase, TabNavigationState } from "@react-navigation/native";
 import { Colors } from "@/constants/Colors";
 import { ThemeContext } from "@/contexts/ThemeContext"; // Import ThemeContext
@@ -23,12 +22,20 @@ const Layout = () => {
   const themeContext = useContext(ThemeContext); // Access the theme context
   const isDarkMode = themeContext?.isDarkMode || false; // Get current theme
   const themeColors = isDarkMode ? Colors.dark : Colors.light; // Use theme colors based on mode
+  const navigation = useNavigation();
+  const { id, farmName } = useLocalSearchParams();
 
+  useEffect(() => {
+    // Set title for the screen
+    navigation.setOptions({
+      title: farmName,
+    });
+  }, [navigation]);
   return (
     <MaterialTopTabs
       screenOptions={{
         tabBarActiveTintColor: themeColors.tint, // Dynamic active tab text color
-        tabBarInactiveTintColor: themeColors.text, // Dynamic inactive tab text color
+        tabBarInactiveTintColor: themeColors.text, 
         tabBarStyle: {
           backgroundColor: themeColors.background, // Dynamic background color
         },
@@ -42,12 +49,12 @@ const Layout = () => {
         },
       }}
     >
-      <MaterialTopTabs.Screen options={{ title: "My Spending" }} name="index" />
+      <MaterialTopTabs.Screen  name="index" />
       <MaterialTopTabs.Screen
         options={{ title: "My Calendars" }}
         name="Calendar"
       />
-      <MaterialTopTabs.Screen options={{ title: "My Farms" }} name="MyFarms" />
+      <MaterialTopTabs.Screen options={{ title: "My Farms" }} name="farmdetail" />
     </MaterialTopTabs>
   );
 };
