@@ -22,7 +22,7 @@ type Bardata = {
 
 export default function Page() {
   const navigation = useNavigation();
-  const { id, farmName } = useLocalSearchParams();
+  const id  = useLocalSearchParams().farmdet as string;
   const [farmData, setFarmData] = useState<FarmData | null>(null);
   const [barChartData3Months, setBarChartData3Months] = useState<Bardata[]>([]);
   const [barChartData6Months, setBarChartData6Months] = useState<Bardata[]>([]);
@@ -33,7 +33,7 @@ export default function Page() {
   const color = isDarkMode ? Colors.dark : Colors.light;
   useEffect(() => {
     navigation.setOptions({
-      title: `Farm ${id} Details`,
+      title: `Farm Details`,
     });
     const fetchData = () => {
       const query = collection(db, "fololimo");

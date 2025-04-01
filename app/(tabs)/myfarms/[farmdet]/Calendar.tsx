@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React, { useContext } from 'react'
-import MonthPicker from '@/app/components/calendar/MonthPicker'
 import { ThemeContext } from '@/contexts/ThemeContext';
 import { Colors } from '@/constants/Colors';
 
@@ -11,14 +10,24 @@ export default function Calendar() {
   const color = isDarkMode ? Colors.dark : Colors.light;
   return (
     <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: color.background,
-        },
-      ]}
+      style={{
+        flex: 1,
+        backgroundColor: color.background,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
     >
-      <MonthPicker />
+      <Text
+        style={{
+          color: color.text,
+          fontSize: 20,
+          fontWeight: 'bold',
+          textAlign: 'center',
+          marginTop: 50,
+        }}
+      >
+        My Calendar
+      </Text>
     </View>
   );
 }
