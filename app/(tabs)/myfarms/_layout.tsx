@@ -12,7 +12,7 @@ const Layout = () => {
                   headerTitle: "My Farms",
                   headerTitleAlign: "center",
                 }} /> 
-      <Stack.Screen name="farmdet" options={{animation: "flip"}} />
+      <Stack.Screen name="[farmdet]" options={{animation: "flip"}} />
     </Stack>
   );
 };
