@@ -49,7 +49,7 @@ export default function ImageResults() {
       return;
     }
 
-    const url = `https://fololimo-api.vercel.app/api/v1/model/${whatTofetch}`;
+    const url = `${process.env.EXPO_PUBLIC_NODEAPI_URL}/model/${whatTofetch}`;
 
     try {
       setLoading(true);

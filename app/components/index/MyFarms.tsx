@@ -58,7 +58,7 @@ export default function MyFarms({ textColor }: MyFarmsProps) {
             </View>
           ))
         ) : farmData?.length > 0 ? (
-          farmData.map(({ name, location, city_name, size }, index) => (
+          farmData?.map(({ name, location, city_name, size }, index) => (
             <FarmCard
               key={index}
               name={name}

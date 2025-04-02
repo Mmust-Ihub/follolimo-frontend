@@ -10,10 +10,15 @@ import { AuthContext } from "./AuthContext";
 // Define types for the context data
 interface FetchContextType {
   farmData: FarmData[];
-  tasks: Task[];
+  pastActivities: Activity[]; // Added pastActivities
+  upComingActivity: Activity[]; // Added upComingActivity
   weatherData: WeatherData | null;
   loading: boolean;
+  isPastActivitiesLoading: boolean; // Added loading state for past activities
+  isUpcomingActivitiesLoading: boolean; // Added loading state for upcoming activities
   fetchFarms: () => Promise<void>;
+  fetchPastActivities: () => Promise<void>; // Added fetchPastActivities
+  fetchUpcomingActivities: () => Promise<void>; // Added fetchUpcomingActivities
 }
 
 // Define types for the data structures (these can be expanded as needed)
@@ -25,13 +30,14 @@ interface FarmData {
   city: number;
 }
 
-interface Task {
-  activity: string;
-  date: string;
-  status: string;
-  cost: number;
-  duration: string;
+interface Activity {
+  id: string;
   farm: string;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  status?: string; // Optional status field
 }
 
 interface WeatherData {
@@ -63,21 +69,25 @@ interface FetchProviderProps {
 
 export const FetchProvider: React.FC<FetchProviderProps> = ({ children }) => {
   const [farmData, setFarmData] = useState<FarmData[]>([]);
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [pastActivities, setPastActivities] = useState<Activity[]>([]);
+  const [upComingActivity, setUpComingActivity] = useState<Activity[]>([]); // Added tasks state
+
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isPastActivitiesLoading, setIsPastActivitiesLoading] = useState(false); // Added loading state for past activities
+  const [isUpcomingActivitiesLoading, setIsUpcomingActivitiesLoading] = useState(false); // Added loading state for upcoming activities
   const authContext = useContext(AuthContext);
   if (!authContext) {
     throw new Error("AuthContext must be used within its provider");
   }
   const { userToken } = authContext;
-
-  // Fetch Farms
-  const fetchFarms = async () => {
+  // https://fololimo.vercel.app/api/activity/?type=past
+  // fetch past activities
+  const fetchPastActivities = async () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/details/`,
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/activity/?type=past`,
         {
           method: "GET",
           headers: {
@@ -87,9 +97,55 @@ export const FetchProvider: React.FC<FetchProviderProps> = ({ children }) => {
         }
       );
       const data = await response.json();
-      setFarmData(data.farms);
-      setWeatherData(data.weather);
-      setTasks(data.activities);
+      setPastActivities(data?.activities);
+    } catch (error) {
+      console.error("Error fetching past activities:", error);
+    } finally {
+      setIsPastActivitiesLoading(false);
+    }
+  };
+  // fetch upcoming activities
+  const fetchUpcomingActivities = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/activity/?type=upcoming`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Token ${userToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      setUpComingActivity(data?.activities);
+    } catch (error) {
+      console.error("Error fetching upcoming activities:", error);
+    } finally {
+      setIsUpcomingActivitiesLoading(false);
+    }
+  }
+
+  // Fetch Farms
+  const fetchFarms = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/farm`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Token ${userToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      console.log("Fetched data:", data);
+      setFarmData(data);
+      setWeatherData(data?.weather);
+      // setTasks(data?.activities);
     } catch (error) {
       console.error("Error fetching farms:", error);
     } finally {
@@ -102,10 +158,15 @@ export const FetchProvider: React.FC<FetchProviderProps> = ({ children }) => {
     <FetchContext.Provider
       value={{
         farmData,
-        tasks,
+        pastActivities,
+        upComingActivity,
         weatherData,
         loading,
         fetchFarms,
+        fetchPastActivities, // Added fetchPastActivities to the context
+        fetchUpcomingActivities,
+        isPastActivitiesLoading, // Added loading state for past activities
+        isUpcomingActivitiesLoading, // Added loading state for upcoming activities
       }}
     >
       {children}
