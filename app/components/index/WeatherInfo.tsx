@@ -13,6 +13,7 @@ interface MyweatherProps {
 
 export default function WeatherInfo({ textColor }: MyweatherProps) {
   const { farmData, fetchFarms, loading } = useFetch();
+  
 
   useEffect(() => {
     fetchFarms();
@@ -44,8 +45,8 @@ export default function WeatherInfo({ textColor }: MyweatherProps) {
           ))}
         </View>
       ) : farmData?.length > 0 ? (
-        farmData?.map(({ city, name }, index) => (
-          <WeatherCard key={index} city={city} name={name} />
+        farmData?.map(({ location, name,size }, index) => (
+          <WeatherCard key={index} city={location} name={name} size={size}/>
         ))
       ) : (
         <View style={styles.noDataContainer}>
@@ -71,7 +72,7 @@ export default function WeatherInfo({ textColor }: MyweatherProps) {
 
 const styles = StyleSheet.create({
   container: {
-    height: screenHeight * 0.3,
+    height: screenHeight * 0.35,
     gap: 10,
     justifyContent: "space-between",
     paddingVertical: 2,

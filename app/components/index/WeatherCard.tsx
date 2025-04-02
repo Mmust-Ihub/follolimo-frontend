@@ -4,33 +4,34 @@ import { Colors } from "@/constants/Colors";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 type WeatherCardProps = {
-  city: number;
+  city: string;
   name: string;
+  size: number;
 };
+
 type WeatherData = {
   temperature: number;
-  description: String;
-  city: String;
+  description: string;
+  city: string;
   humidity: number;
   min_temp: number;
   max_temp: number;
   pressure: number;
 };
-import {
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-  ImageBackground,
-} from "react-native";
+
+import { StyleSheet, Text, View } from "react-native";
 import { AuthContext } from "@/contexts/AuthContext";
-const WeatherCard = ({ city, name }: WeatherCardProps) => {
+
+const WeatherCard = ({ city, name, size }: WeatherCardProps) => {
   const [weatherData, setWeatherData] = useState<WeatherData>();
   const authContext = useContext(AuthContext);
+
   if (!authContext) {
     throw new Error("AuthContext must be used within its provider");
   }
+
   const { userToken } = authContext;
+
   useEffect(() => {
     const fetchWeather = async () => {
       try {
@@ -47,7 +48,7 @@ const WeatherCard = ({ city, name }: WeatherCardProps) => {
         const data = await response.json();
         setWeatherData(data);
       } catch (error) {
-        console.error("Error fetching regions:", error);
+        console.error("Error fetching weather:", error);
       }
     };
 
@@ -56,39 +57,62 @@ const WeatherCard = ({ city, name }: WeatherCardProps) => {
 
   return (
     <View style={styles.container}>
-      <View className="gap-3">
-        <Text className="text-white font-extrabold capitalize ">{name}</Text>
-        <Text className="text-white ">{weatherData?.temperature} °C</Text>
-        <Text className="text-white ">Humidity {weatherData?.humidity}%</Text>
-        <Text className="text-white font-semibold capitalize">
-          {weatherData?.description}
-        </Text>
-        <View className="flex flex-row items-center">
+      <View style={styles.textContainer}>
+        <Text style={styles.title}>{name}</Text>
+        <Text style={styles.text}>{weatherData?.temperature} °C</Text>
+        <Text style={styles.text}>Humidity: {weatherData?.humidity}%</Text>
+        <Text style={styles.text}>{weatherData?.description}</Text>
+        <View style={styles.locationContainer}>
           <Ionicons name="location-sharp" size={18} color="white" />
-          <Text className="text-white">{weatherData?.city}, Kenya</Text>
+          <Text style={styles.text}>{city}, Kenya</Text>
         </View>
-        <Text className="text-white ">Soil p.H 6.5 (Neutral)</Text>
+        <Text style={styles.text}>{size} acres</Text>
+        <Text style={styles.text}>Soil pH: 6.5 (Neutral)</Text>
       </View>
-      <View className="justify-center items-center">
+      <View style={styles.iconContainer}>
         <Ionicons name="cloud" size={80} color="white" />
       </View>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
-    width: screenWidth * 0.8,
-    height: screenHeight * 0.3,
+    width: screenWidth * 0.85,
+    height: screenHeight * 0.35,
     backgroundColor: Colors.darkGreen,
     borderRadius: 20,
-    padding: 20,
+    padding: 15,
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
+    overflow: "hidden", // Ensures nothing spills outside the card
   },
-  image: {
+  textContainer: {
     flex: 1,
-    resizeMode: "cover",
+    gap: 5,
+    flexWrap: "wrap",
+  },
+  title: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+    textTransform: "capitalize",
+  },
+  text: {
+    color: "white",
+    fontSize: 14,
+  },
+  locationContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  iconContainer: {
     justifyContent: "center",
+    alignItems: "center",
+    width: screenWidth * 0.25,
   },
 });
+
 export default WeatherCard;

@@ -52,7 +52,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       // Call your authentication API here to get the token
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/users/login/`,
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/auth/login/`,
         {
           method: "POST",
           headers: {
@@ -75,7 +75,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (response.status === 200) {
         const data = await response.json();
-        const token = data.key; // Assuming your API returns the token in this format
+        const token = data.accessToken; // Assuming your API returns the token in this format
 
         await SecureStore.setItemAsync("Token", token);
         setUserToken(token);
@@ -118,7 +118,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       // Call your authentication API here to get the token
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/users/register/ `,
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/auth/register/ `,
         {
           method: "POST",
           headers: {

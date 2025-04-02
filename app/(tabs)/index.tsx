@@ -187,9 +187,9 @@ export default function Index() {
         <WeatherInfo
           textColor={isDarkMode ? Colors.dark.text : Colors.light.text}
         />
-        <MyFarms
+        {/* <MyFarms
           textColor={isDarkMode ? Colors.dark.text : Colors.light.text}
-        />
+        /> */}
         <MyTasks
           textColor={isDarkMode ? Colors.dark.text : Colors.light.text}
         />
