@@ -48,7 +48,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (username: string, password: string) => {
     setIsLoading(true);
-
+    console.log("Login function called with username:", username, `${process.env.EXPO_PUBLIC_BACKEND_URL}/auth/login/`);
     try {
       // Call your authentication API here to get the token
       const response = await fetch(

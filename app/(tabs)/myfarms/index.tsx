@@ -41,7 +41,7 @@ export default function Page() {
     try {
       setRefreshing(true);
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/insights/farms/`,
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/farm/`,
         {
           method: "GET",
           headers: {
