@@ -32,4 +32,6 @@ export const Colors = {
   },
   darkGreen: "#235357",
   lightGreen: "#d3eddf",
+  linearGreen: "#87dc69",
+  lineardarkGreen: "#22a45d",
 };

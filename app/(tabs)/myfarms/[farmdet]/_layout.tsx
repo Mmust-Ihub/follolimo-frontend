@@ -23,10 +23,10 @@ const Layout = () => {
   const isDarkMode = themeContext?.isDarkMode || false; // Get current theme
   const themeColors = isDarkMode ? Colors.dark : Colors.light; // Use theme colors based on mode
   const navigation = useNavigation();
-  const { id, farmName } = useLocalSearchParams();
+  const { farmName } = useLocalSearchParams();
+
 
   useEffect(() => {
-    // Set title for the screen
     navigation.setOptions({
       title: farmName,
     });
@@ -34,13 +34,11 @@ const Layout = () => {
   return (
     <MaterialTopTabs
       screenOptions={{
-        tabBarActiveTintColor: themeColors.tint, // Dynamic active tab text color
-        tabBarInactiveTintColor: themeColors.text, 
-        tabBarStyle: {
-          backgroundColor: themeColors.background, // Dynamic background color
-        },
+        tabBarActiveTintColor: themeColors.tint, 
+        tabBarInactiveTintColor: themeColors.text,
+        tabBarPressColor: Colors.lightGreen,
         tabBarIndicatorStyle: {
-          backgroundColor: themeColors.tabIconSelected, // Dynamic indicator color
+          backgroundColor: themeColors.tabIconSelected,
           height: 3,
         },
         tabBarLabelStyle: {
@@ -49,7 +47,8 @@ const Layout = () => {
         },
       }}
     >
-      <MaterialTopTabs.Screen  name="index" />
+      <MaterialTopTabs.Screen options={{title: "My Spending"}}
+        name="index"  />
       <MaterialTopTabs.Screen
         options={{ title: "My Calendars" }}
         name="Calendar"

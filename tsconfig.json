@@ -19,7 +19,7 @@
     "**/*.jsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "app/components/calendar/MonthPicker.jsx",
+    "app/components/calendar/calendarView.jsx",
     "nativewind-env.d.ts"
   ]
 }

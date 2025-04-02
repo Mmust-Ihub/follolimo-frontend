@@ -41,7 +41,7 @@ export default function Page() {
     try {
       setRefreshing(true);
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/insights/farms/`,
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/farm/`,
         {
           method: "GET",
           headers: {
@@ -115,7 +115,7 @@ export default function Page() {
                     farmid: {farm.id}
                   </Text>
                   <TouchableOpacity
-                    onPress={() => { router.push({ pathname: "/(tabs)/myfarms/[farmdet]/farmdetail", params: { id: farm.id, farmName: farm.name } }) }}
+                    onPress={() => { router.push({ pathname: "/(tabs)/myfarms/[farmdet]/farmdetail", params: { farmdet: farm.id, farmName: farm.name } }) }}
                     style={{
                       backgroundColor: currentColors.tabIconSelected,
                       padding: 10,

@@ -23,20 +23,18 @@ import { useFetch } from "@/contexts/usefetchData";
 
 // Define types for regions, counties, and subcounties
 interface Region {
-  id: number;
+  id: string;
   region: string;
 }
 
 interface County {
-  id: number;
+  id: string;
   city: string;
-  region: number;
 }
 
 interface Subcounty {
-  id: number;
-  sub_county: string;
-  city: number;
+  id: string;
+  subCounty: string;
 }
 
 export default function AddFarm() {
@@ -61,11 +59,9 @@ export default function AddFarm() {
   const [regions, setRegions] = useState<Region[]>([]);
   const [counties, setCounties] = useState<County[]>([]);
   const [subcounties, setSubcounties] = useState<Subcounty[]>([]);
-  const [selectedRegion, setSelectedRegion] = useState<number | null>(null);
-  const [selectedCounty, setSelectedCounty] = useState<number | null>(null);
-  const [selectedSubcounty, setSelectedSubcounty] = useState<number | null>(
-    null
-  );
+  const [selectedRegion, setSelectedRegion] = useState<string>();
+  const [selectedCounty, setSelectedCounty] = useState<string>();
+  const [selectedSubcounty, setSelectedSubcounty] = useState<string>();
   const [selectedSubcountyName, setSelectedSubcountyName] = useState<
     string | null
   >(null);
@@ -78,7 +74,7 @@ export default function AddFarm() {
     const fetchRegions = async () => {
       try {
         const response = await fetch(
-          `${process.env.EXPO_PUBLIC_BACKEND_URL}/fololimo/regions/`,
+          `${process.env.EXPO_PUBLIC_BACKEND_URL}/location/regions/`,
           {
             method: "GET",
             headers: {
@@ -103,11 +99,11 @@ export default function AddFarm() {
       if (selectedRegion) {
         try {
           const response = await fetch(
-            `${process.env.EXPO_PUBLIC_BACKEND_URL}/fololimo/cities/?region=${selectedRegion}`
+            `${process.env.EXPO_PUBLIC_BACKEND_URL}/location/cities/${selectedRegion}`
           );
           const data = await response.json();
           setCounties(data);
-          setSelectedCounty(null);
+          setSelectedCounty("");
           setSubcounties([]);
         } catch (error) {
           console.error("Error fetching counties:", error);
@@ -124,11 +120,11 @@ export default function AddFarm() {
       if (selectedCounty) {
         try {
           const response = await fetch(
-            `${process.env.EXPO_PUBLIC_BACKEND_URL}/fololimo/subcounties/?city=${selectedCounty}`
+            `${process.env.EXPO_PUBLIC_BACKEND_URL}/location/sub-counties/${selectedCounty}`
           );
           const data = await response.json();
           setSubcounties(data);
-          setSelectedSubcounty(null);
+          setSelectedSubcounty("");
           setSelectedSubcountyName(null);
         } catch (error) {
           console.error("Error fetching subcounties:", error);
@@ -154,7 +150,7 @@ export default function AddFarm() {
     var response;
     try {
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/insights/farms/`,
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/farm/`,
         {
           method: "POST",
           headers: {
@@ -168,16 +164,16 @@ export default function AddFarm() {
       if (response.status === 201) {
         Alert.alert(
           "Success",
-          `Farm ${createdFarm.name} registered successfully!`
+          `Farm ${createdFarm?.farm?.name} registered successfully!`
         );
         fetchFarms();
         // Fetch weather for the new farm
         // Reset fields
         setFarmName("");
         setFarmSize(null);
-        setSelectedRegion(null);
-        setSelectedCounty(null);
-        setSelectedSubcounty(null);
+        setSelectedRegion("");
+        setSelectedCounty("");
+        setSelectedSubcounty("");
         setSelectedSubcountyName(null);
       } else {
         Alert.alert("Error", "Farm registration failed. Please try again.");
@@ -189,10 +185,10 @@ export default function AddFarm() {
       // Reset fields
       setFarmName("");
       setFarmSize(null);
-      setSelectedRegion(null);
-      setSelectedCounty(null);
-      setSelectedSubcounty(null);
-      setSelectedSubcountyName(null);
+      setSelectedRegion("");
+      setSelectedCounty("");
+      setSelectedSubcounty("");
+      setSelectedSubcountyName("");
     }
   };
 
@@ -321,7 +317,7 @@ export default function AddFarm() {
                   const selected = subcounties.find(
                     (subcounty) => subcounty.id === itemValue
                   );
-                  setSelectedSubcountyName(selected?.sub_county || null);
+                  setSelectedSubcountyName(selected?.subCounty || null);
                 }}
                 style={{
                   height: 50,
@@ -337,7 +333,7 @@ export default function AddFarm() {
                 {subcounties?.map((subcounty) => (
                   <Picker.Item
                     key={subcounty.id}
-                    label={subcounty.sub_county}
+                    label={subcounty.subCounty}
                     value={subcounty.id}
                   />
                 ))}
