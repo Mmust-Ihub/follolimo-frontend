@@ -154,12 +154,13 @@
 // }
 
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { Colors } from "@/constants/Colors";
 import { useRouter } from "expo-router";
 import { useFetch } from "@/contexts/usefetchData";
 import useFormat from "@/hooks/useFormat";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { ThemeContext } from "@/contexts/ThemeContext";
 
 interface Activity {
   id: string;
@@ -188,6 +189,18 @@ const ActivityItem = ({
   endDate,
   status,
 }: Activity) => {
+  const themeContext = useContext(ThemeContext);
+  if (!themeContext) {
+    throw new Error(
+      "AuthContext, OnboardingContext, and ThemeContext must be used within their providers"
+    );
+  }
+
+  const { isDarkMode } = themeContext;
+  const tasksBackgroundColor = isDarkMode
+    ? Colors.dark.cardBg
+    : Colors.light.cardBg;
+  const textColor = isDarkMode ? Colors.dark.text : Colors.light.text;
   const { formatDate } = useFormat();
   const router = useRouter();
 
@@ -196,23 +209,28 @@ const ActivityItem = ({
       onPress={() =>
         router.push({
           pathname: "/(tabs)/myfarms/[farmdet]/farmdetail",
-          params: { id:id, farmName: farm },
+          params: { id: id, farmName: farm },
         })
       }
-      className="flex-row items-center justify-between p-2 border rounded-md shadow-sm border-gray-200"
+      className="flex-row items-center justify-between p-2 rounded-md shadow-sm"
+      style={{ backgroundColor: tasksBackgroundColor }}
     >
       <View className="flex-1">
-        <Text className="text-lg font-bold">{title}</Text>
-        <Text className="text-sm">
+        <Text className="text-lg font-bold" style={{ color: textColor }}>
+          {title}
+        </Text>
+        <Text className="text-sm" style={{ color: textColor }}>
           {formatDate(startDate)} - {formatDate(endDate)}
         </Text>
-        <Text className="text-sm">{description?.slice(0, 100)}...</Text>
+        <Text className="text-sm" style={{ color: textColor }}>
+          {description?.slice(0, 100)}...
+        </Text>
         <Text
           className={`font-bold ${
             status === "Completed" ? "text-green-500" : "text-yellow-500"
           }`}
         >
-          {status.toLocaleLowerCase()}
+          {status?.toLocaleLowerCase()}
         </Text>
       </View>
       <Ionicons name="chevron-forward" size={20} color={Colors.light.tint} />
@@ -244,9 +262,9 @@ const ActivityList = ({
             Loading...
           </Text>
         </View>
-      ) : activities.length > 0 ? (
+      ) : activities?.length > 0 ? (
         <View className="gap-2">
-          {activities.map((activity, index) => (
+          {activities?.map((activity, index) => (
             <ActivityItem
               key={index}
               {...activity}
@@ -304,9 +322,9 @@ export default function MyTasks({ textColor }: { textColor: string }) {
     <View className="mb-8 mt-2">
       <ActivityList
         title="My Upcoming Activities"
-        activities={upComingActivity.map((activity) => ({
+        activities={upComingActivity?.map((activity) => ({
           ...activity,
-          status: activity.status || "Unknown",
+          status: activity?.status || "Unknown",
         }))}
         isLoading={isUpcomingActivitiesLoading}
         textColor={textColor}
@@ -314,9 +332,9 @@ export default function MyTasks({ textColor }: { textColor: string }) {
       />
       <ActivityList
         title="My Past Activities"
-        activities={pastActivities.map((activity) => ({
+        activities={pastActivities?.map((activity) => ({
           ...activity,
-          status: activity.status || "Unknown",
+          status: activity?.status || "Unknown",
         }))}
         isLoading={isPastActivitiesLoading}
         textColor={textColor}

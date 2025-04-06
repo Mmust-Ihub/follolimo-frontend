@@ -6,6 +6,7 @@ import React, {
   ReactNode,
 } from "react";
 import { AuthContext } from "./AuthContext";
+import { Alert } from "react-native";
 
 // Define types for the context data
 interface FetchContextType {
@@ -75,12 +76,13 @@ export const FetchProvider: React.FC<FetchProviderProps> = ({ children }) => {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [isPastActivitiesLoading, setIsPastActivitiesLoading] = useState(false); // Added loading state for past activities
-  const [isUpcomingActivitiesLoading, setIsUpcomingActivitiesLoading] = useState(false); // Added loading state for upcoming activities
+  const [isUpcomingActivitiesLoading, setIsUpcomingActivitiesLoading] =
+    useState(false); // Added loading state for upcoming activities
   const authContext = useContext(AuthContext);
   if (!authContext) {
     throw new Error("AuthContext must be used within its provider");
   }
-  const { userToken } = authContext;
+  const { userToken, logout } = authContext;
   // https://fololimo.vercel.app/api/activity/?type=past
   // fetch past activities
   const fetchPastActivities = async () => {
@@ -97,7 +99,18 @@ export const FetchProvider: React.FC<FetchProviderProps> = ({ children }) => {
         }
       );
       const data = await response.json();
-      setPastActivities(data?.activities);
+      if (response.status === 200) {
+        console.log("Fetched data:", data);
+        setPastActivities(data?.activities);
+      }
+      if (
+        response.status === 401 ||
+        data.message === "Invalid or expired token"
+      ) {
+        Alert.alert("Unauthorized", "Invalid or expired token");
+        logout(); // Call the logout function from AuthContext
+        return;
+      }
     } catch (error) {
       console.error("Error fetching past activities:", error);
     } finally {
@@ -119,13 +132,24 @@ export const FetchProvider: React.FC<FetchProviderProps> = ({ children }) => {
         }
       );
       const data = await response.json();
-      setUpComingActivity(data?.activities);
+      if (response.status === 200) {
+        console.log("Fetched data:", data);
+        setUpComingActivity(data?.activities);
+      }
+      if (
+        response.status === 401 ||
+        data.message === "Invalid or expired token"
+      ) {
+        Alert.alert("Unauthorized", "Invalid or expired token");
+        logout(); // Call the logout function from AuthContext
+        return;
+      }
     } catch (error) {
       console.error("Error fetching upcoming activities:", error);
     } finally {
       setIsUpcomingActivitiesLoading(false);
     }
-  }
+  };
 
   // Fetch Farms
   const fetchFarms = async () => {
@@ -142,10 +166,20 @@ export const FetchProvider: React.FC<FetchProviderProps> = ({ children }) => {
         }
       );
       const data = await response.json();
-      console.log("Fetched data:", data);
-      setFarmData(data);
-      setWeatherData(data?.weather);
-      // setTasks(data?.activities);
+      if (response.status === 200) {
+        console.log("Fetched data:", data);
+        setFarmData(data);
+        setWeatherData(data?.weather);
+        // setTasks(data?.activities);
+      }
+      if (
+        response.status === 401 ||
+        data.message === "Invalid or expired token"
+      ) {
+        Alert.alert("Unauthorized", "Invalid or expired token");
+        logout(); // Call the logout function from AuthContext
+        return;
+      }
     } catch (error) {
       console.error("Error fetching farms:", error);
     } finally {
