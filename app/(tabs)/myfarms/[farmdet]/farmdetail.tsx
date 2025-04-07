@@ -12,6 +12,7 @@ import { db } from "@/firebase";
 import { FarmData } from "@/constants/Types";
 import { Colors } from "@/constants/Colors";
 import { ThemeContext } from "@/contexts/ThemeContext";
+import { LineChart } from "react-native-gifted-charts"
 
 type Bardata = {
   label: string;
@@ -25,6 +26,10 @@ export default function Page() {
   const [barChartData3Months, setBarChartData3Months] = useState<Bardata[]>([]);
   const [barChartData6Months, setBarChartData6Months] = useState<Bardata[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const lineData = [{value: 0},{value: 10},{value: 8},{value: 58},{value: 56},{value: 78},{value: 74},{value: 98}];
+    const lineData2 = [{value: 0},{value: 20},{value: 18},{value: 40},{value: 36},{value: 60},{value: 54},{value: 85}];
+    
 
   const themeContext = useContext(ThemeContext);
   const isDarkMode = themeContext?.isDarkMode ?? false;
@@ -148,24 +153,7 @@ export default function Page() {
 
           <View style={[styles.card, { backgroundColor: color.cardBg }]}>
             <Text style={styles.chartTitle}>Crops for 3 Months</Text>
-            <Text style={{ color: color.text }}>barchat</Text>
-
-            {/* <BarChart
-              data={barChartData3Months}
-              barWidth={35}
-              maxValue={100}
-              noOfSections={4}
-              cappedBars
-              backgroundColor={color.cardBg}
-              capColor={"rgb(78, 0, 142)"}
-              yAxisColor={color.text}
-              xAxisColor={color.text}
-              yAxisTextStyle={{ color: color.text, fontSize: 12 }}
-              xAxisLabelTextStyle={{ color: color.text, fontSize: 12 }}
-              capThickness={4}
-              isAnimated
-              frontColor={color.tabIconSelected}
-            /> */}
+            
           </View>
 
           {farmData.crops_for_3_months.map((crop, index) => (
@@ -309,7 +297,31 @@ export default function Page() {
           ))}
         </View>
       ) : (
+        <View>
         <Text style={styles.noData}>No farm data available.</Text>
+
+            <LineChart
+            areaChart
+            curved
+            data={lineData}
+            data2={lineData2}
+            height={250}
+            showVerticalLines
+            spacing={44}
+            initialSpacing={0}
+            color1="skyblue"
+            color2="orange"
+            textColor1="green"
+            hideDataPoints
+            dataPointsColor1="blue"
+            dataPointsColor2="red"
+            startFillColor1="skyblue"
+            startFillColor2="orange"
+            startOpacity={0.8}
+            endOpacity={0.3}
+            />
+        </View>
+
       )}
     </ScrollView>
   );
