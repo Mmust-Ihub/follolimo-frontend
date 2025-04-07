@@ -2,9 +2,16 @@ import React, { createContext, useState, useEffect, ReactNode } from "react";
 import * as SecureStore from "expo-secure-store";
 import { Alert } from "react-native";
 import { router } from "expo-router";
+import { log } from "console";
 
 interface AuthContextType {
   userToken: string | null;
+  userDetails: {
+    username: string;
+    pk: string;
+    email: string;
+    role: string;
+  } | null; // Allow userDetails to be null
   login: (username: string, password: string) => Promise<void>; // Change to include credentials
   logout: () => Promise<void>;
   isLoading: boolean;
@@ -26,15 +33,25 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [userToken, setUserToken] = useState<string | null>(null);
+  const [userDetails, setUserDetails] = useState<
+    AuthContextType["userDetails"] | null
+  >(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const loadToken = async () => {
       try {
         const token = await SecureStore.getItemAsync("Token");
+        const userDetailsString = await SecureStore.getItemAsync("UserDetails");
+        const userDetails: AuthContextType["userDetails"] = userDetailsString
+          ? JSON.parse(userDetailsString)
+          : null;
 
-        if (token) {
+        if (token && userDetails) {
           setUserToken(token);
+          console.log("details", userDetails);
+
+          setUserDetails(userDetails);
         }
       } catch (error) {
         console.error("Error loading token:", error);
@@ -44,11 +61,46 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     loadToken();
-  }, [userToken]);
+  }, []);
+
+  const fetchUserDetails = async (token: string) => {
+    try {
+      if (token) {
+        const response = await fetch(
+          `${process.env.EXPO_PUBLIC_BACKEND_URL}/auth/user/`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Token ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = await response.json();
+        if (response.status === 200) {
+          console.log("User details:", data);
+          // store to secure store
+          await SecureStore.setItemAsync("UserDetails", JSON.stringify(data));
+          setUserDetails(data);
+        }
+        if (response.status === 401) {
+          console.log("Unauthorized access to user details");
+          Alert.alert("Unauthorized", "Invalid or expired token");
+          logout(); // Call the logout function from AuthContext
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    }
+  };
 
   const login = async (username: string, password: string) => {
     setIsLoading(true);
-    console.log("Login function called with username:", username, `${process.env.EXPO_PUBLIC_BACKEND_URL}/auth/login/`);
+    console.log(
+      "Login function called with username:",
+      username,
+      `${process.env.EXPO_PUBLIC_BACKEND_URL}/auth/login/`
+    );
     try {
       // Call your authentication API here to get the token
       const response = await fetch(
@@ -70,7 +122,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         setIsLoading(false);
         Alert.alert("Login failed", "Invalid credentials");
-        throw new Error("Login failed"); // Handle failed login
       }
 
       if (response.status === 200) {
@@ -79,7 +130,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         await SecureStore.setItemAsync("Token", token);
         setUserToken(token);
-
+        fetchUserDetails(token);
         router.replace("/(tabs)");
         setIsLoading(false);
         // Alert.alert("Login Successful", "You are now logged in");
@@ -89,14 +140,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         setIsLoading(false);
         Alert.alert("Login failed", "Invalid credentials"); // Handle failed login
-        throw new Error("Login failed");
       }
       if (response.status !== 200 && response.status !== 401) {
         const data = await response.json();
 
         setIsLoading(false);
         Alert.alert("Login failed", "Invalid credentials");
-        throw new Error("Login failed");
       }
     } catch (error) {
       setIsLoading(false);
@@ -158,6 +207,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = async () => {
     try {
       await SecureStore.deleteItemAsync("Token");
+      await SecureStore.deleteItemAsync("UserDetails");
       setUserToken(null);
       router.replace("/(auth)/Login");
     } catch (error) {
@@ -167,7 +217,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ userToken, login, register, logout, isLoading }}
+      value={{ userToken, userDetails, login, register, logout, isLoading }}
     >
       {children}
     </AuthContext.Provider>

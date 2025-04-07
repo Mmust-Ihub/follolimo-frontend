@@ -10,44 +10,48 @@ import {
   Platform,
 } from "react-native";
 import { onSnapshot, collection } from "firebase/firestore";
+import NetInfo from "@react-native-community/netinfo";
 import { db } from "./../../firebase";
 import { screenHeight } from "@/constants/AppDimensions";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Colors } from "@/constants/Colors";
 import { ThemeContext } from "@/contexts/ThemeContext";
 import WeatherInfo from "../components/index/WeatherInfo";
-import MyFarms from "../components/index/MyFarms";
 import MyTasks from "../components/index/MyTasks";
 import { useRouter } from "expo-router";
 import { AuthContext } from "@/contexts/AuthContext";
-import { useNotifications } from "../../hooks/useNotification"; // Custom hook for notifications
+import { useNotifications } from "../../hooks/useNotification";
+import { Feather } from "@expo/vector-icons";
 
 export default function Index() {
   interface UserData {
     username: string;
     pk: string;
+    email: string;
+    role: string;
   }
+
   interface AlarmData {
     id: string;
   }
 
   const [alarmUsers, setAlarmUsers] = useState<AlarmData[]>([]);
-  const [userData, setUserData] = useState<UserData | null>(null);
   const [greetingType, setGreetingType] = useState("Hello");
+  const [isConnected, setIsConnected] = useState<boolean | null>(true);
+  const [justReconnected, setJustReconnected] = useState(false); // ✅ New state
+
   const themeContext = useContext(ThemeContext);
   const isDarkMode = themeContext?.isDarkMode ?? false;
 
   const authContext = useContext(AuthContext);
-  const { userToken } = authContext || {};
+  const { userDetails } = authContext || {};
+  const userData: UserData | null = userDetails || null;
 
   const router = useRouter();
-
-  // Custom hook for notifications
   const { expoPushToken, sendPushNotification } = useNotifications();
-
-  // Ref to track initial snapshot to prevent sending notifications on load
   const isFirstSnapshot = useRef(true);
 
+  // Greeting
   useEffect(() => {
     const getGreeting = () => {
       const currentHour = new Date().getHours();
@@ -58,36 +62,31 @@ export default function Index() {
     setGreetingType(getGreeting());
   }, []);
 
+  // Network status
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.EXPO_PUBLIC_BACKEND_URL}/users/user/`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Token ${userToken}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const data = await response.json();
-        setUserData(data);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      const connected =
+        state.isConnected && state.isInternetReachable !== false;
+
+      if (!isConnected && connected) {
+        setJustReconnected(true);
+        setTimeout(() => setJustReconnected(false), 3000); // ✅ show green banner briefly
       }
-    };
 
-    fetchUser();
-  }, [userToken]);
+      setIsConnected(connected);
+    });
 
+    return () => unsubscribe();
+  }, [isConnected]);
+
+  // Listen for farm data
   useEffect(() => {
-    if (!userData) return; // Wait until the user data is loaded
+    if (!userData) return;
 
     const query = collection(db, "fololimo");
     const unsubscribe = onSnapshot(query, (snapshot) => {
       const alarmsData: AlarmData[] = snapshot.docs
-        .filter((doc) => doc.data().user_id === userData.pk) // Filter by user_id
+        .filter((doc) => doc.data().user_id === userData.pk)
         .map((doc) => ({
           id: doc.id,
           ...doc.data(),
@@ -103,23 +102,18 @@ export default function Index() {
             const newFarmData = change.doc.data();
 
             if (!expoPushToken) return;
-            // console.log("New farm data:", newFarmData.user_id === userData.pk);
             if (newFarmData.user_id === userData.pk) {
-              console.log(newFarmData.name);
               const notificationMessage = {
                 title: "New Farm Data",
-                body: `New data for farm ${newFarmData.farm_id}`, // Notification body
-                farmId: newFarmData.farm_id, // Send the farm ID
-                farmName: newFarmData.farm_name, // Send the farm name
-                userId: newFarmData.user_id, // Send the user ID
+                body: `New data for farm ${newFarmData.farm_id}`,
+                farmId: newFarmData.farm_id,
+                farmName: newFarmData.farm_name,
+                userId: newFarmData.user_id,
                 userDataId: userData.pk,
               };
 
-              // Send notification using the custom hook's function
+              // Uncomment to enable notifications
               // sendPushNotification(expoPushToken!, notificationMessage);
-            } else {
-              console.log("No new data for your farms");
-              return;
             }
           }
         });
@@ -127,9 +121,8 @@ export default function Index() {
     });
 
     return () => unsubscribe();
-  }, [expoPushToken, userData]); // Depend on userData so that it triggers when userData is available
-  //  ExponentPushToken[KhADTFKwmEdBGFVWveNjAE];
-  console.log(expoPushToken);
+  }, [expoPushToken, userData]);
+
   return (
     <SafeAreaView
       style={[
@@ -141,6 +134,22 @@ export default function Index() {
         },
       ]}
     >
+      {/* Offline Banner */}
+      {!isConnected && (
+        <View style={styles.offlineBanner}>
+          <Feather name="wifi-off" size={24} color="black" />
+          <Text style={styles.offlineText}>You're offline</Text>
+        </View>
+      )}
+
+      {/* Online Banner (✅ New) */}
+      {justReconnected && (
+        <View style={styles.onlineBanner}>
+          <Feather name="wifi" size={24} color="white" />
+          <Text style={styles.onlineText}>You're back online</Text>
+        </View>
+      )}
+
       <ScrollView
         contentContainerStyle={styles.scrollViewStyle}
         showsVerticalScrollIndicator={false}
@@ -177,6 +186,7 @@ export default function Index() {
               </Text>
             </View>
           </View>
+
           <MaterialIcons
             name="notifications-on"
             size={28}
@@ -187,9 +197,6 @@ export default function Index() {
         <WeatherInfo
           textColor={isDarkMode ? Colors.dark.text : Colors.light.text}
         />
-        {/* <MyFarms
-          textColor={isDarkMode ? Colors.dark.text : Colors.light.text}
-        /> */}
         <MyTasks
           textColor={isDarkMode ? Colors.dark.text : Colors.light.text}
         />
@@ -218,39 +225,72 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 10,
   },
   userInfo: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
   },
-  userImage: {
-    height: 60,
-    width: 60,
-    borderRadius: 50,
-    resizeMode: "cover",
-  },
   greetingText: {
     fontSize: 18,
+    fontWeight: "700",
   },
   usernameText: {
     fontSize: 18,
-    fontWeight: "500",
+    fontWeight: "600",
   },
   Chat: {
-    width: 70, // Make width and height equal for a circular button
+    width: 70,
     height: 70,
-    borderRadius: 35, // Half of the width/height to make it circular
+    borderRadius: 35,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: Colors.dark.tint,
-    position: "absolute", // Optional: to fix its position on the screen
-    bottom: 30, // Adjust positioning as needed
+    position: "absolute",
+    bottom: 30,
     right: 30,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    zIndex: 1,
+    borderWidth: 1,
+    borderColor: Colors.light.tabIconSelected,
+    overflow: "hidden",
   },
   chatText: {
     color: "white",
-    fontSize: 12, // Adjust font size for circular button
-    textAlign: "center", // Center the text
+    fontSize: 12,
+    textAlign: "center",
+  },
+  offlineBanner: {
+    backgroundColor: "#ffcccb",
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+  },
+  offlineText: {
+    color: "#333",
+    fontWeight: "bold",
+  },
+  onlineBanner: {
+    backgroundColor: "#4CAF50", // Green
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+  },
+  onlineText: {
+    color: "white",
+    fontWeight: "bold",
   },
 });

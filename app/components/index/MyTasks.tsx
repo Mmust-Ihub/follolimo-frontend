@@ -1,170 +1,20 @@
-// import { ActivityIndicator, Pressable, Text, View } from "react-native";
-// import React, { useEffect } from "react";
-// import { Colors } from "@/constants/Colors";
-// import { useRouter } from "expo-router";
-// import { useFetch } from "@/contexts/usefetchData";
-// import useFormat from "@/hooks/useFormat";
-
-// interface Activity {
-//   farmId: string;
-//   title: string;
-//   description: string;
-//   startDate: string;
-//   endDate: string;
-//   status: string;
-// }
-
-// interface ActivityListProps {
-//   title: string;
-//   activities: Activity[];
-//   isLoading: boolean;
-//   textColor: string;
-//   emptyMessage: string;
-// }
-
-// const ActivityItem = ({
-//   farmId,
-//   title,
-//   description,
-//   startDate,
-//   endDate,
-//   status,
-// }: Activity) => {
-//   const { formatDate } = useFormat();
-//   return (
-//     <View className="flex-col gap-1 p-2 border rounded-md shadow-sm border-gray-200">
-//       <Text className="text-lg font-bold">{title}</Text>
-//       <Text className="rounded-md text-sm">
-//         {formatDate(startDate)} - {formatDate(endDate)}
-//       </Text>
-//       <Text className="text-sm">{description?.slice(0, 100)}...</Text>
-//       <Text
-//         className={`font-bold ${
-//           status === "Completed" ? "text-green-500" : "text-yellow-500"
-//         }`}
-//       >
-//         {status.toLocaleLowerCase()}
-//       </Text>
-//     </View>
-//   );
-// };
-
-// const ActivityList = ({
-//   title,
-//   activities,
-//   isLoading,
-//   textColor,
-//   emptyMessage,
-// }: ActivityListProps) => {
-//   const router = useRouter();
-
-//   return (
-//     <View className="mb-2 mt-2 p-4">
-//       <Text className="font-bold text-lg mb-2" style={{ color: textColor }}>
-//         {title}
-//       </Text>
-//       {isLoading ? (
-//         <View className="w-screen flex flex-col justify-center items-center">
-//           <ActivityIndicator size="large" color={Colors.light.tint} />
-//           <Text
-//             style={{ color: textColor }}
-//             className="text-lg mt-4 w-full text-center"
-//           >
-//             Loading...
-//           </Text>
-//         </View>
-//       ) : activities.length > 0 ? (
-//         <View className="gap-2">
-//           {activities.map((activity, index) => (
-//             <ActivityItem
-//               key={index}
-//               {...activity}
-//               status={activity.status || "Unknown"}
-//             />
-//           ))}
-//         </View>
-//       ) : (
-//         <View className="flex w-screen p-2">
-//           <Text
-//             className="text-md mt-4 font-bold w-full"
-//             style={{ color: textColor }}
-//           >
-//             {emptyMessage}
-//           </Text>
-//           <Pressable
-//             onPress={() => router.replace("/(tabs)/inventory/MyFarms")}
-//           >
-//             <Text
-//               className="text-lg font-bold text-center"
-//               style={{
-//                 color: Colors.light.tabIconSelected,
-//                 textDecorationLine: "underline",
-//               }}
-//             >
-//               Create one
-//             </Text>
-//           </Pressable>
-//         </View>
-//       )}
-//     </View>
-//   );
-// };
-
-// export default function MyTasks({ textColor }: { textColor: string }) {
-//   const {
-//     fetchFarms,
-//     fetchPastActivities,
-//     fetchUpcomingActivities,
-//     upComingActivity,
-//     pastActivities,
-//     isPastActivitiesLoading,
-//     isUpcomingActivitiesLoading,
-//   } = useFetch();
-
-//   useEffect(() => {
-//     fetchFarms();
-//     fetchPastActivities();
-//     fetchUpcomingActivities();
-//   }, []);
-
-//   return (
-//     <View className="mb-8 mt-2">
-//       <ActivityList
-//         title="My Upcoming Activities"
-//         activities={upComingActivity.map((activity) => ({
-//           ...activity,
-//           status: activity.status || "Unknown",
-//         }))}
-//         isLoading={isUpcomingActivitiesLoading}
-//         textColor={textColor}
-//         emptyMessage="You have no upcoming activities..."
-//       />
-//       <ActivityList
-//         title="My Past Activities"
-//         activities={pastActivities.map((activity) => ({
-//           ...activity,
-//           status: activity.status || "Unknown",
-//         }))}
-//         isLoading={isPastActivitiesLoading}
-//         textColor={textColor}
-//         emptyMessage="You have no past activities..."
-//       />
-//     </View>
-//   );
-// }
-
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
-import React, { useContext, useEffect } from "react";
+import { Pressable, Text, TouchableOpacity, View } from "react-native";
+import React, { useContext, useMemo } from "react";
 import { Colors } from "@/constants/Colors";
 import { useRouter } from "expo-router";
 import { useFetch } from "@/contexts/usefetchData";
 import useFormat from "@/hooks/useFormat";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { ThemeContext } from "@/contexts/ThemeContext";
+import ShimmerPlaceholder from "react-native-shimmer-placeholder";
+import { LinearGradient } from "expo-linear-gradient";
+import dayjs from "dayjs";
 
 interface Activity {
-  id: string;
-  farm: string;
+  farmId: {
+    _id: string;
+    name: string;
+  };
   title: string;
   description: string;
   startDate: string;
@@ -181,8 +31,7 @@ interface ActivityListProps {
 }
 
 const ActivityItem = ({
-  id,
-  farm,
+  farmId,
   title,
   description,
   startDate,
@@ -191,9 +40,7 @@ const ActivityItem = ({
 }: Activity) => {
   const themeContext = useContext(ThemeContext);
   if (!themeContext) {
-    throw new Error(
-      "AuthContext, OnboardingContext, and ThemeContext must be used within their providers"
-    );
+    throw new Error("ThemeContext must be used within its provider");
   }
 
   const { isDarkMode } = themeContext;
@@ -201,40 +48,85 @@ const ActivityItem = ({
     ? Colors.dark.cardBg
     : Colors.light.cardBg;
   const textColor = isDarkMode ? Colors.dark.text : Colors.light.text;
+  const progressColor = isDarkMode ? "#4ade80" : "#22c55e";
+  const trackColor = isDarkMode ? "#374151" : "#e5e7eb";
+
   const { formatDate } = useFormat();
   const router = useRouter();
 
+  const start = dayjs(startDate);
+  const end = dayjs(endDate);
+  const today = dayjs();
+
+  const totalDuration = end.diff(start, "day");
+  const progress = Math.min(
+    100,
+    Math.max(
+      0,
+      parseFloat(((today.diff(start, "day") / totalDuration) * 100).toFixed(0))
+    )
+  );
+
+  const remainingDays = start.diff(today, "day");
+
   return (
-    <Pressable
+    <TouchableOpacity
       onPress={() =>
         router.push({
           pathname: "/(tabs)/myfarms/[farmdet]/farmdetail",
-          params: { id: id, farmName: farm },
+          params: { id: farmId?._id, farmName: farmId?.name },
         })
       }
-      className="flex-row items-center justify-between p-2 rounded-md shadow-sm"
+      className="flex-row items-center justify-between p-3 rounded-xl shadow-sm"
       style={{ backgroundColor: tasksBackgroundColor }}
     >
       <View className="flex-1">
-        <Text className="text-lg font-bold" style={{ color: textColor }}>
+        <Text className="text-lg font-bold mb-1" style={{ color: textColor }}>
           {title}
         </Text>
-        <Text className="text-sm" style={{ color: textColor }}>
+        <Text
+          className="text-md font-semibold mb-1"
+          style={{ color: textColor }}
+        >
+          {farmId?.name}
+        </Text>
+        <Text className="text-sm mb-1" style={{ color: textColor }}>
           {formatDate(startDate)} - {formatDate(endDate)}
         </Text>
-        <Text className="text-sm" style={{ color: textColor }}>
+        <Text className="text-sm mb-1" style={{ color: textColor }}>
           {description?.slice(0, 100)}...
         </Text>
-        <Text
-          className={`font-bold ${
-            status === "Completed" ? "text-green-500" : "text-yellow-500"
-          }`}
-        >
-          {status?.toLocaleLowerCase()}
-        </Text>
+
+        {remainingDays > 0 && (
+          <Text
+            className={`text-md tracking-wide mb-1 font-semibold ${
+              remainingDays <=2 ? "text-[#ef9920]" : "text-[#4ade80]"
+            }`}
+          >
+            Starts in {remainingDays} day{remainingDays > 1 ? "s" : ""}
+          </Text>
+        )}
+
+        {today.isAfter(start) && today.isBefore(end) && (
+          <>
+            <View
+              className="w-full h-2 rounded-md mt-1 mb-1"
+              style={{ backgroundColor: trackColor }}
+            >
+              <View
+                className="h-2 rounded-md"
+                style={{
+                  backgroundColor: progressColor,
+                  width: `${progress}%`,
+                }}
+              />
+            </View>
+            <Text className="text-xs text-gray-500">{progress}% complete</Text>
+          </>
+        )}
       </View>
-      <Ionicons name="chevron-forward" size={20} color={Colors.light.tint} />
-    </Pressable>
+      <Ionicons name="chevron-forward" size={25} color={textColor} />
+    </TouchableOpacity>
   );
 };
 
@@ -253,14 +145,20 @@ const ActivityList = ({
         {title}
       </Text>
       {isLoading ? (
-        <View className="w-screen flex flex-col justify-center items-center">
-          <ActivityIndicator size="large" color={Colors.light.tint} />
-          <Text
-            style={{ color: textColor }}
-            className="text-lg mt-4 w-full text-center"
-          >
-            Loading...
-          </Text>
+        <View className="gap-2">
+          {[...Array(1)].map((_, index) => (
+            <ShimmerPlaceholder
+              key={index}
+              style={{
+                width: "100%",
+                height: 100,
+                borderRadius: 8,
+                marginBottom: 10,
+              }}
+              shimmerStyle={{ borderRadius: 8 }}
+              LinearGradient={LinearGradient}
+            />
+          ))}
         </View>
       ) : activities?.length > 0 ? (
         <View className="gap-2">
@@ -280,9 +178,7 @@ const ActivityList = ({
           >
             {emptyMessage}
           </Text>
-          <Pressable
-            onPress={() => router.replace("/(tabs)/inventory/MyFarms")}
-          >
+          <Pressable onPress={() => router.replace("/(tabs)/myfarms")}>
             <Text
               className="text-lg font-bold text-center"
               style={{
@@ -300,43 +196,39 @@ const ActivityList = ({
 };
 
 export default function MyTasks({ textColor }: { textColor: string }) {
-  const {
-    fetchFarms,
-    fetchPastActivities,
-    fetchUpcomingActivities,
-    upComingActivity,
-    pastActivities,
-    isPastActivitiesLoading,
-    isUpcomingActivitiesLoading,
-  } = useFetch();
+  const { Activity, loading } = useFetch();
 
-  useEffect(() => {
-    fetchFarms();
-    fetchPastActivities();
-    fetchUpcomingActivities();
-  }, []);
+  const now = new Date();
 
-  console.log("upComingActivity", upComingActivity);
+  const { upcomingActivities, pastActivities } = useMemo(() => {
+    const upcoming: Activity[] = [];
+    const past: Activity[] = [];
+
+    Activity?.forEach((activity: Activity) => {
+      const end = new Date(activity.endDate);
+      if (end >= now) {
+        upcoming.push(activity);
+      } else {
+        past.push(activity);
+      }
+    });
+
+    return { upcomingActivities: upcoming, pastActivities: past };
+  }, [Activity]);
 
   return (
     <View className="mb-8 mt-2">
       <ActivityList
         title="My Upcoming Activities"
-        activities={upComingActivity?.map((activity) => ({
-          ...activity,
-          status: activity?.status || "Unknown",
-        }))}
-        isLoading={isUpcomingActivitiesLoading}
+        activities={upcomingActivities}
+        isLoading={loading}
         textColor={textColor}
         emptyMessage="You have no upcoming activities..."
       />
       <ActivityList
         title="My Past Activities"
-        activities={pastActivities?.map((activity) => ({
-          ...activity,
-          status: activity?.status || "Unknown",
-        }))}
-        isLoading={isPastActivitiesLoading}
+        activities={pastActivities}
+        isLoading={loading}
         textColor={textColor}
         emptyMessage="You have no past activities..."
       />
