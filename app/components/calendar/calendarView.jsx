@@ -11,10 +11,10 @@ dayjs.extend(weekday);
 dayjs.extend(weekofYear);
 
 export default function CalendarView() {
-    const [currentDate, setCurrentDate] = useState(dayjs(Date.now())); // ✅ Use Date.now()
+    const [currentDate, setCurrentDate] = useState(dayjs(Date.now())); 
     
     const daysInMonth = currentDate.daysInMonth();
-    const firstDayOfMonth = currentDate.startOf('month').day(); // Day of the week (0 = Sunday, 6 = Saturday)
+    const firstDayOfMonth = currentDate.startOf('month').day(); 
     const lastDayOfMonth = currentDate.endOf('month').day();
 
     const prevMonth = currentDate.subtract(1, 'month');
