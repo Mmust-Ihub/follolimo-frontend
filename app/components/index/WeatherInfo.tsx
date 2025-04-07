@@ -4,8 +4,9 @@ import { useFetch } from "@/contexts/usefetchData";
 import WeatherCard from "./WeatherCard";
 import ShimmerPlaceholder from "react-native-shimmer-placeholder"; // Import the shimmer placeholder
 import { Colors } from "@/constants/Colors";
-import { screenHeight } from "@/constants/AppDimensions";
+import { screenHeight, screenWidth } from "@/constants/AppDimensions";
 import { router } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface MyweatherProps {
   textColor: string;
@@ -13,7 +14,7 @@ interface MyweatherProps {
 
 export default function WeatherInfo({ textColor }: MyweatherProps) {
   const { farmData, fetchFarms, loading } = useFetch();
-  
+  // console.log("farm details data", farmData[0].location);
 
   useEffect(() => {
     fetchFarms();
@@ -25,8 +26,9 @@ export default function WeatherInfo({ textColor }: MyweatherProps) {
   return (
     <ScrollView
       horizontal
-      contentContainerStyle={styles.container}
       showsHorizontalScrollIndicator={false}
+      scrollEnabled={true}
+      contentContainerStyle={styles.container}
     >
       {loading ? (
         // Display shimmer placeholders during loading
@@ -36,6 +38,7 @@ export default function WeatherInfo({ textColor }: MyweatherProps) {
               <ShimmerPlaceholder
                 style={styles.shimmer}
                 shimmerColors={["#f0f0f0", "#e0e0e0", "#f0f0f0"]}
+                LinearGradient={LinearGradient}
               />
               {/* <ShimmerPlaceholder
                 style={styles.shimmerText}
@@ -45,9 +48,19 @@ export default function WeatherInfo({ textColor }: MyweatherProps) {
           ))}
         </View>
       ) : farmData?.length > 0 ? (
-        farmData?.map(({ location, name,size }, index) => (
-          <WeatherCard key={index} city={location} name={name} size={size}/>
-        ))
+        farmData?.map(
+          ({ description, farm, humidity, location, temperature,farmId }, index) => (
+            <WeatherCard
+              key={index}
+              location={location}
+              farm={farm}
+              description={description}
+              humidity={humidity}
+              temperature={temperature}
+              farmId={farmId}
+            />
+          )
+        )
       ) : (
         <View style={styles.noDataContainer}>
           <Text style={[styles.noDataText, { color: textColor }]}>
@@ -72,7 +85,6 @@ export default function WeatherInfo({ textColor }: MyweatherProps) {
 
 const styles = StyleSheet.create({
   container: {
-    height: screenHeight * 0.35,
     gap: 10,
     justifyContent: "space-between",
     paddingVertical: 2,
@@ -82,15 +94,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   shimmerCard: {
-    width: 200,
-    height: 150,
+    width: screenWidth * 0.85,
+    height: screenHeight * 0.35,
     marginRight: 10,
     borderRadius: 10,
     overflow: "hidden",
   },
   shimmer: {
     width: "100%",
-    height: "70%",
+    height: "100%",
     borderRadius: 10,
   },
   shimmerText: {
