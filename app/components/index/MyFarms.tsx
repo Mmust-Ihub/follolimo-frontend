@@ -6,12 +6,14 @@ import { Colors } from "@/constants/Colors";
 import { useRouter } from "expo-router";
 import { useFetch } from "@/contexts/usefetchData";
 
+
 interface MyFarmsProps {
   textColor: string;
 }
 
 export default function MyFarms({ textColor }: MyFarmsProps) {
   const router = useRouter();
+  
 
   const { farmData, loading, fetchFarms } = useFetch();
 

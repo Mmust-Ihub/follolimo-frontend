@@ -12,6 +12,7 @@ import {
   Keyboard,
   ScrollView,
   Platform,
+  StatusBar,
 } from "react-native";
 import React, { useContext, useState } from "react";
 import Modal from "react-native-modal";
@@ -39,8 +40,18 @@ export default function SignUp() {
     throw new Error("Contexts not found");
   }
 
-  const { register, isLoading } = authContext;
+  if (!themeContext) {
+    throw new Error(
+      "AuthContext, OnboardingContext, and ThemeContext must be used within their providers"
+    );
+  }
+
   const { isDarkMode } = themeContext;
+  const headerBackgroundColor = isDarkMode
+    ? Colors.dark.headerBackground
+    : Colors.light.headerBackground;
+
+  const { register, isLoading } = authContext;
 
   const handleSubmit = () => {
     Keyboard.dismiss();
@@ -100,12 +111,16 @@ export default function SignUp() {
 
   return (
     <SafeAreaView style={{ backgroundColor }} className="flex-1">
+      <StatusBar
+        barStyle={isDarkMode ? "light-content" : "dark-content"}
+        backgroundColor={headerBackgroundColor}
+      />
       <KeyboardAvoidingView
         className="flex justify-center items-center h-screen px-4 space-y-6"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View className="space-y-4 w-full">
+          <View className="space-y-4 w-full gap-4">
             <Text
               style={{ color: textColor }}
               className="font-extrabold text-xl uppercase text-center mb-4"

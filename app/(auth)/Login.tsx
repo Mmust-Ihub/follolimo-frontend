@@ -11,6 +11,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   Platform,
+  StatusBar,
 } from "react-native";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { AuthContext } from "@/contexts/AuthContext";
@@ -58,6 +59,9 @@ export default function Login() {
   const textColor = isDarkMode ? Colors.dark.text : Colors.light.text;
   const inputBorderColor = isDarkMode ? Colors.dark.tint : Colors.light.tint;
   const iconColor = isDarkMode ? Colors.dark.icon : Colors.light.icon;
+  const headerBackgroundColor = isDarkMode
+    ? Colors.dark.headerBackground
+    : Colors.light.headerBackground;
 
   if (isLoading) {
     return (
@@ -75,13 +79,17 @@ export default function Login() {
 
   return (
     <SafeAreaView style={{ backgroundColor }} className="flex-1">
+      <StatusBar
+        barStyle={isDarkMode ? "light-content" : "dark-content"}
+        backgroundColor={headerBackgroundColor}
+      />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex justify-center items-center h-screen px-4 space-y-6 w-screen"
         enabled
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View className="space-y-4 w-full">
+          <View className="space-y-4 w-full gap-2">
             <Text
               style={{ color: textColor }}
               className="font-extrabold text-xl uppercase text-center mb-4"
