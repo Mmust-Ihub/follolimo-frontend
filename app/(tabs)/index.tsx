@@ -142,7 +142,7 @@ export default function Index() {
         </View>
       )}
 
-      {/* Online Banner (✅ New) */}
+      {/* Online Banner*/}
       {justReconnected && (
         <View style={styles.onlineBanner}>
           <Feather name="wifi" size={24} color="white" />
