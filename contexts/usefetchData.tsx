@@ -166,20 +166,21 @@ export const FetchProvider: React.FC<FetchProviderProps> = ({ children }) => {
         }
       );
       const data = await response.json();
-      if (response.status === 200) {
-        console.log("Fetched data:", data);
-        setFarmData(data);
-        setWeatherData(data?.weather);
-        // setTasks(data?.activities);
+      if (!response.ok) {
+        const errorMessage = data?.message || "Failed to fetch farms";
+        if(errorMessage === "Invalid or expired token" || response.status === 403){
+          console.log("Token expired, logging out...");
+          authContext?.logout();
+          return;
+        }
+      }else{
+      
+      console.log("Fetched data:", data);
+
+      setFarmData(data);
+      setWeatherData(data?.weather);
       }
-      if (
-        response.status === 401 ||
-        data.message === "Invalid or expired token"
-      ) {
-        Alert.alert("Unauthorized", "Invalid or expired token");
-        logout(); // Call the logout function from AuthContext
-        return;
-      }
+      // setTas
     } catch (error) {
       console.error("Error fetching farms:", error);
     } finally {

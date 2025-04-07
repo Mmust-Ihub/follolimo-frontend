@@ -1,7 +1,6 @@
 // import { ActivityIndicator, Pressable, Text, View } from "react-native";
 // import React, { useEffect } from "react";
 // import { Colors } from "@/constants/Colors";
-// import { useRouter } from "expo-router";
 // import { useFetch } from "@/contexts/usefetchData";
 // import useFormat from "@/hooks/useFormat";
 
@@ -209,7 +208,8 @@ const ActivityItem = ({
       onPress={() =>
         router.push({
           pathname: "/(tabs)/myfarms/[farmdet]/farmdetail",
-          params: { id: id, farmName: farm },
+          params: { farmdet:id, farmName: farm },
+
         })
       }
       className="flex-row items-center justify-between p-2 rounded-md shadow-sm"
@@ -281,7 +281,7 @@ const ActivityList = ({
             {emptyMessage}
           </Text>
           <Pressable
-            onPress={() => router.replace("/(tabs)/inventory/MyFarms")}
+            onPress={() => router.replace("/(tabs)/myfarms")}
           >
             <Text
               className="text-lg font-bold text-center"
@@ -317,10 +317,11 @@ export default function MyTasks({ textColor }: { textColor: string }) {
   }, []);
 
   console.log("upComingActivity", upComingActivity);
-
+  const router = useRouter();
   return (
     <View className="mb-8 mt-2">
-      <ActivityList
+      {upComingActivity.length > 0 ? (
+        <ActivityList
         title="My Upcoming Activities"
         activities={upComingActivity?.map((activity) => ({
           ...activity,
@@ -330,7 +331,31 @@ export default function MyTasks({ textColor }: { textColor: string }) {
         textColor={textColor}
         emptyMessage="You have no upcoming activities..."
       />
-      <ActivityList
+      ) : (
+        <View className="flex w-screen p-2">
+          <Text
+            className="text-md mt-4 font-bold w-full"
+            style={{ color: textColor }}
+          >
+            You have no upcoming activities...
+          </Text>
+          <Pressable
+            onPress={() => router.replace("/(tabs)/myfarms")}
+          >
+            <Text
+              className="text-lg font-bold text-center"
+              style={{
+                color: Colors.light.tabIconSelected,
+                textDecorationLine: "underline",
+              }}
+            >
+              Create one
+            </Text>
+          </Pressable>
+        </View>
+      )}
+      {pastActivities.length > 0 ? (
+        <ActivityList
         title="My Past Activities"
         activities={pastActivities?.map((activity) => ({
           ...activity,
@@ -340,6 +365,25 @@ export default function MyTasks({ textColor }: { textColor: string }) {
         textColor={textColor}
         emptyMessage="You have no past activities..."
       />
+      ) : (
+        <View className="flex w-screen p-2">
+          <Text className="text-md mt-4 font-bold w-full" style={{ color: textColor }}>
+            You have no past activities...
+          </Text>
+          <Pressable  onPress={() => router.replace("/(tabs)/myfarms")} >
+            <Text
+              className="text-lg font-bold text-center"
+              style={{
+                color: Colors.light.tabIconSelected,
+                textDecorationLine: "underline",
+              }}
+            >
+              Check more details
+            </Text>
+          </Pressable>
+          </View>
+          )
+            }
     </View>
   );
 }

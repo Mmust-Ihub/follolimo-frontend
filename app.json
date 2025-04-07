@@ -7,7 +7,6 @@
     "icon": "./assets/images/icon.png",
     "scheme": "fololimo",
     "deeplinking": true,
-
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
@@ -34,8 +33,15 @@
               "host": "com.wabunifu.fololimo"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
+      ],
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "web": {
@@ -60,8 +66,11 @@
       "typedRoutes": true
     },
     "extra": {
+      "router": {
+        "origin": false
+      },
       "eas": {
-        "projectId": "7758b083-57a6-4787-8a55-03befd0f9225"
+        "projectId": "c6057c82-84bc-4348-872d-033b3ce147ce"
       }
     }
   }

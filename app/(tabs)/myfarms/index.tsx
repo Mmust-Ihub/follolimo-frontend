@@ -22,9 +22,10 @@ type Farm = {
   location: string;
   city: number;
   city_name: string;
-  size: number; // Size in acres
-  latitude?: number | null; // Optional property
-  longitude?: number | null; // Optional property
+  size: number; 
+  latitude?: number | null; 
+  longitude?: number | null; 
+  pk: number;
 };
 
 export default function Page() {
@@ -112,7 +113,7 @@ export default function Page() {
                     Size: {farm.size} acres
                   </Text>
                   <Text style={{ color: currentColors.text }}>
-                    farmid: {farm.id}
+                    farmid: {farm.pk}
                   </Text>
                   <TouchableOpacity
                     onPress={() => { router.push({ pathname: "/(tabs)/myfarms/[farmdet]/farmdetail", params: { farmdet: farm.id, farmName: farm.name } }) }}
