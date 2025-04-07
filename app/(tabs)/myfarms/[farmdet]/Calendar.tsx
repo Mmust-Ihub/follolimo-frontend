@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React, { useContext } from 'react'
-import { ThemeContext } from '@/contexts/ThemeContext';
+
 import { Colors } from '@/constants/Colors';
 import { LinearGradient } from 'expo-linear-gradient';
 import CalendarView from '@/app/components/calendar/calendarView';

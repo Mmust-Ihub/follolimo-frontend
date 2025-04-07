@@ -10,9 +10,7 @@ import { useLocalSearchParams, useNavigation } from "expo-router";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/firebase";
 import { FarmData } from "@/constants/Types";
-// import { BarChart } from "react-native-gifted-charts";
 import { Colors } from "@/constants/Colors";
-// import { title } from "process";
 import { ThemeContext } from "@/contexts/ThemeContext";
 
 type Bardata = {

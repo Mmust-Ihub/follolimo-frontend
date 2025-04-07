@@ -114,10 +114,10 @@ export function useNotifications() {
         if (farmId && userId === userDataId) {
           // deeplink to the modals page with the farm ID
 
-          const deepLink = `follolimo://modals/${farmId}`;
+          const deepLink = `fololimo://modals/${farmId}`;
           Linking.openURL(deepLink);
           // router.push({
-          //   pathname: "follolimo://modals",
+          //   pathname: "fololimo://modals",
           //   params: { id: farmId, farmName: "farm" },
           // });
 

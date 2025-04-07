@@ -127,9 +127,7 @@ export default function Index() {
     });
 
     return () => unsubscribe();
-  }, [expoPushToken, userData]); // Depend on userData so that it triggers when userData is available
-  //  ExponentPushToken[KhADTFKwmEdBGFVWveNjAE];
-  console.log(expoPushToken);
+  }, [expoPushToken, userData]); 
   return (
     <SafeAreaView
       style={[

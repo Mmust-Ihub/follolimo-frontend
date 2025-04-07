@@ -28,7 +28,7 @@ export default function MyFarms({ textColor }: MyFarmsProps) {
         <Text style={[styles.title, { color: textColor }]}>My Farms</Text>
         {farmData && (
           <Pressable
-            onPress={() => router.replace("/(tabs)/inventory/MyFarms")}
+            onPress={() => router.replace("/(tabs)/myfarms")}
           >
             <Text
               style={{

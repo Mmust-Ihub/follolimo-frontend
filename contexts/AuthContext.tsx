@@ -26,6 +26,7 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [userToken, setUserToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null); 
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -48,7 +49,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (username: string, password: string) => {
     setIsLoading(true);
-    console.log("Login function called with username:", username, `${process.env.EXPO_PUBLIC_BACKEND_URL}/auth/login/`);
     try {
       // Call your authentication API here to get the token
       const response = await fetch(
@@ -75,11 +75,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (response.status === 200) {
         const data = await response.json();
-        const token = data.accessToken; // Assuming your API returns the token in this format
+        const token = data.accessToken; 
+        const refreshToken = data.refreshToken; 
 
         await SecureStore.setItemAsync("Token", token);
         setUserToken(token);
 
+        await SecureStore.setItemAsync("RefreshToken", refreshToken);
+        setRefreshToken(refreshToken);
         router.replace("/(tabs)");
         setIsLoading(false);
         // Alert.alert("Login Successful", "You are now logged in");
