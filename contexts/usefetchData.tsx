@@ -46,7 +46,6 @@ interface Activity {
   status: string;
 }
 
-
 // Create FetchContext with a default value of undefined
 const FetchContext = createContext<FetchContextType | undefined>(undefined);
 

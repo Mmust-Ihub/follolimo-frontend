@@ -126,8 +126,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (response.status === 200) {
         const data = await response.json();
-        const token = data.accessToken; 
-        const refreshToken = data.refreshToken; 
+        const token = data.accessToken; // Assuming your API returns the token in this format
 
         await SecureStore.setItemAsync("Token", token);
         setUserToken(token);
