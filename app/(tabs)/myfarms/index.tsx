@@ -14,7 +14,6 @@ import { ThemeContext } from "@/contexts/ThemeContext";
 import { AuthContext } from "@/contexts/AuthContext";
 import { screenHeight, screenWidth } from "@/constants/AppDimensions";
 import { Link, useRouter } from "expo-router";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 type Farm = {
   id: number;
@@ -22,15 +21,15 @@ type Farm = {
   location: string;
   city: number;
   city_name: string;
-  size: number; 
-  latitude?: number | null; 
-  longitude?: number | null; 
+  size: number;
+  latitude?: number | null;
+  longitude?: number | null;
   pk: number;
 };
 
 export default function Page() {
   const [farmData, setFarmData] = useState<Array<Farm> | null>();
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState(true);
   const authContext = useContext(AuthContext);
   if (!authContext) {
     throw new Error("AuthContext must be used within its provider");
@@ -53,9 +52,8 @@ export default function Page() {
       );
       const data = await response.json();
       setFarmData(data);
-     
     } catch (error) {
-      console.error("Error fetching regions:", error);
+      console.error("Error fetching farms:", error);
     } finally {
       setRefreshing(false);
     }
@@ -76,7 +74,7 @@ export default function Page() {
     <SafeAreaView>
       <ScrollView
         contentContainerStyle={styles.scrollViewStyle}
-        style={{ backgroundColor }}
+        style={{ backgroundColor: backgroundColor }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -116,7 +114,12 @@ export default function Page() {
                     farmid: {farm.pk}
                   </Text>
                   <TouchableOpacity
-                    onPress={() => { router.push({ pathname: "/(tabs)/myfarms/[farmdet]/farmdetail", params: { farmdet: farm.id, farmName: farm.name } }) }}
+                    onPress={() => {
+                      router.push({
+                        pathname: "/(tabs)/myfarms/[farmdet]/farmdetail",
+                        params: { farmdet: farm.id, farmName: farm.name },
+                      });
+                    }}
                     style={{
                       backgroundColor: currentColors.tabIconSelected,
                       padding: 10,

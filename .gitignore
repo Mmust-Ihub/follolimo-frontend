@@ -33,3 +33,5 @@ expo-env.d.ts
 # firebase.js
 application-91b1d-firebase-adminsdk-6a7nf-218701fc31.json
 google-services.json
+.json
+*.json

@@ -48,9 +48,11 @@ export default function Index() {
   const userData: UserData | null = userDetails || null;
 
   const router = useRouter();
-  const { expoPushToken, sendPushNotification } = useNotifications();
-  const isFirstSnapshot = useRef(true);
+  const { expoPushToken, notification } = useNotifications();
 
+
+  // console.log("notification", notification?.request.content.data);
+  console.log("notification", notification);
   // Greeting
   useEffect(() => {
     const getGreeting = () => {
@@ -78,50 +80,6 @@ export default function Index() {
 
     return () => unsubscribe();
   }, [isConnected]);
-
-  // Listen for farm data
-  useEffect(() => {
-    if (!userData) return;
-
-    const query = collection(db, "fololimo");
-    const unsubscribe = onSnapshot(query, (snapshot) => {
-      const alarmsData: AlarmData[] = snapshot.docs
-        .filter((doc) => doc.data().user_id === userData.pk)
-        .map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-      setAlarmUsers(alarmsData);
-
-      if (isFirstSnapshot.current) {
-        isFirstSnapshot.current = false;
-      } else {
-        snapshot.docChanges().forEach((change) => {
-          if (change.type === "added") {
-            const newFarmData = change.doc.data();
-
-            if (!expoPushToken) return;
-            if (newFarmData.user_id === userData.pk) {
-              const notificationMessage = {
-                title: "New Farm Data",
-                body: `New data for farm ${newFarmData.farm_id}`,
-                farmId: newFarmData.farm_id,
-                farmName: newFarmData.farm_name,
-                userId: newFarmData.user_id,
-                userDataId: userData.pk,
-              };
-
-              // Uncomment to enable notifications
-              // sendPushNotification(expoPushToken!, notificationMessage);
-            }
-          }
-        });
-      }
-    });
-
-    return () => unsubscribe();
-  }, [expoPushToken, userData]);
 
   return (
     <SafeAreaView

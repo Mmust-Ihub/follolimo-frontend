@@ -3,7 +3,11 @@ import {
   MaterialTopTabNavigationOptions,
   MaterialTopTabNavigationEventMap,
 } from "@react-navigation/material-top-tabs";
-import { useLocalSearchParams, useNavigation, withLayoutContext } from "expo-router";
+import {
+  useLocalSearchParams,
+  useNavigation,
+  withLayoutContext,
+} from "expo-router";
 import React, { useContext, useEffect } from "react";
 import { ParamListBase, TabNavigationState } from "@react-navigation/native";
 import { Colors } from "@/constants/Colors";
@@ -25,16 +29,28 @@ const Layout = () => {
   const navigation = useNavigation();
   const { farmName } = useLocalSearchParams();
 
-
   useEffect(() => {
     navigation.setOptions({
       title: farmName,
+      // bg
+      headerStyle: {
+        backgroundColor: isDarkMode
+          ? Colors.dark.background
+          : Colors.light.background,
+      },
+      headerTitleStyle: {
+        fontSize: 20,
+        fontWeight: "bold",
+        color: isDarkMode ? Colors.dark.text : Colors.light.text,
+      },
+      // back button color
+      headerTintColor: isDarkMode ? Colors.dark.text : Colors.light.text,
     });
-  }, [navigation]);
+  }, [navigation, farmName, isDarkMode]);
   return (
     <MaterialTopTabs
       screenOptions={{
-        tabBarActiveTintColor: themeColors.tint, 
+        tabBarActiveTintColor: themeColors.tint,
         tabBarInactiveTintColor: themeColors.text,
         tabBarPressColor: Colors.lightGreen,
         tabBarIndicatorStyle: {
@@ -44,16 +60,29 @@ const Layout = () => {
         tabBarLabelStyle: {
           fontWeight: "bold",
           textTransform: "capitalize",
+          color: isDarkMode ? Colors.dark.text : Colors.light.text,
+        },
+        tabBarStyle: {
+          backgroundColor: isDarkMode
+            ? Colors.dark.background
+            : Colors.light.background,
         },
       }}
     >
-      <MaterialTopTabs.Screen options={{title: "My Spending"}}
-        name="index"  />
+      <MaterialTopTabs.Screen
+        options={{
+          title: "My Spending",
+        }}
+        name="index"
+      />
       <MaterialTopTabs.Screen
         options={{ title: "My Calendars" }}
         name="Calendar"
       />
-      <MaterialTopTabs.Screen options={{ title: "My Farms" }} name="farmdetail" />
+      <MaterialTopTabs.Screen
+        options={{ title: "My Farms" }}
+        name="farmdetail"
+      />
     </MaterialTopTabs>
   );
 };

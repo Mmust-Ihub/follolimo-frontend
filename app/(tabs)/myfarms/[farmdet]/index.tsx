@@ -139,7 +139,7 @@ export default function index() {
       style={{
         backgroundColor: color.cardBg,
         paddingBottom: 40,
-        borderRadius: 10,
+        // borderRadius: 10,
         flex: 1,
       }}
     >

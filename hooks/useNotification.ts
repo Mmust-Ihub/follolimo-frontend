@@ -14,31 +14,6 @@ Notifications.setNotificationHandler({
   }),
 });
 
-async function sendPushNotification(
-  expoPushToken: string,
-  message: { title: string; body: string }
-) {
-  const notificationMessage = {
-    to: expoPushToken,
-    sound: "default",
-    title: message.title,
-    body: message.body,
-    data: { someData: "goes here" }, // Optional additional data
-  };
-
-  await fetch("https://exp.host/--/api/v2/push/send", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Accept-encoding": "gzip, deflate",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(notificationMessage),
-  }).catch((error) => {
-    console.error("Error sending push notification:", error);
-  });
-}
-
 async function registerForPushNotificationsAsync() {
   if (Platform.OS === "android") {
     Notifications.setNotificationChannelAsync("default", {
@@ -105,29 +80,27 @@ export function useNotifications() {
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
         const farmId = response.notification.request.content.data.farmId;
-        const userId = response.notification.request.content.data.userId;
-        const userDataId =
-          response.notification.request.content.data.userDataId;
+        // const userId = response.notification.request.content.data.userId;
+        // const userDataId =
+        //   response.notification.request.content.data.userDataId;
 
-        const router = useRouter();
+        // if (farmId && userId === userDataId) {
+        // deeplink to the modals page with the farm ID
 
-        if (farmId && userId === userDataId) {
-          // deeplink to the modals page with the farm ID
+        const deepLink = `fololimo://(tabs)/myfarms/${farmId}/farmdetail`;
+        Linking.openURL(deepLink);
+        // router.push({
+        //   pathname: "fololimo://modals",
+        //   params: { id: farmId, farmName: "farm" },
+        // });
 
-          const deepLink = `fololimo://modals/${farmId}`;
-          Linking.openURL(deepLink);
-          // router.push({
-          //   pathname: "fololimo://modals",
-          //   params: { id: farmId, farmName: "farm" },
-          // });
-
-          // Navigate to the modals page with the farm ID
-          // router.push({ pathname: "/(modals)", params: { farmId } });
-          // router.push({
-          //   pathname: "/(modals)/[id]",
-          //   params: { id: farmId, farmName: "farm" },
-          // });
-        }
+        // Navigate to the modals page with the farm ID
+        // router.push({ pathname: "/(modals)", params: { farmId } });
+        // router.push({
+        //   pathname: "/(modals)/[id]",
+        //   params: { id: farmId, farmName: "farm" },
+        // });
+        // }
       });
 
     return () => {
@@ -140,5 +113,5 @@ export function useNotifications() {
     };
   }, []);
 
-  return { expoPushToken, notification, sendPushNotification };
+  return { expoPushToken, notification };
 }

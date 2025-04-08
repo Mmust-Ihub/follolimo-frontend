@@ -1,0 +1,31 @@
+{
+  "farmId": "67ee249cce71949940a0a7af",
+  "response": [
+    {
+      "name": "Potatoes",
+      "suitability": "Well-drained soil and moderate pH levels in Nakuru are ideal for potato cultivation, making it a profitable cash crop.",
+      "suitabilityScore": 90
+    },
+    {
+      "name": "Wheat",
+      "suitability": "The soil's pH and nutrient levels support wheat growth, and it's a significant cash crop in Nakuru's climate.",
+      "suitabilityScore": 85
+    },
+    {
+      "name": "Pyrethrum",
+      "suitability": "Nakuru's climate is well-suited for pyrethrum, a high-value cash crop used in insecticides.",
+      "suitabilityScore": 80
+    },
+    {
+      "name": "Cabbages",
+      "suitability": "The soil pH and nutrient levels support cabbage growth, and it is a popular vegetable with good market demand.",
+      "suitabilityScore": 75
+    },
+    {
+      "name": "Carrots",
+      "suitability": "Nakuru's soil conditions are conducive to carrot production, making it a reliable cash crop for local markets.",
+      "suitabilityScore": 70
+    }
+  ],
+  "screen": "Notifications"
+}
