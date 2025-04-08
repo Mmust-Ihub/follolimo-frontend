@@ -1,12 +1,6 @@
 import { useContext } from "react";
 import { Tabs } from "expo-router";
-import {
-  View,
-  ActivityIndicator,
-  StatusBar,
-  StyleSheet,
-  Text,
-} from "react-native";
+import { View, ActivityIndicator, StatusBar, StyleSheet } from "react-native";
 import { AuthContext } from "@/contexts/AuthContext"; // For user authentication
 import { OnboardingContext } from "@/contexts/OnBoardingContext"; // For onboarding status
 import { ThemeContext } from "@/contexts/ThemeContext"; // For theme management
@@ -17,7 +11,6 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Image } from "react-native";
 import OnBoarding from "../(auth)/OnBoarding";
 import Login from "../(auth)/Login";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 export default function TabLayout() {
   const authContext = useContext(AuthContext);
@@ -65,16 +58,11 @@ export default function TabLayout() {
     );
   }
   if (!userToken && !isOnboardingCompleted) {
-    // setIsLoading(false);
-
     return <OnBoarding />;
-    // router.replace("/(auth)/OnBoarding");
   }
   if (isOnboardingCompleted && !userToken) {
     return <Login />;
-    // router.replace("/(auth)/Login");
   }
-  console.log("backend urr  = ", process.env.EXPO_PUBLIC_BACKEND_URL);
 
   return (
     <>

@@ -1,8 +1,9 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import * as SecureStore from "expo-secure-store";
-import { Alert } from "react-native";
+import { Alert, ToastAndroid } from "react-native";
 import { router } from "expo-router";
 import { log } from "console";
+import { useNotifications } from "@/hooks/useNotification";
 
 interface AuthContextType {
   userToken: string | null;
@@ -37,6 +38,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     AuthContextType["userDetails"] | null
   >(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { expoPushToken } = useNotifications();
 
   useEffect(() => {
     const loadToken = async () => {
@@ -94,6 +96,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  // send ExpoPushToken to backend
+  const sendPushTokenToBackend = async (
+    pustToken: string,
+    userAuthToken: string
+  ) => {
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/auth/expo-token/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Token ${userAuthToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token: pustToken }), // Send the token in the request body
+        }
+      );
+
+      if (response.ok) {
+        console.log("Push token sent successfully to backend");
+      }
+    } catch (error) {
+      console.error("Error sending push token to backend:", error);
+    }
+  };
+
   const login = async (username: string, password: string) => {
     setIsLoading(true);
     console.log(
@@ -126,14 +154,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (response.status === 200) {
         const data = await response.json();
-        const token = data.accessToken; // Assuming your API returns the token in this format
-
+        const token = data.accessToken;
+        if (expoPushToken) {
+          sendPushTokenToBackend(expoPushToken, token); // Send the push token to the backend
+        } else {
+          console.warn(
+            "Expo push token is null, skipping push token submission."
+          );
+        }
+        fetchUserDetails(token);
         await SecureStore.setItemAsync("Token", token);
         setUserToken(token);
-        fetchUserDetails(token);
+
         router.replace("/(tabs)");
         setIsLoading(false);
         // Alert.alert("Login Successful", "You are now logged in");
+        // toast
+        ToastAndroid.showWithGravity(
+          "Login Successful",
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM
+        );
       }
       if (response.status === 401) {
         const data = await response.json();

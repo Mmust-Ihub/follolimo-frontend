@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext, useRef } from "react";
+import { useEffect, useState, useContext } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -9,9 +9,7 @@ import {
   Pressable,
   Platform,
 } from "react-native";
-import { onSnapshot, collection } from "firebase/firestore";
 import NetInfo from "@react-native-community/netinfo";
-import { db } from "./../../firebase";
 import { screenHeight } from "@/constants/AppDimensions";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Colors } from "@/constants/Colors";
@@ -31,11 +29,6 @@ export default function Index() {
     role: string;
   }
 
-  interface AlarmData {
-    id: string;
-  }
-
-  const [alarmUsers, setAlarmUsers] = useState<AlarmData[]>([]);
   const [greetingType, setGreetingType] = useState("Hello");
   const [isConnected, setIsConnected] = useState<boolean | null>(true);
   const [justReconnected, setJustReconnected] = useState(false); // ✅ New state
@@ -48,11 +41,11 @@ export default function Index() {
   const userData: UserData | null = userDetails || null;
 
   const router = useRouter();
+
   const { expoPushToken, notification } = useNotifications();
 
-
-  // console.log("notification", notification?.request.content.data);
-  console.log("notification", notification);
+  console.log("notification", notification?.request.content.data);
+  // console.log("notification", notification);
   // Greeting
   useEffect(() => {
     const getGreeting = () => {

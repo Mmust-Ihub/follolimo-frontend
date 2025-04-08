@@ -72,9 +72,14 @@ const ActivityItem = ({
   return (
     <TouchableOpacity
       onPress={() =>
+        // router.push({
+        //   pathname: "/(tabs)/myfarms/[farmdet]/farmdetail",
+        //   params: { id: farmId?._id, farmName: farmId?.name },
+        // })
+
         router.push({
-          pathname: "/(tabs)/myfarms/[farmdet]/farmdetail",
-          params: { id: farmId?._id, farmName: farmId?.name },
+          pathname: `/(tabs)/myfarms/[farmdet]/farmdetail`,
+          params: { farmdet: farmId?._id, farmName: farmId?.name },
         })
       }
       className="flex-row items-center justify-between p-3 rounded-xl shadow-sm"

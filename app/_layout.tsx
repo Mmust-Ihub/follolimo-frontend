@@ -1,32 +1,42 @@
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ImageProvider } from "@/contexts/ImageContext";
-import { Stack } from "expo-router/stack";
+
+import { useRouter, Stack } from "expo-router";
+import * as Notifications from "expo-notifications";
 import { OnboardingProvider } from "@/contexts/OnBoardingContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { FetchProvider } from "@/contexts/usefetchData";
-import { useEffect } from "react";
-import * as Linking from "expo-linking";
-import { useRouter } from "expo-router";
 import "../global.css";
+import { useEffect } from "react";
 
 export default function Layout() {
   const router = useRouter();
-  useEffect(() => {
-    const deepLinkHandler = (event: { url: string }) => {
-      const { url } = event;
-      if (url) {
-        const parsed = Linking.parse(url);
-        if (parsed.path) {
-          router.push({ pathname: parsed.path as any });
-        }
-      }
-    };
 
-    const subscription = Linking.addEventListener("url", deepLinkHandler);
-    return () => {
-      subscription.remove();
-    };
+  const navigateToFarm = (data: any) => {
+    const { screen, farmId, farmName } = data;
+    if (screen === "Notifications" && farmId && farmName) {
+      // omit the (tabs) group here
+      router.push({
+        pathname: "/myfarms/[farmdet]/farmdetail",
+        params: { farmdet: farmId, farmName },
+      });
+    }
+  };
+
+  useEffect(() => {
+    // 1) Handle cold‑start
+    Notifications.getLastNotificationResponseAsync().then((resp) => {
+      if (resp) navigateToFarm(resp.notification.request.content.data);
+    });
+
+    // 2) Handle taps when app is foreground/background
+    const sub = Notifications.addNotificationResponseReceivedListener(
+      (response) => navigateToFarm(response.notification.request.content.data)
+    );
+
+    return () => sub.remove();
   }, []);
+
   return (
     <AuthProvider>
       <OnboardingProvider>

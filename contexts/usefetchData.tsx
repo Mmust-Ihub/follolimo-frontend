@@ -89,7 +89,7 @@ export const FetchProvider: React.FC<FetchProviderProps> = ({ children }) => {
         }
       );
       const data = await response.json();
-      console.log("Fetched data:", data.weather);
+      // console.log("Fetched data:", data.weather);
       if (response.status === 200) {
         setFarmData(data?.weather);
         // setWeatherData(data?.weather);

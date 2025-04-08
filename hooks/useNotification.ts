@@ -3,7 +3,7 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
 import { Platform } from "react-native";
-import { useRouter } from "expo-router";
+import { router, useRouter } from "expo-router";
 import * as Linking from "expo-linking";
 
 Notifications.setNotificationHandler({
@@ -72,36 +72,36 @@ export function useNotifications() {
         console.error("Failed to register for notifications:", error)
       );
 
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification) => {
-        setNotification(notification);
-      });
+    // notificationListener.current =
+    //   Notifications.addNotificationReceivedListener((notification) => {
+    //     setNotification(notification);
+    //   });
 
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        const farmId = response.notification.request.content.data.farmId;
-        // const userId = response.notification.request.content.data.userId;
-        // const userDataId =
-        //   response.notification.request.content.data.userDataId;
+    // responseListener.current =
+    //   Notifications.addNotificationResponseReceivedListener((response) => {
+    //     const farmId = response.notification.request.content.data.farmId;
+    //     const farmName = response.notification.request.content.data.farmName;
 
-        // if (farmId && userId === userDataId) {
-        // deeplink to the modals page with the farm ID
+    //     // const deepLink = Linking.createURL(
+    //     //   `/(tabs)/myfarms/${farmId}/farmdetail?farmName=${encodeURIComponent(
+    //     //     farmName
+    //     //   )}`
+    //     // );
+    //     // Linking.openURL(deepLink);
 
-        const deepLink = `fololimo://(tabs)/myfarms/${farmId}/farmdetail`;
-        Linking.openURL(deepLink);
-        // router.push({
-        //   pathname: "fololimo://modals",
-        //   params: { id: farmId, farmName: "farm" },
-        // });
+    //     // router.push({
+    //     //   pathname: "fololimo://modals",
+    //     //   params: { id: farmId, farmName: "farm" },
+    //     // });
 
-        // Navigate to the modals page with the farm ID
-        // router.push({ pathname: "/(modals)", params: { farmId } });
-        // router.push({
-        //   pathname: "/(modals)/[id]",
-        //   params: { id: farmId, farmName: "farm" },
-        // });
-        // }
-      });
+    //     // Navigate to the modals page with the farm ID
+    //     // router.push({ pathname: "/(modals)", params: { farmId } });
+    //     router.push({
+    //       pathname: `/(tabs)/myfarms/[farmdet]/farmdetail`,
+    //       params: { farmdet: farmId, farmName: farmName },
+    //     });
+    //     // }
+    //   });
 
     return () => {
       notificationListener.current &&

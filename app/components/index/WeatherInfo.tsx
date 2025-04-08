@@ -14,7 +14,7 @@ interface MyweatherProps {
 
 export default function WeatherInfo({ textColor }: MyweatherProps) {
   const { farmData, fetchFarms, loading } = useFetch();
-  // console.log("farm details data", farmData[0].location);
+  // console.log("farm details data", farmData);
 
   useEffect(() => {
     fetchFarms();
@@ -49,7 +49,10 @@ export default function WeatherInfo({ textColor }: MyweatherProps) {
         </View>
       ) : farmData?.length > 0 ? (
         farmData?.map(
-          ({ description, farm, humidity, location, temperature,farmId }, index) => (
+          (
+            { description, farm, humidity, location, temperature, farmId },
+            index
+          ) => (
             <WeatherCard
               key={index}
               location={location}
