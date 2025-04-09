@@ -14,8 +14,8 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@devvie/bottom-sheet": "^0.4.3",
     "@expo/vector-icons": "^14.0.4",
+    "@gorhom/bottom-sheet": "^5.1.2",
     "@react-native-community/netinfo": "11.4.1",
     "@react-native-picker/picker": "^2.11.0",
     "@react-navigation/bottom-tabs": "^7.2.0",

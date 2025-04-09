@@ -51,6 +51,7 @@ export default function Page() {
         }
       );
       const data = await response.json();
+      console.log("farm data", data);
       setFarmData(data);
     } catch (error) {
       console.error("Error fetching farms:", error);
@@ -116,7 +117,7 @@ export default function Page() {
                   <TouchableOpacity
                     onPress={() => {
                       router.push({
-                        pathname: "/(tabs)/myfarms/[farmdet]/farmdetail",
+                        pathname: "/(tabs)/myfarms/[farmdet]",
                         params: { farmdet: farm.id, farmName: farm.name },
                       });
                     }}

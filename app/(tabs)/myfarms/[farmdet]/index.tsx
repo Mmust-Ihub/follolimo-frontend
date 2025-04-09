@@ -1,171 +1,235 @@
+import BottomForm from "@/components/bottomForm";
 import { Colors } from "@/constants/Colors";
+import { InventoryTransaction } from "@/constants/Types";
+import { AuthContext } from "@/contexts/AuthContext";
 import { ThemeContext } from "@/contexts/ThemeContext";
-import React, { useContext } from "react";
-import { View, Text } from "react-native";
-// import { BarChart } from "react-native-gifted-charts";
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from "@gorhom/bottom-sheet";
+import dayjs from "dayjs";
+import { Redirect, useLocalSearchParams } from "expo-router";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import {
+  View,
+  Text,
+  Pressable,
+  ActivityIndicator,
+  StyleSheet,
+} from "react-native";
+import {
+  GestureHandlerRootView,
+  ScrollView,
+} from "react-native-gesture-handler";
 
-export default function index() {
-  
+export default function Index() {
+  const { farmdet } = useLocalSearchParams() as { farmdet: string };
   const themeContext = useContext(ThemeContext);
   const isDarkMode = themeContext?.isDarkMode ?? false;
   const color = isDarkMode ? Colors.dark : Colors.light;
-  const barData = [
-    {
-      value: 40,
-      label: "Jan",
-      spacing: 2,
-      labelWidth: 30,
-      labelTextStyle: { color: "gray" },
-      frontColor: Colors.light.tabIconSelected,
-    },
-    { value: 20, frontColor: "#ED6665" },
-    {
-      value: 50,
-      label: "Feb",
-      spacing: 2,
-      labelWidth: 30,
-      labelTextStyle: { color: "gray" },
-      frontColor: Colors.light.tabIconSelected,
-    },
-    { value: 40, frontColor: "#ED6665" },
-    {
-      value: 75,
-      label: "Mar",
-      spacing: 2,
-      labelWidth: 30,
-      labelTextStyle: { color: "gray" },
-      frontColor: Colors.light.tabIconSelected,
-    },
-    { value: 25, frontColor: "#ED6665" },
-    {
-      value: 30,
-      label: "Apr",
-      spacing: 2,
-      labelWidth: 30,
-      labelTextStyle: { color: "gray" },
-      frontColor: Colors.light.tabIconSelected,
-    },
-    { value: 20, frontColor: "#ED6665" },
-    {
-      value: 60,
-      label: "May",
-      spacing: 2,
-      labelWidth: 30,
-      labelTextStyle: { color: "gray" },
-      frontColor: Colors.light.tabIconSelected,
-    },
-    { value: 40, frontColor: "#ED6665" },
-    {
-      value: 65,
-      label: "Jun",
-      spacing: 2,
-      labelWidth: 30,
-      labelTextStyle: { color: "gray" },
-      frontColor: Colors.light.tabIconSelected,
-    },
-    { value: 30, frontColor: "#ED6665" },
-  ];
 
-  const renderTitle = () => {
-    return (
-      <View style={{ marginVertical: 30 }}>
-        <Text
-          style={{
-            color: color.text,
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const [fetchedData, setFetchedData] = useState<InventoryTransaction[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-            fontSize: 20,
-            fontWeight: "bold",
-            textAlign: "center",
-          }}
-        >
-         My Spending
-        </Text>
-        <View
-          style={{
-            flex: 1,
-            flexDirection: "row",
-            justifyContent: "space-evenly",
-            marginTop: 24,
-            backgroundColor: "yellow",
-          }}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <View
-              style={{
-                height: 12,
-                width: 12,
-                borderRadius: 6,
-                backgroundColor: color.tabIconSelected,
-                marginRight: 8,
-              }}
-            />
-            <Text
-              style={{
-                width: 60,
-                height: 16,
-                color: color.textDisabled,
-              }}
-            >
-              Debits
-            </Text>
-          </View>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <View
-              style={{
-                height: 12,
-                width: 12,
-                borderRadius: 6,
-                backgroundColor: "#ED6665",
-                marginRight: 8,
-              }}
-            />
-            <Text
-              style={{
-                width: 60,
-                height: 16,
-                color: color.textDisabled,
-              }}
-            >
-              Credits
-            </Text>
-          </View>
-        </View>
-      </View>
-    );
+  const authContext = useContext(AuthContext);
+  if (!authContext) return <Redirect href="/(auth)/Login" />;
+  const { userToken } = authContext;
+
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log("Sheet changed to index:", index);
+  }, []);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, [farmdet]);
+
+  const fetchTransactions = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/inventory/my/${farmdet}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        console.error("Error fetching transactions");
+        setError("Failed to fetch transactions.");
+        return;
+      }
+
+      const data: InventoryTransaction[] = await res.json();
+      setFetchedData(data); // Always set data even if empty
+      setError(null);
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setError("Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <View
+    <GestureHandlerRootView
       style={{
         backgroundColor: color.cardBg,
-        paddingBottom: 40,
-        // borderRadius: 10,
         flex: 1,
+        paddingBottom: 40,
       }}
     >
-      <Text style={{ color: color.text, fontSize: 20, fontWeight: "bold" }}>
-        {" "}
-        My Spending
-      </Text>
+      <BottomSheetModalProvider>
+        <View style={styles.headerContainer}>
+          <Text style={[styles.headerTitle, { color: color.text }]}>
+            My Spending
+          </Text>
+          <Pressable
+            onPress={handlePresentModalPress}
+            hitSlop={10}
+            style={styles.addButton}
+          >
+            <Text style={styles.addButtonText}>+ Add new Transaction</Text>
+          </Pressable>
+        </View>
 
-      {/* {renderTitle()}
-      <BarChart
-        data={barData}
-        barWidth={8}
-        spacing={24}
-        roundedTop
-        yAxisColor={color.text}
-        xAxisColor={color.text}
-        yAxisTextStyle={{ color: color.text, fontSize: 12 }}
-        xAxisLabelTextStyle={{ color: color.text, fontSize: 12 }}
-        roundedBottom
-        // hideRules
-        backgroundColor={color.cardBg}
-        xAxisThickness={0}
-        yAxisThickness={0}
-        noOfSections={3}
-        maxValue={75}
-      /> */}
-    </View>
+        {loading ? (
+          <ActivityIndicator size="large" color={color.tint} />
+        ) : error ? (
+          <View style={styles.centeredView}>
+            <Text style={{ color: "red" }}>{error}</Text>
+          </View>
+        ) : fetchedData.length === 0 ? (
+          <View style={styles.centeredView}>
+            <Text style={{ color: color.text }}>No transactions yet.</Text>
+          </View>
+        ) : (
+          <ScrollView
+            style={{ width: "100%" }}
+            contentContainerStyle={styles.scrollContainer}
+            showsVerticalScrollIndicator={false}
+          >
+            {fetchedData.map((item, index) => (
+              <View key={index} style={styles.Tcontainer}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.desc}>{item.description}</Text>
+                  <Text style={styles.typeText}>{item.transactionType}</Text>
+                </View>
+                <View style={styles.rightSection}>
+                  <Text
+                    style={[
+                      styles.amountText,
+                      {
+                        color:
+                          item.transactionType === "income"
+                            ? Colors.linearGreen
+                            : Colors.orange,
+                      },
+                    ]}
+                  >
+                    {item.transactionType === "income" ? "+" : "-"} KES{" "}
+                    {item.cost}
+                  </Text>
+                  <Text style={styles.dateText}>
+                    {dayjs(item.createdAt).format("DD/MM/YYYY")}
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </ScrollView>
+        )}
+
+        <BottomForm
+          userToken={userToken}
+          farmId={farmdet}
+          handleSheetChanges={handleSheetChanges}
+          bottomSheetModalRef={bottomSheetModalRef}
+          refetchTransactions={fetchTransactions}
+        />
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   );
-};
+}
+
+const styles = StyleSheet.create({
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  addButton: {
+    backgroundColor: "#31A05F",
+    padding: 12,
+    borderRadius: 8,
+  },
+  addButtonText: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  scrollContainer: {
+    paddingBottom: 100,
+    paddingTop: 10,
+    paddingHorizontal: 10,
+  },
+  Tcontainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: "#fff",
+    padding: 10,
+    borderRadius: 10,
+    elevation: 6,
+    marginBottom: 14,
+  },
+  desc: {
+    fontSize: 26,
+    fontWeight: "600",
+    color: Colors.gray,
+    marginVertical: 10,
+  },
+  typeText: {
+    fontWeight: "200",
+    fontSize: 12,
+    letterSpacing: 4,
+    color: Colors.light.textDisabled,
+  },
+  rightSection: {
+    flexDirection: "column-reverse",
+    alignItems: "flex-end",
+  },
+  amountText: {
+    fontSize: 28,
+    fontWeight: "bold",
+  },
+  dateText: {
+    fontWeight: "200",
+    fontSize: 12,
+    letterSpacing: 4,
+    color: Colors.gray,
+  },
+  centeredView: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+});

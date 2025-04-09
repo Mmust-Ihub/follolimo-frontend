@@ -10,7 +10,9 @@ const Layout = () => {
   const isDarkMode = themeContext?.isDarkMode ?? false;
 
   return (
-    <Stack screenOptions={{ title: farmNameString }}>
+    <Stack 
+    
+    screenOptions={{ title: farmNameString }}>
       <Stack.Screen
         name="index"
         options={{
