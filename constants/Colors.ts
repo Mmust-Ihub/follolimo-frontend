@@ -17,6 +17,7 @@ export const Colors = {
     cardBg: "#efeff0",
     scrollBg: "#efeff0",
     textDisabled: "#c4c4c4",
+    
   },
   dark: {
     text: "#ECEDEE",

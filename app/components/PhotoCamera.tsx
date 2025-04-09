@@ -5,7 +5,6 @@ import {
   Text,
   Pressable,
   StyleSheet,
-  TouchableOpacity,
   Button,
   Alert,
   ActivityIndicator,
@@ -22,19 +21,26 @@ import { router } from "expo-router";
 export default function PhotoCamera() {
   const [facing, setFacing] = useState<CameraType>("back");
   const [flash, setFlash] = useState<"off" | "on">("off");
-  const cameraRef = useRef<CameraView>(null);
   const [loading, setLoading] = useState(false);
+  const cameraRef = useRef<CameraView>(null);
+
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [mediaLibraryPermission, requestMediaLibraryPermission] =
     MediaLibrary.usePermissions();
+
   const { width } = useWindowDimensions();
   const height = Math.round((width * 16) / 9);
-  const image = useImageContext();
 
-  if (!image) {
-    throw new Error("ImageContext not found");
-  }
+  const image = useImageContext();
+  if (!image) throw new Error("ImageContext not found");
   const { setImageUri } = image;
+
+  useEffect(() => {
+    (async () => {
+      if (!cameraPermission) await requestCameraPermission();
+      if (!mediaLibraryPermission) await requestMediaLibraryPermission();
+    })();
+  }, []);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -49,15 +55,41 @@ export default function PhotoCamera() {
     }
   };
 
-  useEffect(() => {
-    (async () => {
-      if (!mediaLibraryPermission?.granted) {
-        await requestMediaLibraryPermission();
-      }
-    })();
-  }, [mediaLibraryPermission]);
+  const capturePhoto = async () => {
+    if (!cameraRef.current) return;
 
-  if (!cameraPermission?.granted) {
+    setLoading(true);
+    try {
+      const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
+
+      if (photo && mediaLibraryPermission?.granted) {
+        const asset = await MediaLibrary.createAssetAsync(photo.uri);
+        await MediaLibrary.createAlbumAsync("ExpoProject", asset, false);
+        setImageUri(photo.uri);
+        router.push("/(modals)/ImageResults");
+      } else {
+        Alert.alert(
+          "Permission Required",
+          "Please enable media library access to save photos"
+        );
+      }
+    } catch (error) {
+      console.error("Photo capture failed:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Loading indicator while checking permission state
+  if (!cameraPermission || !mediaLibraryPermission) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#fff" />
+      </View>
+    );
+  }
+
+  if (!cameraPermission.granted) {
     return (
       <View style={styles.container}>
         <Text style={styles.message}>
@@ -71,37 +103,6 @@ export default function PhotoCamera() {
     );
   }
 
-  const capturePhoto = async () => {
-    if (cameraRef.current) {
-      setLoading(true);
-      try {
-        const photo = await cameraRef.current.takePictureAsync({
-          quality: 1,
-        });
-
-        if (mediaLibraryPermission?.granted) {
-          const asset = await MediaLibrary.createAssetAsync(photo.uri);
-          await MediaLibrary.createAlbumAsync("ExpoProject", asset, false);
-          setImageUri(photo.uri);
-          setLoading(false);
-          router.push("/(modals)/ImageResults");
-        } else {
-          setLoading(false);
-          Alert.alert(
-            "Permission Required",
-            "Please enable media library access to save photos"
-          );
-        }
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-        console.error("Photo capture failed:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
   return (
     <View style={styles.container}>
       <CameraView
@@ -112,23 +113,40 @@ export default function PhotoCamera() {
         ref={cameraRef}
         autofocus="on"
       >
+        {/* Loading Overlay */}
         {loading && (
-          <ActivityIndicator
-            style={{ position: "absolute", top: "50%", left: "50%" }}
-            size="large"
-            color="#fff"
-          />
+          <View style={styles.loadingOverlay}>
+            <ActivityIndicator size="large" color="#fff" />
+          </View>
         )}
+
+        {/* Action Buttons */}
         <View style={styles.actionContainer}>
-          <Pressable style={styles.actionButton} onPress={pickImage}>
+          <Pressable
+            style={[styles.actionButton, loading && { opacity: 0.5 }]}
+            onPress={!loading ? pickImage : undefined}
+            disabled={loading}
+          >
             <Entypo name="folder-images" size={24} color="black" />
           </Pressable>
-          <Pressable style={styles.captureButton} onPress={capturePhoto}>
+
+          <Pressable
+            style={[styles.captureButton, loading && { opacity: 0.5 }]}
+            onPress={!loading ? capturePhoto : undefined}
+            disabled={loading}
+          >
             <View style={styles.captureButtonInner} />
           </Pressable>
+
           <Pressable
-            style={styles.actionButton}
-            onPress={() => setFacing(facing === "back" ? "front" : "back")}
+            style={[styles.actionButton, loading && { opacity: 0.5 }]}
+            onPress={
+              !loading
+                ? () =>
+                    setFacing((prev) => (prev === "back" ? "front" : "back"))
+                : undefined
+            }
+            disabled={loading}
           >
             <MaterialCommunityIcons
               name="camera-flip"
@@ -177,5 +195,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "tomato",
     paddingBottom: 10,
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 10,
   },
 });

@@ -5,22 +5,18 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { useLocalSearchParams, useNavigation } from "expo-router";
-import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "@/firebase";
+
 import { FarmData } from "@/constants/Types";
 import { Colors } from "@/constants/Colors";
 import { ThemeContext } from "@/contexts/ThemeContext";
 
-type Bardata = {
-  label: string;
-  value: number;
-};
 
 export default function Page() {
   const navigation = useNavigation();
   const { id } = useLocalSearchParams();
+  console.log("Farm ID:", id);
   const [farmData, setFarmData] = useState<FarmData | null>(null);
   const [loading, setLoading] = useState(true);
 

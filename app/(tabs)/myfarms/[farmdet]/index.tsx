@@ -8,7 +8,11 @@ import {
   BottomSheetModalProvider,
 } from "@gorhom/bottom-sheet";
 import dayjs from "dayjs";
-import { Redirect, useLocalSearchParams } from "expo-router";
+import {
+  Redirect,
+  useGlobalSearchParams,
+  useLocalSearchParams,
+} from "expo-router";
 import React, {
   useCallback,
   useContext,
@@ -29,7 +33,7 @@ import {
 } from "react-native-gesture-handler";
 
 export default function Index() {
-  const { farmdet } = useLocalSearchParams() as { farmdet: string };
+  const { farmdet } = useGlobalSearchParams() as { farmdet: string };
   const themeContext = useContext(ThemeContext);
   const isDarkMode = themeContext?.isDarkMode ?? false;
   const color = isDarkMode ? Colors.dark : Colors.light;
@@ -69,20 +73,17 @@ export default function Index() {
         }
       );
 
-      if (!res.ok) {
-        console.error("Error fetching transactions");
-        setError("Failed to fetch transactions.");
-        return;
+      if (res.ok) {
+        const data: InventoryTransaction[] = await res.json();
+        setFetchedData(data); // Always set data even if empty
+        setError(null);
       }
-
-      const data: InventoryTransaction[] = await res.json();
-      setFetchedData(data); // Always set data even if empty
-      setError(null);
     } catch (err) {
       console.error("Fetch error:", err);
       setError("Something went wrong.");
     } finally {
       setLoading(false);
+      setError(null);
     }
   };
 

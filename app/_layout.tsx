@@ -17,7 +17,8 @@ export default function Layout() {
     if (screen === "Notifications" && farmId && farmName) {
       // omit the (tabs) group here
       router.push({
-        pathname: "/myfarms/[farmdet]/farmdetail",
+        pathname: "/(tabs)/myfarms/[farmdet]/farmdetail",
+
         params: { farmdet: farmId, farmName },
       });
     }
