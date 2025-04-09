@@ -11,6 +11,7 @@
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/splash-icon.png",
+      "imageWidth": 200,
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -33,10 +34,7 @@
               "host": "com.wabunifu.fololimo"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ],
       "permissions": [

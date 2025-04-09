@@ -1,4 +1,3 @@
-// AIzaSyDzCeN5ACBmB662_hCyAQVtGGjVSedQne4
 import {
   View,
   Text,
@@ -6,11 +5,9 @@ import {
   KeyboardAvoidingView,
   TextInput,
   TouchableOpacity,
-  Alert,
   ActivityIndicator,
   TouchableWithoutFeedback,
   Keyboard,
-  ScrollView,
   Platform,
   StatusBar,
 } from "react-native";

@@ -12,14 +12,10 @@ import { Alert } from "react-native";
 interface FetchContextType {
   farmData: FarmData[];
   Activity: Activity[]; // Added pastActivities
-  // upComingActivity: Activity[]; // Added upComingActivity
-  // weatherData: WeatherData | null;
+
   loading: boolean;
-  // isPastActivitiesLoading: boolean; // Added loading state for past activities
-  // isUpcomingActivitiesLoading: boolean; // Added loading state for upcoming activities
+
   fetchFarms: () => Promise<void>;
-  // fetchPastActivities: () => Promise<void>; // Added fetchPastActivities
-  // fetchUpcomingActivities: () => Promise<void>; // Added fetchUpcomingActivities
 }
 
 // Define types for the data structures (these can be expanded as needed)

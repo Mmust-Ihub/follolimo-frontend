@@ -42,11 +42,6 @@ export default function Index() {
 
   const router = useRouter();
 
-  const { expoPushToken, notification } = useNotifications();
-
-  console.log("notification", notification?.request.content.data);
-  // console.log("notification", notification);
-  // Greeting
   useEffect(() => {
     const getGreeting = () => {
       const currentHour = new Date().getHours();

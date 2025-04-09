@@ -5,7 +5,6 @@ import {
   RefreshControl,
   SafeAreaView,
   ScrollView,
-  Button,
   TouchableOpacity,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";

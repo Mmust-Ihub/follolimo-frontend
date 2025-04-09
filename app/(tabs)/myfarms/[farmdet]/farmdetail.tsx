@@ -13,11 +13,6 @@ import { FarmData } from "@/constants/Types";
 import { Colors } from "@/constants/Colors";
 import { ThemeContext } from "@/contexts/ThemeContext";
 
-type Bardata = {
-  label: string;
-  value: number;
-};
-
 export default function Page() {
   const navigation = useNavigation();
   const { farmdet: id } = useLocalSearchParams();
@@ -57,16 +52,22 @@ export default function Page() {
   );
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: color.background }]}>
+    <ScrollView
+      style={[styles.container, { backgroundColor: color.background }]}
+    >
       {loading ? (
         <ActivityIndicator size="large" color={Colors.light.tint} />
       ) : farmData ? (
         <View style={styles.dataContainer}>
           {/* Farm Basic Info */}
           <View style={[styles.card, { backgroundColor: color.cardBg }]}>
-            <Text style={[styles.title, { color: color.text }]}>Farm Details</Text>
+            <Text style={[styles.title, { color: color.text }]}>
+              Farm Details
+            </Text>
             <View style={styles.infoContainer}>
-              <Text style={[styles.label, { color: color.text }]}>Farm ID:</Text>
+              <Text style={[styles.label, { color: color.text }]}>
+                Farm ID:
+              </Text>
               <Text style={[styles.value, { color: color.text }]}>
                 {farmData.farm_id}
               </Text>
@@ -76,19 +77,25 @@ export default function Page() {
             {farmData.soil_data && (
               <>
                 <View style={styles.infoContainer}>
-                  <Text style={[styles.label, { color: color.text }]}>Soil Moisture:</Text>
+                  <Text style={[styles.label, { color: color.text }]}>
+                    Soil Moisture:
+                  </Text>
                   <Text style={[styles.value, { color: color.text }]}>
                     {farmData.soil_data.Moisture}
                   </Text>
                 </View>
                 <View style={styles.infoContainer}>
-                  <Text style={[styles.label, { color: color.text }]}>Soil pH:</Text>
+                  <Text style={[styles.label, { color: color.text }]}>
+                    Soil pH:
+                  </Text>
                   <Text style={[styles.value, { color: color.text }]}>
                     {farmData.soil_data.pH}
                   </Text>
                 </View>
                 <View style={styles.infoContainer}>
-                  <Text style={[styles.label, { color: color.text }]}>Soil NPK:</Text>
+                  <Text style={[styles.label, { color: color.text }]}>
+                    Soil NPK:
+                  </Text>
                   <View style={styles.npkContainer}>
                     <View style={styles.npkBox}>
                       <Text style={styles.npkLabel}>N</Text>
@@ -117,14 +124,21 @@ export default function Page() {
           {/* Crops for 3 Months */}
           {Array.isArray(farmData.crops_for_3_months) &&
             farmData.crops_for_3_months.map((crop, index) => (
-              <View key={index} style={[styles.card, { backgroundColor: color.cardBg }]}>
+              <View
+                key={index}
+                style={[styles.card, { backgroundColor: color.cardBg }]}
+              >
                 <Text style={styles.subtitle}>Crop: {crop.crop_name}</Text>
                 <View style={styles.infoContainer}>
-                  <Text style={[styles.label, { color: color.text }]}>Suitability Score:</Text>
+                  <Text style={[styles.label, { color: color.text }]}>
+                    Suitability Score:
+                  </Text>
                   {renderProgressBar(crop.suitability_score)}
                 </View>
                 <View style={styles.infoContainer}>
-                  <Text style={[styles.label, { color: color.text }]}>Expected Yield:</Text>
+                  <Text style={[styles.label, { color: color.text }]}>
+                    Expected Yield:
+                  </Text>
                   <Text style={[styles.value, { color: color.text }]}>
                     {crop.expected_yield_per_hectare} per hectare
                   </Text>
@@ -151,13 +165,17 @@ export default function Page() {
                   </View>
                 </View>
                 <View style={styles.infoContainer}>
-                  <Text style={[styles.label, { color: color.text }]}>Irrigation:</Text>
+                  <Text style={[styles.label, { color: color.text }]}>
+                    Irrigation:
+                  </Text>
                   <Text style={[styles.value, { color: color.text }]}>
                     {crop.recommendations?.irrigation}
                   </Text>
                 </View>
                 <View style={styles.infoContainer}>
-                  <Text style={[styles.label, { color: color.text }]}>pH Adjustment:</Text>
+                  <Text style={[styles.label, { color: color.text }]}>
+                    pH Adjustment:
+                  </Text>
                   <Text style={[styles.value, { color: color.text }]}>
                     {crop.recommendations?.pH_adjustment}
                   </Text>
@@ -168,14 +186,21 @@ export default function Page() {
           {/* Crops for 6 Months */}
           {Array.isArray(farmData.crops_for_6_months) &&
             farmData.crops_for_6_months.map((crop, index) => (
-              <View key={index} style={[styles.card, { backgroundColor: color.cardBg }]}>
+              <View
+                key={index}
+                style={[styles.card, { backgroundColor: color.cardBg }]}
+              >
                 <Text style={styles.subtitle}>Crop: {crop.crop_name}</Text>
                 <View style={styles.infoContainer}>
-                  <Text style={[styles.label, { color: color.text }]}>Suitability Score:</Text>
+                  <Text style={[styles.label, { color: color.text }]}>
+                    Suitability Score:
+                  </Text>
                   {renderProgressBar(crop.suitability_score)}
                 </View>
                 <View style={styles.infoContainer}>
-                  <Text style={[styles.label, { color: color.text }]}>Expected Yield:</Text>
+                  <Text style={[styles.label, { color: color.text }]}>
+                    Expected Yield:
+                  </Text>
                   <Text style={[styles.value, { color: color.text }]}>
                     {crop.expected_yield_per_hectare} per hectare
                   </Text>
@@ -202,13 +227,17 @@ export default function Page() {
                   </View>
                 </View>
                 <View style={styles.infoContainer}>
-                  <Text style={[styles.label, { color: color.text }]}>Irrigation:</Text>
+                  <Text style={[styles.label, { color: color.text }]}>
+                    Irrigation:
+                  </Text>
                   <Text style={[styles.value, { color: color.text }]}>
                     {crop.recommendations?.irrigation}
                   </Text>
                 </View>
                 <View style={styles.infoContainer}>
-                  <Text style={[styles.label, { color: color.text }]}>pH Adjustment:</Text>
+                  <Text style={[styles.label, { color: color.text }]}>
+                    pH Adjustment:
+                  </Text>
                   <Text style={[styles.value, { color: color.text }]}>
                     {crop.recommendations?.pH_adjustment}
                   </Text>
@@ -252,9 +281,18 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   progressBarText: { fontSize: 12, fontWeight: "500" },
-  npkContainer: { flexDirection: "row", justifyContent: "space-between", marginTop: 4 },
+  npkContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 4,
+  },
   npkBox: { alignItems: "center", flex: 1 },
   npkLabel: { fontWeight: "bold", fontSize: 12 },
   npkValue: { fontSize: 12 },
-  noData: { fontSize: 16, fontStyle: "italic", textAlign: "center", marginTop: 20 },
+  noData: {
+    fontSize: 16,
+    fontStyle: "italic",
+    textAlign: "center",
+    marginTop: 20,
+  },
 });

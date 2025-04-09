@@ -3,8 +3,6 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
 import { Platform } from "react-native";
-import { router, useRouter } from "expo-router";
-import * as Linking from "expo-linking";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -59,9 +57,7 @@ async function registerForPushNotificationsAsync() {
 
 export function useNotifications() {
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
-  const [notification, setNotification] = useState<
-    Notifications.Notification | undefined
-  >(undefined);
+
   const notificationListener = useRef<Notifications.Subscription>();
   const responseListener = useRef<Notifications.Subscription>();
 
@@ -72,36 +68,7 @@ export function useNotifications() {
         console.error("Failed to register for notifications:", error)
       );
 
-    // notificationListener.current =
-    //   Notifications.addNotificationReceivedListener((notification) => {
-    //     setNotification(notification);
-    //   });
-
-    // responseListener.current =
-    //   Notifications.addNotificationResponseReceivedListener((response) => {
-    //     const farmId = response.notification.request.content.data.farmId;
-    //     const farmName = response.notification.request.content.data.farmName;
-
-    //     // const deepLink = Linking.createURL(
-    //     //   `/(tabs)/myfarms/${farmId}/farmdetail?farmName=${encodeURIComponent(
-    //     //     farmName
-    //     //   )}`
-    //     // );
-    //     // Linking.openURL(deepLink);
-
-    //     // router.push({
-    //     //   pathname: "fololimo://modals",
-    //     //   params: { id: farmId, farmName: "farm" },
-    //     // });
-
-    //     // Navigate to the modals page with the farm ID
-    //     // router.push({ pathname: "/(modals)", params: { farmId } });
-    //     router.push({
-    //       pathname: `/(tabs)/myfarms/[farmdet]/farmdetail`,
-    //       params: { farmdet: farmId, farmName: farmName },
-    //     });
-    //     // }
-    //   });
+   
 
     return () => {
       notificationListener.current &&
@@ -113,5 +80,5 @@ export function useNotifications() {
     };
   }, []);
 
-  return { expoPushToken, notification };
+  return { expoPushToken };
 }

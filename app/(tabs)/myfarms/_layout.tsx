@@ -4,7 +4,7 @@ import { ThemeContext } from "@/contexts/ThemeContext";
 import { Colors } from "@/constants/Colors";
 
 const Layout = () => {
-  const { id, farmName } = useLocalSearchParams();
+  const { farmName } = useLocalSearchParams();
   const farmNameString = Array.isArray(farmName) ? farmName[0] : farmName;
   const themeContext = useContext(ThemeContext);
   const isDarkMode = themeContext?.isDarkMode ?? false;

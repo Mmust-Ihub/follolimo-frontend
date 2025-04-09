@@ -10,9 +10,7 @@ import { useLocalSearchParams, useNavigation } from "expo-router";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/firebase";
 import { FarmData } from "@/constants/Types";
-// import { BarChart } from "react-native-gifted-charts";
 import { Colors } from "@/constants/Colors";
-// import { title } from "process";
 import { ThemeContext } from "@/contexts/ThemeContext";
 
 type Bardata = {
@@ -22,52 +20,13 @@ type Bardata = {
 
 export default function Page() {
   const navigation = useNavigation();
-  const { id, farmName } = useLocalSearchParams();
+  const { id } = useLocalSearchParams();
   const [farmData, setFarmData] = useState<FarmData | null>(null);
-  const [barChartData3Months, setBarChartData3Months] = useState<Bardata[]>([]);
-  const [barChartData6Months, setBarChartData6Months] = useState<Bardata[]>([]);
   const [loading, setLoading] = useState(true);
 
   const themeContext = useContext(ThemeContext);
   const isDarkMode = themeContext?.isDarkMode ?? false;
   const color = isDarkMode ? Colors.dark : Colors.light;
-  useEffect(() => {
-    navigation.setOptions({
-      title: `Farm ${id} Details`,
-    });
-    const fetchData = () => {
-      const query = collection(db, "fololimo");
-
-      const unsubscribe = onSnapshot(query, (snapshot) => {
-        const cropData: FarmData[] = snapshot.docs
-          .filter((doc) => doc.data().farm_id == id)
-          .map((doc) => doc.data() as FarmData);
-
-        if (cropData.length > 0) {
-          setFarmData(cropData[0]);
-
-          const barData3Months = cropData[0].crops_for_3_months.map((crop) => ({
-            label: crop.crop_name,
-            value: crop.suitability_score,
-          }));
-          setBarChartData3Months(barData3Months);
-          const barData6Months = cropData[0].crops_for_6_months.map((crop) => ({
-            label: crop.crop_name,
-            value: crop.suitability_score,
-          }));
-          setBarChartData6Months(barData6Months);
-        } else {
-          setFarmData(null);
-        }
-        setLoading(false);
-      });
-
-      return unsubscribe;
-    };
-
-    const unsubscribe = fetchData();
-    return () => unsubscribe();
-  }, [id, navigation]);
 
   const renderProgressBar = (value: number) => (
     <View style={styles.progressBarContainer}>
@@ -151,23 +110,6 @@ export default function Page() {
           <View style={[styles.card, { backgroundColor: color.cardBg }]}>
             <Text style={styles.chartTitle}>Crops for 3 Months</Text>
             <Text style={{ color: color.text }}>barchat</Text>
-
-            {/* <BarChart
-              data={barChartData3Months}
-              barWidth={35}
-              maxValue={100}
-              noOfSections={4}
-              cappedBars
-              backgroundColor={color.cardBg}
-              capColor={"rgb(78, 0, 142)"}
-              yAxisColor={color.text}
-              xAxisColor={color.text}
-              yAxisTextStyle={{ color: color.text, fontSize: 12 }}
-              xAxisLabelTextStyle={{ color: color.text, fontSize: 12 }}
-              capThickness={4}
-              isAnimated
-              frontColor={color.tabIconSelected}
-            /> */}
           </View>
 
           {farmData.crops_for_3_months.map((crop, index) => (
@@ -233,21 +175,6 @@ export default function Page() {
           <View style={[styles.card, { backgroundColor: color.cardBg }]}>
             <Text style={styles.chartTitle}>Crops for 6 Months</Text>
             <Text style={{ color: color.text }}>barchat</Text>
-            {/* <BarChart
-              data={barChartData6Months}
-              barWidth={35}
-              maxValue={100}
-              noOfSections={4}
-              cappedBars
-              capColor={"rgb(78, 0, 142)"}
-              capThickness={4}
-              yAxisColor={color.text}
-              xAxisColor={color.text}
-              yAxisTextStyle={{ color: color.text, fontSize: 12 }}
-              xAxisLabelTextStyle={{ color: color.text, fontSize: 12 }}
-              isAnimated
-              frontColor={Colors.light.tabIconSelected}
-            /> */}
           </View>
 
           {farmData.crops_for_6_months.map((crop, index) => (

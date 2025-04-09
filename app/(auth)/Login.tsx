@@ -7,7 +7,6 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
-  ScrollView,
   Keyboard,
   TouchableWithoutFeedback,
   Platform,

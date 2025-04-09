@@ -147,7 +147,6 @@ export default function AddFarm() {
       location: selectedSubcountyName, // Use subcounty name
       size: farmSize,
     };
-    var response;
     try {
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/farm/`,

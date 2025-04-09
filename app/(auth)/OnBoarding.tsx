@@ -24,7 +24,6 @@ const OnBoarding = () => {
 
   const handleComplete = async () => {
     await completeOnboarding();
-    // Alert.alert("Onboarding Complete", "Redirecting to login...");
     router.replace("/(auth)/Login");
   };
 

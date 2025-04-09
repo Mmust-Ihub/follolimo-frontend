@@ -31,7 +31,7 @@ const WeatherCard = ({
       onPress={() =>
         router.push({
           pathname: "/(tabs)/myfarms/[farmdet]/farmdetail",
-          params: { id: farmId, farmName: farm },
+          params: {farmdet: farmId, farmName: farm },
         })
       }
     >
