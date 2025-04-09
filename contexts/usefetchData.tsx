@@ -116,14 +116,8 @@ export const FetchProvider: React.FC<FetchProviderProps> = ({ children }) => {
       value={{
         farmData,
         Activity,
-        // upComingActivity,
-        // weatherData,
         loading,
         fetchFarms,
-        // fetchPastActivities, // Added fetchPastActivities to the context
-        // fetchUpcomingActivities,
-        // isPastActivitiesLoading, // Added loading state for past activities
-        // isUpcomingActivitiesLoading, // Added loading state for upcoming activities
       }}
     >
       {children}
