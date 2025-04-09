@@ -2,15 +2,15 @@
   "build": {
     "preview": {
       "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "experimental": {
+          "splitApks": true
+        }
       }
     },
     "preview2": {
       "android": {
-        "gradleCommand": ":app:assembleRelease",
-        "experimental": {
-          "splitApks": true
-        }
+        "gradleCommand": ":app:assembleRelease"
       }
     },
     "preview3": {
