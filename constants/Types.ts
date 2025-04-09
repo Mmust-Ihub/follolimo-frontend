@@ -91,3 +91,14 @@ export interface FarmData {
   soil_data?: soil_data;
 }
 
+export interface InventoryTransaction {
+  _id: string;
+  cost: number;
+  createdAt: string; 
+  updatedAt: string;
+  farmId: string;
+  transactionType: TransactionType;
+  description?: string;
+  __v?: number;
+}
+export type TransactionType = "income" | "expense";
