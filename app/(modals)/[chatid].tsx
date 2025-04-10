@@ -91,9 +91,7 @@ export default function ChatScreen() {
     ? Colors.dark.headerText
     : Colors.light.headerText;
   const textColor = isDarkMode ? Colors.dark.text : Colors.light.text;
-  const userChatBgColor = isDarkMode
-    ? Colors.dark.tint
-    : Colors.light.tint;
+  const userChatBgColor = isDarkMode ? Colors.dark.tint : Colors.light.tint;
 
   const userMessageBg = isDarkMode ? "#1E40AF" : "#BFDBFE";
   const modelMessageBg = isDarkMode ? "#374151" : "#E5E7EB";
@@ -112,9 +110,9 @@ export default function ChatScreen() {
           }
         );
         const data = await res.json();
-        const parsedMessages = data.history.map((msg: any) => ({
-          role: msg.role === "model" ? "assistant" : msg.role,
-          content: msg.parts[0]?.text ?? "",
+        const parsedMessages = data?.history?.map((msg: any) => ({
+          role: msg?.role === "model" ? "assistant" : msg.role,
+          content: msg?.parts[0]?.text ?? "",
         }));
         setMessages(parsedMessages);
       } catch (error) {
@@ -124,10 +122,6 @@ export default function ChatScreen() {
 
     fetchMessages();
   }, [chatId]);
-
-  useEffect(() => {
-    flatListRef.current?.scrollToEnd({ animated: true });
-  }, [messages]);
 
   const sendMessage = async () => {
     Keyboard.dismiss();
@@ -154,6 +148,10 @@ export default function ChatScreen() {
         ...prev,
         { role: "assistant", content: newMessage.modelMessage },
       ]);
+      setTimeout(
+        () => flatListRef.current?.scrollToEnd({ animated: true }),
+        200
+      );
       setInput("");
     } catch (err) {
       console.error("Error sending message:", err);
@@ -161,11 +159,11 @@ export default function ChatScreen() {
       setLoading(false);
     }
   };
-//   useEffect for title
+  //   useEffect for title
   const navigation = useNavigation();
   useEffect(() => {
     const title =
-      messages.length > 0 ? messages[messages.length - 1].content : "Chat";
+      messages?.length > 0 ? messages[messages?.length - 1]?.content : "Chat";
     navigation.setOptions({ title });
   }, [messages, navigation]);
 

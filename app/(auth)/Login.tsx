@@ -37,13 +37,33 @@ export default function Login() {
   const { isDarkMode } = themeContext;
 
   const handleLogin = () => {
-    if (!username || !password) {
+    if (!username.trim() || !password.trim()) {
       setModalMessage("All fields are required");
       setIsModalVisible(true);
       return;
     }
+    if (username.trim().length < 3) {
+      setModalMessage("Username must be at least 3 characters long");
+      setIsModalVisible(true);
+      return;
+    }
+    // const emailTest =
+    //   /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
 
-    login(username, password);
+    // if (!emailTest.test(email.trim())) {
+    //   setModalMessage("Invalid email address");
+    //   setIsModalVisible(true);
+    //   return;
+    // }
+    // const passwordTest = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
+    // if (!passwordTest.test(password.trim())) {
+    //   setModalMessage(
+    //     "Password must contain at least 8 characters, one Uppercase, one Lowercase, and one Number"
+    //   );
+    //   setIsModalVisible(true);
+    //   return;
+    // }
+    login(username.trim(), password.trim());
     Keyboard.dismiss();
   };
 

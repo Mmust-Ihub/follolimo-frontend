@@ -52,12 +52,22 @@ export default function SignUp() {
 
   const handleSubmit = () => {
     Keyboard.dismiss();
-    if (!username || !email || !password || !confirmPassword) {
+    if (
+      !username.trim() ||
+      !email.trim() ||
+      !password.trim() ||
+      !confirmPassword.trim()
+    ) {
       setModalMessage("All fields are required");
       setIsModalVisible(true);
       return;
     }
-    if (password !== confirmPassword) {
+    if (username.trim().length < 3) {
+      setModalMessage("Username must be at least 3 characters long");
+      setIsModalVisible(true);
+      return;
+    }
+    if (password.trim() !== confirmPassword.trim()) {
       setModalMessage("Password does not match");
       setIsModalVisible(true);
       return;
@@ -65,20 +75,20 @@ export default function SignUp() {
     const emailTest =
       /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
 
-    if (!emailTest.test(email)) {
+    if (!emailTest.test(email.trim())) {
       setModalMessage("Invalid email address");
       setIsModalVisible(true);
       return;
     }
     const passwordTest = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
-    if (!passwordTest.test(password)) {
+    if (!passwordTest.test(password.trim())) {
       setModalMessage(
         "Password must contain at least 8 characters, one Uppercase, one Lowercase, and one Number"
       );
       setIsModalVisible(true);
       return;
     }
-    register(email, username, password);
+    register(email.trim(), username.trim(), password.trim());
   };
 
   const handleOpen = () => setIsOpen((prev) => !prev);

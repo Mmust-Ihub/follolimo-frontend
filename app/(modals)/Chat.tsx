@@ -17,6 +17,7 @@ import isToday from "dayjs/plugin/isToday";
 import isYesterday from "dayjs/plugin/isYesterday";
 import { router } from "expo-router";
 import { Colors } from "@/constants/Colors";
+import { Ionicons } from "@expo/vector-icons";
 
 dayjs.extend(relativeTime);
 dayjs.extend(isToday);
@@ -57,7 +58,7 @@ export default function ChatsListScreen() {
     try {
       setLoading(true);
       const res = await fetch(
-       `${process.env.EXPO_PUBLIC_NODEAPI_URL}/ai/chat/`,
+        `${process.env.EXPO_PUBLIC_NODEAPI_URL}/ai/chat/`,
         {
           headers: {
             Authorization: `Bearer ${userToken}`,
@@ -78,15 +79,21 @@ export default function ChatsListScreen() {
     try {
       setCreating(true);
       const res = await fetch(
-       `${process.env.EXPO_PUBLIC_NODEAPI_URL}/ai/chat/`,
+        `${process.env.EXPO_PUBLIC_NODEAPI_URL}/ai/chat/`,
         {
           method: "POST",
           headers: {
             Authorization: `Bearer ${userToken}`,
+            "Content-Type": "application/json",
           },
+          body: JSON.stringify({
+            message: "Hello",
+          }),
         }
       );
       const data = await res.json();
+      console.log("New chat created:", data);
+      setChats((prev) => [data, ...prev]);
       router.push({
         pathname: "/(modals)/[chatid]",
         params: { chatid: data.chatId },
@@ -144,12 +151,29 @@ export default function ChatsListScreen() {
             paddingVertical: 8,
             backgroundColor: activeTintColor,
             borderRadius: 9999,
+            shadowColor: "#000",
+            shadowOffset: {
+              width: 0,
+              height: 1,
+            },
+            shadowOpacity: 0.2,
+            shadowRadius: 1.41,
+            elevation: 2,
           }}
           disabled={creating}
         >
-          <Text style={{ color: "#fff" }}>
-            {creating ? "Creating..." : "New Chat"}
-          </Text>
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "row",
+            }}
+          >
+            <Ionicons name="add" size={16} color="#fff" />
+            <Text style={{ color: "#fff", fontSize: 16, fontWeight: "600" }}>
+              {creating ? "Creating..." : "New Chat"}
+            </Text>
+          </View>
         </TouchableOpacity>
       </View>
 
