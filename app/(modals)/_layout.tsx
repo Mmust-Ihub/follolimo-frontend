@@ -12,7 +12,7 @@ export default function Modals() {
     <Stack
       screenOptions={{
         presentation: "modal",
-        animation: "slide_from_bottom",
+        animation: "flip",
         headerStyle: {
           backgroundColor: themeColors.headerBackground,
         },
@@ -32,7 +32,7 @@ export default function Modals() {
           headerTitleAlign: "center",
         }}
       />
-      <Stack.Screen name="[id]" />
+      <Stack.Screen name="[chatid]" />
     </Stack>
   );
 }
