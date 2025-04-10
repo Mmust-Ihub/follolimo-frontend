@@ -1,9 +1,9 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import * as SecureStore from "expo-secure-store";
 import { Alert, ToastAndroid } from "react-native";
-import { router } from "expo-router";
+import { router, SplashScreen } from "expo-router";
 import { log } from "console";
-import { useNotifications } from "@/hooks/useNotification";
+import { usePushNotificationToken } from "@/hooks/useNotification";
 
 interface AuthContextType {
   userToken: string | null;
@@ -19,8 +19,7 @@ interface AuthContextType {
   register: (
     email: string,
     username: string,
-    password1: string,
-    password2: string
+    password: string
   ) => Promise<void>;
 }
 
@@ -38,7 +37,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     AuthContextType["userDetails"] | null
   >(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const { expoPushToken } = useNotifications();
+  const {
+    expoPushToken,
+    errorMsg,
+    isLoading: loading,
+  } = usePushNotificationToken();
+
+  if (errorMsg) {
+    Alert.alert("Error in pushToken", errorMsg);
+    console.error("Error getting push notification token:", errorMsg);
+  }
 
   useEffect(() => {
     const loadToken = async () => {
@@ -54,11 +62,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           console.log("details", userDetails);
 
           setUserDetails(userDetails);
+          SplashScreen.hideAsync();
         }
       } catch (error) {
         console.error("Error loading token:", error);
+        SplashScreen.hideAsync();
       } finally {
         setIsLoading(false);
+        SplashScreen.hideAsync();
       }
     };
 
@@ -200,8 +211,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = async (
     email: string,
     username: string,
-    password1: string,
-    password2: string
+    password: string
   ) => {
     setIsLoading(true);
 
@@ -217,8 +227,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           body: JSON.stringify({
             username: username,
             email: email,
-            password1: password1,
-            password2: password2,
+            password: password,
           }), // Send username and password
         }
       );

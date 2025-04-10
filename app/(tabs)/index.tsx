@@ -18,7 +18,7 @@ import WeatherInfo from "../components/index/WeatherInfo";
 import MyTasks from "../components/index/MyTasks";
 import { useRouter } from "expo-router";
 import { AuthContext } from "@/contexts/AuthContext";
-import { useNotifications } from "../../hooks/useNotification";
+import { usePushNotificationToken } from "../../hooks/useNotification";
 import { Feather } from "@expo/vector-icons";
 
 export default function Index() {

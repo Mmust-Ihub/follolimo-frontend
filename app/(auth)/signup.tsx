@@ -78,7 +78,7 @@ export default function SignUp() {
       setIsModalVisible(true);
       return;
     }
-    register(email, username, password, confirmPassword);
+    register(email, username, password);
   };
 
   const handleOpen = () => setIsOpen((prev) => !prev);

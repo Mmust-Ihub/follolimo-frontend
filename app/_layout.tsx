@@ -1,7 +1,7 @@
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ImageProvider } from "@/contexts/ImageContext";
 
-import { useRouter, Stack } from "expo-router";
+import { useRouter, Stack, SplashScreen } from "expo-router";
 import * as Notifications from "expo-notifications";
 import { OnboardingProvider } from "@/contexts/OnBoardingContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
@@ -11,6 +11,7 @@ import { useEffect } from "react";
 
 export default function Layout() {
   const router = useRouter();
+  SplashScreen.preventAutoHideAsync();
 
   const navigateToFarm = (data: any) => {
     const { screen, farmId, farmName } = data;

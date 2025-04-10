@@ -76,9 +76,11 @@ export default function ImageResults() {
         },
         body: formData,
       });
+      const Data = await apiResponse.json();
+      console.log("API Response:", Data); // Log the response for debugging
 
       if (!apiResponse.ok) {
-        setError("An error occurred");
+        setError("An unexpected error occurred. Please try again.");
         setCropResults(null);
         setPestResults(null);
         return;
