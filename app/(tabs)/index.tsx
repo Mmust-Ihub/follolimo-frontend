@@ -21,6 +21,7 @@ import { AuthContext } from "@/contexts/AuthContext";
 import { usePushNotificationToken } from "../../hooks/useNotification";
 import { Feather } from "@expo/vector-icons";
 
+
 export default function Index() {
   interface UserData {
     username: string;
@@ -28,6 +29,10 @@ export default function Index() {
     email: string;
     role: string;
   }
+
+  const { expoPushToken, errorMsg } = usePushNotificationToken();
+  console.log("expoPushToken", expoPushToken);
+  console.log("errorMsg", errorMsg);
 
   const [greetingType, setGreetingType] = useState("Hello");
   const [isConnected, setIsConnected] = useState<boolean | null>(true);
@@ -60,7 +65,7 @@ export default function Index() {
 
       if (!isConnected && connected) {
         setJustReconnected(true);
-        setTimeout(() => setJustReconnected(false), 3000); // ✅ show green banner briefly
+        setTimeout(() => setJustReconnected(false), 3000); //show banner briefly
       }
 
       setIsConnected(connected);

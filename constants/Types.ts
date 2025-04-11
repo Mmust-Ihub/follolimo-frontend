@@ -1,29 +1,15 @@
-export type CropInfo = {
-  crop: string;
-  disease: string;
-  other_crops_infested: string[];
-  cause: string[];
-  life_cycle: string[];
-  remedy: string[];
-  preventive_measures: string[];
-  environment_conditions: string[];
-  nutrient_deficiency: string[];
-  companion_planting: string[];
-  post_harvest_handling: string[];
-  image_url: string[];
-};
-export type PestInfo = {
-  pest_name: string;
+export type PlantInfo = {
   affected_crops: string[];
-  life_cycle: string[];
-  treatment: string[];
-  preventive_measures: string[];
-  environment_conditions: string[];
+  common_name: string;
   companion_planting: string[];
-  nutrient_deficiencies: string[];
+  environment_conditions: string[];
+  life_cycle: string[];
   post_harvest_handling: string[];
-  image_url: string;
+  preventive_measures: string[];
+  problem_type: string;
+  treatment: string[];
 };
+
 export type Image = {
   assetId: string | null;
   base64: string | null;
@@ -94,7 +80,7 @@ export interface FarmData {
 export interface InventoryTransaction {
   _id: string;
   cost: number;
-  createdAt: string; 
+  createdAt: string;
   updatedAt: string;
   farmId: string;
   transactionType: TransactionType;

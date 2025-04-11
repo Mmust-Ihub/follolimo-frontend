@@ -28,6 +28,8 @@ export default function SignUp() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
   // Get AuthContext and check if it's defined
   const authContext = useContext(AuthContext);
@@ -48,7 +50,7 @@ export default function SignUp() {
     ? Colors.dark.headerBackground
     : Colors.light.headerBackground;
 
-  const { register, isLoading } = authContext;
+  const { register, isAutLoading } = authContext;
 
   const handleSubmit = () => {
     Keyboard.dismiss();
@@ -56,12 +58,43 @@ export default function SignUp() {
       !username.trim() ||
       !email.trim() ||
       !password.trim() ||
-      !confirmPassword.trim()
+      !confirmPassword.trim() ||
+      !firstName.trim() ||
+      !lastName.trim()
     ) {
       setModalMessage("All fields are required");
       setIsModalVisible(true);
       return;
     }
+    // check if lastname and first name are less than 3 characters
+    if (firstName.trim().length < 3) {
+      setModalMessage("Firstname must be at least 3 characters long");
+      setIsModalVisible(true);
+      return;
+    }
+    if (lastName.trim().length < 3) {
+      setModalMessage("Lastname must be at least 3 characters long");
+      setIsModalVisible(true);
+      return;
+    }
+
+    // check if lastname and first name are containing numbers
+    const nameTest = /^[a-zA-Z]+$/;
+    if (!nameTest.test(firstName.trim())) {
+      setModalMessage(
+        "Firstname must not contain numbers or special characters"
+      );
+      setIsModalVisible(true);
+      return;
+    }
+    if (!nameTest.test(lastName.trim())) {
+      setModalMessage(
+        "Lastname must not contain numbers or special characters"
+      );
+      setIsModalVisible(true);
+      return;
+    }
+
     if (username.trim().length < 3) {
       setModalMessage("Username must be at least 3 characters long");
       setIsModalVisible(true);
@@ -88,7 +121,13 @@ export default function SignUp() {
       setIsModalVisible(true);
       return;
     }
-    register(email.trim(), username.trim(), password.trim());
+    register(
+      email.trim(),
+      username.trim(),
+      password.trim(),
+      firstName.trim(),
+      lastName.trim()
+    );
   };
 
   const handleOpen = () => setIsOpen((prev) => !prev);
@@ -102,20 +141,6 @@ export default function SignUp() {
   const inputBorderColor = isDarkMode ? Colors.dark.tint : Colors.light.tint;
   const iconColor = isDarkMode ? Colors.dark.icon : Colors.light.icon;
 
-  if (isLoading) {
-    return (
-      <SafeAreaView
-        style={{ backgroundColor }}
-        className="flex-1 justify-center items-center"
-      >
-        <ActivityIndicator size="large" color={Colors.light.tint} />
-        <Text style={{ color: textColor }} className="text-lg mt-4">
-          Registering...
-        </Text>
-      </SafeAreaView>
-    );
-  }
-
   return (
     <SafeAreaView style={{ backgroundColor }} className="flex-1">
       <StatusBar
@@ -127,18 +152,60 @@ export default function SignUp() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View className="space-y-4 w-full gap-4">
+          <View className="space-y-2 w-full gap-2">
             <Text
               style={{ color: textColor }}
               className="font-extrabold text-xl uppercase text-center mb-4"
             >
               Register To Fololimo
             </Text>
+            <View className="w-full flex flex-row">
+              <View className="w-[49%] mr-2">
+                <Text className="font-bold" style={{ color: textColor }}>
+                  Firstname
+                </Text>
+                <View
+                  style={{ borderColor: inputBorderColor }}
+                  className="border rounded-lg w-full flex flex-row items-center px-4 py-1 "
+                >
+                  <Ionicons name="mail-outline" size={20} color={iconColor} />
+                  <TextInput
+                    onChange={(e) => setFirstName(e.nativeEvent.text)}
+                    className="w-full"
+                    placeholder="Firstname..."
+                    placeholderTextColor={iconColor}
+                    style={{ color: textColor }}
+                  />
+                </View>
+              </View>
+
+              <View className="w-[49%]">
+                <Text className="font-bold" style={{ color: textColor }}>
+                  Lastname
+                </Text>
+                <View
+                  style={{ borderColor: inputBorderColor }}
+                  className="border rounded-lg w-full flex flex-row items-center px-4 py-1"
+                >
+                  <Ionicons name="mail-outline" size={20} color={iconColor} />
+                  <TextInput
+                    onChange={(e) => setLastName(e.nativeEvent.text)}
+                    className="w-full"
+                    placeholder="Lastname..."
+                    placeholderTextColor={iconColor}
+                    style={{ color: textColor }}
+                  />
+                </View>
+              </View>
+            </View>
 
             {/* Username input with icon */}
+            <Text className="font-bold" style={{ color: textColor }}>
+              Username*
+            </Text>
             <View
               style={{ borderColor: inputBorderColor }}
-              className="border rounded-lg w-full flex flex-row items-center px-4 py-2"
+              className="border rounded-lg w-full flex flex-row items-center px-4 py-1"
             >
               <Ionicons name="person-outline" size={20} color={iconColor} />
               <TextInput
@@ -151,9 +218,12 @@ export default function SignUp() {
             </View>
 
             {/* Email input with icon */}
+            <Text className="font-bold" style={{ color: textColor }}>
+              Email*
+            </Text>
             <View
               style={{ borderColor: inputBorderColor }}
-              className="border rounded-lg w-full flex flex-row items-center px-4 py-2"
+              className="border rounded-lg w-full flex flex-row items-center px-4 py-1"
             >
               <Ionicons name="mail-outline" size={20} color={iconColor} />
               <TextInput
@@ -162,13 +232,17 @@ export default function SignUp() {
                 placeholder="Email..."
                 placeholderTextColor={iconColor}
                 style={{ color: textColor }}
+                keyboardType="email-address"
               />
             </View>
 
             {/* Password input with icon */}
+            <Text className="font-bold" style={{ color: textColor }}>
+              Password*
+            </Text>
             <View
               style={{ borderColor: inputBorderColor }}
-              className="border rounded-lg w-full flex flex-row items-center px-4 py-2"
+              className="border rounded-lg w-full flex flex-row items-center px-4 py-1"
             >
               <Ionicons
                 name="lock-closed-outline"
@@ -193,9 +267,12 @@ export default function SignUp() {
             </View>
 
             {/* Confirm Password input with icon */}
+            <Text className="font-bold" style={{ color: textColor }}>
+              Confirmed Password
+            </Text>
             <View
               style={{ borderColor: inputBorderColor }}
-              className="border rounded-lg w-full flex flex-row items-center px-4 py-2"
+              className="border rounded-lg w-full flex flex-row items-center px-4 py-1"
             >
               <Ionicons
                 name="lock-closed-outline"
@@ -220,25 +297,35 @@ export default function SignUp() {
             </View>
 
             {/* Register button */}
-            <View className="w-full">
+            <View className="w-full mt-2 mb-1">
               <TouchableOpacity
                 className="bg-green-500 rounded-lg w-full px-4 py-3"
                 onPress={handleSubmit}
+                disabled={isAutLoading}
+                activeOpacity={0.7} // Add this line for feedback on press
               >
-                <Text className="text-white text-center font-bold">
-                  Register
-                </Text>
+                {isAutLoading ? (
+                  <View className="flex flex-row justify-center items-center gap-2">
+                    <ActivityIndicator size="small" color="white" />
+                    <Text className="text-white text-center font-bold">
+                      Registering...
+                    </Text>
+                  </View>
+                ) : (
+                  <Text className="text-white text-center font-bold">
+                    Register
+                  </Text>
+                )}
               </TouchableOpacity>
             </View>
-
             {/* Login link below the Register button */}
-            <View className="w-full flex flex-row justify-start mt-2">
+            <View className="w-full flex flex-row justify-start ">
               <TouchableOpacity className="flex flex-row gap-2">
                 <Link href="/(auth)/Login" className="text-green-500 text-md">
                   <Text className="text-lg underline">
                     Already have an account?
                   </Text>
-                  <Text className="text-green-500 text-lg underline">
+                  <Text className="text-green-500 text-lg underline font-bold">
                     {" "}
                     Login
                   </Text>

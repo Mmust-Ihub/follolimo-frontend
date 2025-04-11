@@ -11,6 +11,7 @@ import {
   TouchableWithoutFeedback,
   Platform,
   StatusBar,
+  Image,
 } from "react-native";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { AuthContext } from "@/contexts/AuthContext";
@@ -33,20 +34,23 @@ export default function Login() {
     throw new Error("Contexts not found");
   }
 
-  const { login, isLoading } = authContext;
+  const { login, isAutLoading } = authContext;
   const { isDarkMode } = themeContext;
 
   const handleLogin = () => {
-    if (!username.trim() || !password.trim()) {
+    if (!username || !password) {
       setModalMessage("All fields are required");
       setIsModalVisible(true);
       return;
     }
-    if (username.trim().length < 3) {
-      setModalMessage("Username must be at least 3 characters long");
-      setIsModalVisible(true);
-      return;
-    }
+    // if (username.trim().length < 3) {
+    //   setModalMessage("Username must be at least 3 characters long");
+    //   setIsModalVisible(true);
+    //   return;
+    // }
+    // check if username or email is valid
+    // const emailTest = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     // const emailTest =
     //   /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
 
@@ -82,20 +86,6 @@ export default function Login() {
     ? Colors.dark.headerBackground
     : Colors.light.headerBackground;
 
-  if (isLoading) {
-    return (
-      <SafeAreaView
-        style={{ backgroundColor }}
-        className="flex-1 justify-center items-center"
-      >
-        <ActivityIndicator size="large" color={Colors.light.tint} />
-        <Text style={{ color: textColor }} className="text-lg mt-4">
-          Logging in...
-        </Text>
-      </SafeAreaView>
-    );
-  }
-
   return (
     <SafeAreaView style={{ backgroundColor }} className="flex-1">
       <StatusBar
@@ -104,21 +94,30 @@ export default function Login() {
       />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="flex justify-center items-center h-screen px-4 space-y-6 w-screen"
+        className="flex justify-center items-center h-screen px-4 space-y-2 w-screen"
         enabled
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View className="space-y-4 w-full gap-2">
+          <View className="space-y-2 w-full gap-2">
+            <View className="w-full flex justify-center items-center">
+              <Image
+                source={require("../../assets/img/fololimo.png")}
+                style={{ width: 200 }}
+                resizeMode="contain"
+              />
+            </View>
+
+            {/* Header */}
             <Text
               style={{ color: textColor }}
-              className="font-extrabold text-xl uppercase text-center mb-4"
+              className="font-extrabold text-xl uppercase text-center mb-4 "
             >
-              Login To Fololimo
+              Login to your account
             </Text>
 
             {/* Username input with icon */}
             <Text className="font-bold" style={{ color: textColor }}>
-              Username
+              Username or Email
             </Text>
             <View
               style={{ borderColor: inputBorderColor }}
@@ -128,7 +127,7 @@ export default function Login() {
               <TextInput
                 onChange={(e) => setUsername(e.nativeEvent.text)}
                 className="ml-2 flex-1"
-                placeholder="Username..."
+                placeholder="Enter or Username..."
                 placeholderTextColor={iconColor}
                 style={{ color: textColor }}
               />
@@ -151,7 +150,7 @@ export default function Login() {
                 onChange={(e) => setPassword(e.nativeEvent.text)}
                 secureTextEntry={!isOpen}
                 className="ml-2 flex-1"
-                placeholder="Password..."
+                placeholder="Enter Password..."
                 placeholderTextColor={iconColor}
                 style={{ color: textColor }}
               />
@@ -165,7 +164,7 @@ export default function Login() {
             </View>
 
             {/* Forgot Password link */}
-            <View className="w-full">
+            {/* <View className="w-full">
               <TouchableOpacity className="mt-2">
                 <Text
                   style={{ color: Colors.light.tint }}
@@ -174,15 +173,28 @@ export default function Login() {
                   Forgot Password?
                 </Text>
               </TouchableOpacity>
-            </View>
+            </View> */}
 
             {/* Login button */}
-            <View className="w-full">
+            <View className="w-full mt-4">
               <TouchableOpacity
                 className="bg-green-500 rounded-lg w-full px-4 py-3"
                 onPress={handleLogin}
+                disabled={isAutLoading}
+                activeOpacity={0.7}
               >
-                <Text className="text-white text-center font-bold">Login</Text>
+                {isAutLoading ? (
+                  <View className="flex flex-row justify-center items-center gap-2">
+                    <ActivityIndicator size="small" color="white" />
+                    <Text className="text-white text-center font-bold">
+                      Logging in...
+                    </Text>
+                  </View>
+                ) : (
+                  <Text className="text-white text-center font-bold">
+                    Login
+                  </Text>
+                )}
               </TouchableOpacity>
             </View>
 

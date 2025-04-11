@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect, ReactNode } from "react";
 import * as SecureStore from "expo-secure-store";
 import { Alert, ToastAndroid } from "react-native";
 import { router, SplashScreen } from "expo-router";
-import { log } from "console";
+
 import { usePushNotificationToken } from "@/hooks/useNotification";
 
 interface AuthContextType {
@@ -16,10 +16,13 @@ interface AuthContextType {
   login: (username: string, password: string) => Promise<void>; // Change to include credentials
   logout: () => Promise<void>;
   isLoading: boolean;
+  isAutLoading: boolean;
   register: (
     email: string,
     username: string,
-    password: string
+    password: string,
+    firstName: string,
+    lastName: string
   ) => Promise<void>;
 }
 
@@ -37,6 +40,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     AuthContextType["userDetails"] | null
   >(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isAutLoading, setIsAutLoading] = useState<boolean>(false);
   const {
     expoPushToken,
     errorMsg,
@@ -134,7 +138,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const login = async (username: string, password: string) => {
-    setIsLoading(true);
+    setIsAutLoading(true);
     console.log(
       "Login function called with username:",
       username,
@@ -156,13 +160,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       );
 
-      if (!response.ok) {
-        const data = await response.json();
-
-        setIsLoading(false);
-        Alert.alert("Login failed", "Invalid credentials");
-      }
-
       if (response.status === 200) {
         const data = await response.json();
         const token = data.accessToken;
@@ -178,7 +175,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUserToken(token);
 
         router.replace("/(tabs)");
-        setIsLoading(false);
+        setIsAutLoading(false);
         // Alert.alert("Login Successful", "You are now logged in");
         // toast
         ToastAndroid.showWithGravity(
@@ -190,30 +187,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (response.status === 401) {
         const data = await response.json();
 
-        setIsLoading(false);
+        setIsAutLoading(false);
         Alert.alert("Login failed", "Invalid credentials"); // Handle failed login
       }
       if (response.status !== 200 && response.status !== 401) {
         const data = await response.json();
 
-        setIsLoading(false);
+        setIsAutLoading(false);
         Alert.alert("Login failed", "Invalid credentials");
       }
     } catch (error) {
-      setIsLoading(false);
+      setIsAutLoading(false);
       Alert.alert("Login failed " + error);
       console.error("Login failed:", error);
     } finally {
-      setIsLoading(false);
+      setIsAutLoading(false);
     }
   };
 
   const register = async (
     email: string,
     username: string,
-    password: string
+    password: string,
+    firstName: string,
+    lastName: string
   ) => {
-    setIsLoading(true);
+    setIsAutLoading(true);
 
     try {
       // Call your authentication API here to get the token
@@ -228,6 +227,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             username: username,
             email: email,
             password: password,
+            firstName: firstName,
+            last: lastName,
           }), // Send username and password
         }
       );
@@ -235,7 +236,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (!response.ok) {
         const data = await response.json();
 
-        setIsLoading(false);
+        setIsAutLoading(false);
         Alert.alert("Registration failed");
         throw new Error("Register failed"); // Handle failed login
       }
@@ -244,14 +245,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const data = await response.json();
 
         router.replace("/(auth)/Login");
-        setIsLoading(false);
+        setIsAutLoading(false);
       }
     } catch (error) {
-      setIsLoading(false);
+      setIsAutLoading(false);
       Alert.alert("Registration failed " + error);
       console.error("Register failed:", error);
     } finally {
-      setIsLoading(false);
+      setIsAutLoading(false);
     }
   };
   const logout = async () => {
@@ -267,7 +268,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ userToken, userDetails, login, register, logout, isLoading }}
+      value={{
+        userToken,
+        userDetails,
+        login,
+        register,
+        logout,
+        isLoading,
+        isAutLoading,
+      }}
     >
       {children}
     </AuthContext.Provider>

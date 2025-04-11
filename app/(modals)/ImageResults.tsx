@@ -7,202 +7,125 @@ import {
   ScrollView,
   StyleSheet,
 } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { useImageContext } from "@/contexts/ImageContext";
-import { CropInfo, PestInfo } from "@/constants/Types";
-import { Colors } from "@/constants/Colors";
 import { AuthContext } from "@/contexts/AuthContext";
-import { ThemeContext } from "@/contexts/ThemeContext"; // Import ThemeContext
+import { ThemeContext } from "@/contexts/ThemeContext";
 import * as FileSystem from "expo-file-system";
+import { Colors } from "@/constants/Colors";
 import DiseaseResult from "../components/imageResults/DiseaseResult";
 import PestResult from "../components/imageResults/PestResult";
+import { PlantInfo } from "@/constants/Types";
 
-export default function ImageResults() {
-  const authContext = useContext(AuthContext);
-  if (!authContext) {
-    throw new Error("AuthContext not found");
-  }
-  const { userToken: token } = authContext;
+const ImageResults = () => {
+  const { userToken: token } = useContext(AuthContext)!;
+  const { imageUri } = useImageContext()!;
+  const { isDarkMode } = useContext(ThemeContext)!;
+  const themeColors = isDarkMode ? Colors.dark : Colors.light;
 
-  const image = useImageContext();
-  if (!image) {
-    throw new Error("ImageContext not found");
-  }
-  const { imageUri } = image;
-  if (!imageUri) {
-    throw new Error("Image URI not found");
-  }
+  const [cropResults, setCropResults] = useState<PlantInfo | null>(null);
 
-  const themeContext = useContext(ThemeContext); // Access the theme context
-  const isDarkMode = themeContext?.isDarkMode || false; // Get current theme
-  const themeColors = isDarkMode ? Colors.dark : Colors.light; // Use colors based on theme
-
-  const [Cropresults, setCropResults] = useState<CropInfo | null>(null);
-  const [Pestresults, setPestResults] = useState<PestInfo | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [whatTofetch, setWhatToFetch] = useState<string>("disease");
 
   const handleFetchResults = async () => {
-    if (!whatTofetch) {
-      setError("Please select the type of analysis you want to perform");
-      return;
-    }
-
-    const url = `${process.env.EXPO_PUBLIC_NODEAPI_URL}/model/${whatTofetch}`;
+    if (!imageUri) return setError("No image selected");
+    const fileInfo = await FileSystem.getInfoAsync(imageUri);
+    const formData = new FormData();
+    // @ts-expect-error: React Native FormData
+    formData.append("file", {
+      uri: imageUri,
+      name: fileInfo.uri.split("/").pop(),
+      type: "image/jpeg",
+    });
 
     try {
       setLoading(true);
-      if (!imageUri) {
-        setError("No image to process");
-        return;
-      }
+      const res = await fetch(
+        `${process.env.EXPO_PUBLIC_NODEAPI_URL}/ai/analyse`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+          body: formData,
+        }
+      );
 
-      const fileInfo = await FileSystem.getInfoAsync(imageUri);
+      const data = await res.json();
 
-      const formData = new FormData();
-      // @ts-expect-error: special react native format for form data
-      formData.append("photo", {
-        uri: imageUri,
-        name: fileInfo.uri.split("/").pop(),
-        type: "image/jpeg",
-      });
-
-      const apiResponse = await fetch(url, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-        body: formData,
-      });
-      const Data = await apiResponse.json();
-      console.log("API Response:", Data); // Log the response for debugging
-
-      if (!apiResponse.ok) {
-        setError("An unexpected error occurred. Please try again.");
-        setCropResults(null);
-        setPestResults(null);
-        return;
-      }
-
-      const data = await apiResponse.json();
-      if (whatTofetch === "pest") {
-        setPestResults(data);
-      } else {
-        setCropResults(data);
-      }
-
+      setCropResults(data);
       setError(null);
-    } catch (error) {
-      console.error("Error fetching results:", error);
-      setError("An unexpected error occurred. Please try again.");
+    } catch (err) {
+      console.error(err);
+      setError("Failed to analyze image. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  const handleClear = () => {
+    setCropResults(null);
+    setError(null);
+  };
+
   return (
     <View
-      className="flex-1"
-      style={{ backgroundColor: themeColors.background }}
+      style={[styles.container, { backgroundColor: themeColors.background }]}
     >
-      {imageUri && (
-        <Image
-          source={{ uri: imageUri }}
-          className="w-screen h-[30vh] object-cover"
-        />
-      )}
+      {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
+
       {loading ? (
-        <ActivityIndicator size="large" color={themeColors.tabIconSelected} />
+        <View>
+          <ActivityIndicator size="large" color={themeColors.tint} />
+          <Text style={[styles.heading, { color: themeColors.text }]}>
+            Analyzing image...
+          </Text>
+        </View>
       ) : (
-        <View className="flex-1 p-4 justify-center items-center">
+        <View style={styles.inner}>
           {error ? (
-            <View>
-              <Text style={{ color: themeColors.text }}>{error}</Text>
-              <View className="flex-row w-[80vw] gap-3 justify-center">
+            <View style={styles.errorContainer}>
+              <Text style={[styles.errorText, { color: themeColors.text }]}>
+                {error}
+              </Text>
+              <View style={styles.buttonRow}>
                 <TouchableOpacity
-                  className="bg-green-700 p-2 px-4"
-                  onPress={() => handleFetchResults()}
+                  style={styles.actionButton}
+                  onPress={handleFetchResults}
                 >
-                  <Text style={{ color: "white" }}>Pest</Text>
+                  <Text style={styles.buttonText}>Retry</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  className="bg-green-700 p-2 px-4"
-                  onPress={() => {
-                    setCropResults(null);
-                    setPestResults(null);
-                  }}
+                  style={styles.clearButton}
+                  onPress={handleClear}
                 >
-                  <Text style={{ color: "white" }}>Clear</Text>
+                  <Text style={styles.buttonText}>Clear</Text>
                 </TouchableOpacity>
               </View>
             </View>
           ) : (
             <ScrollView
-              stickyHeaderHiddenOnScroll={true}
-              contentContainerStyle={{
-                padding: 10,
-                borderRadius: 10,
-                backgroundColor: themeColors.background,
-                borderTopRightRadius: 28,
-                borderTopLeftRadius: 28,
-              }}
-              showsVerticalScrollIndicator={false}
+              contentContainerStyle={[
+                styles.scrollContent,
+                { backgroundColor: themeColors.background },
+              ]}
             >
-              <Text
-                className="text-xl font-bold text-center mb-4"
-                style={{ color: themeColors.text }}
-              >
+              <Text style={[styles.heading, { color: themeColors.text }]}>
                 Analysis Results
               </Text>
-              {Cropresults ? (
-                <DiseaseResult {...Cropresults} />
-              ) : Pestresults ? (
-                <PestResult {...Pestresults} />
+
+              {cropResults ? (
+                <PestResult results={cropResults} />
               ) : (
-                <View className="space-y-1">
-                  <Text style={{ color: themeColors.text }}>
-                    Choose what you want to analyse in the image
-                  </Text>
-                  <View className="flex w-full flex-row justify-start gap-7">
-                    <TouchableOpacity
-                      className="px-6 py-2 mb-4"
-                      style={[
-                        styles.button,
-                        whatTofetch === "pest"
-                          ? { backgroundColor: Colors.darkGreen }
-                          : { backgroundColor: "gray" },
-                      ]}
-                      onPress={() => setWhatToFetch("pest")}
-                    >
-                      <Text style={styles.buttonText}>Pest</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      className="px-6 py-2 mb-4"
-                      style={[
-                        styles.button,
-                        whatTofetch === "disease"
-                          ? { backgroundColor: Colors.darkGreen }
-                          : { backgroundColor: "gray" },
-                      ]}
-                      onPress={() => setWhatToFetch("disease")}
-                    >
-                      <Text style={styles.buttonText}>Disease</Text>
-                    </TouchableOpacity>
-                  </View>
-
-                  {whatTofetch && (
-                    <TouchableOpacity
-                      onPress={handleFetchResults}
-                      style={styles.submitButton}
-                    >
-                      <Text style={styles.submitButtonText}>
-                        Submit Results
-                      </Text>
-                    </TouchableOpacity>
-                  )}
+                <View style={styles.selectionContainer}>
+                  <TouchableOpacity
+                    style={styles.submitButton}
+                    onPress={handleFetchResults}
+                  >
+                    <Text style={styles.buttonText}>Submit For Analysis</Text>
+                  </TouchableOpacity>
                 </View>
               )}
             </ScrollView>
@@ -211,29 +134,82 @@ export default function ImageResults() {
       )}
     </View>
   );
-}
+};
+
+export default ImageResults;
 
 const styles = StyleSheet.create({
-  button: {
-    padding: 10,
+  container: {
+    flex: 1,
+  },
+  inner: {
+    flex: 1,
+    padding: 16,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  image: {
+    width: "100%",
+    height: "30%",
+    resizeMode: "cover",
+  },
+  scrollContent: {
+    padding: 16,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+  },
+  heading: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  selectionContainer: {
+    marginTop: 16,
+    alignItems: "center",
+  },
+  toggleRow: {
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 12,
+  },
+  toggleButton: {
+    backgroundColor: "gray",
+    paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 5,
-  },
-  buttonText: {
-    color: "white",
-    textAlign: "center",
-    fontWeight: "bold",
   },
   submitButton: {
     backgroundColor: Colors.light.tabIconSelected,
     padding: 10,
     paddingHorizontal: 16,
+    borderRadius: 15,
+  },
+  actionButton: {
+    backgroundColor: "green",
+    padding: 10,
     borderRadius: 5,
+  },
+  clearButton: {
+    backgroundColor: "gray",
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonRow: {
+    flexDirection: "row",
+    gap: 10,
     marginTop: 10,
   },
-  submitButtonText: {
+  buttonText: {
     color: "white",
-    textAlign: "center",
     fontWeight: "bold",
+    textAlign: "center",
+  },
+  errorContainer: {
+    alignItems: "center",
+  },
+  errorText: {
+    marginBottom: 10,
+    fontSize: 16,
   },
 });

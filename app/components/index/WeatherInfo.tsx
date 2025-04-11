@@ -65,10 +65,19 @@ export default function WeatherInfo({ textColor }: MyweatherProps) {
           <Text style={[styles.noDataText, { color: textColor }]}>
             No farms Data found...
           </Text>
-          <Pressable onPress={() => router.replace("/(tabs)/add")}>
+          <Pressable
+            onPress={() => router.replace("/(tabs)/add")}
+            style={{
+              backgroundColor: "#22c55e",
+              padding: 10,
+              borderRadius: 10,
+              marginTop: 10,
+              width: screenWidth * 0.8,
+            }}
+          >
             <Text
               style={{
-                color: Colors.light.tabIconSelected,
+                color: "white",
                 textDecorationLine: "underline",
               }}
               className="text-lg font-bold text-center"
@@ -112,11 +121,12 @@ const styles = StyleSheet.create({
   },
   noDataContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    width: screenWidth,
   },
   noDataText: {
     fontSize: 18,
     fontWeight: "bold",
+    marginTop: 2,
+    marginBottom: 2,
   },
 });

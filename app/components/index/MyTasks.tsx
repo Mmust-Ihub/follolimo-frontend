@@ -9,6 +9,7 @@ import { ThemeContext } from "@/contexts/ThemeContext";
 import ShimmerPlaceholder from "react-native-shimmer-placeholder";
 import { LinearGradient } from "expo-linear-gradient";
 import dayjs from "dayjs";
+import { screenWidth } from "@/constants/AppDimensions";
 
 interface Activity {
   farmId: {
@@ -140,7 +141,7 @@ const ActivityList = ({
   const router = useRouter();
 
   return (
-    <View className="mb-2 mt-2 p-4">
+    <View className="mb-2 mt-2 p-2 justify-center">
       <Text className="font-bold text-lg mb-2" style={{ color: textColor }}>
         {title}
       </Text>
@@ -171,18 +172,27 @@ const ActivityList = ({
           ))}
         </View>
       ) : (
-        <View className="flex w-screen p-2">
+        <View className="flex w-full p-2 ">
           <Text
             className="text-md mt-4 font-bold w-full"
             style={{ color: textColor }}
           >
             {emptyMessage}
           </Text>
-          <Pressable onPress={() => router.replace("/(tabs)/myfarms")}>
+          <Pressable
+            onPress={() => router.replace("/(tabs)/myfarms")}
+            style={{
+              backgroundColor: "#22c55e",
+              padding: 10,
+              borderRadius: 10,
+              marginTop: 10,
+              width: screenWidth * 0.8,
+            }}
+          >
             <Text
               className="text-lg font-bold text-center"
               style={{
-                color: Colors.light.tabIconSelected,
+                color: "white",
                 textDecorationLine: "underline",
               }}
             >

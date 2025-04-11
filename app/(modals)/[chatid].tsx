@@ -15,6 +15,7 @@ import Markdown from "react-native-markdown-display";
 import { Ionicons } from "@expo/vector-icons";
 import { FlashList } from "@shopify/flash-list";
 import { Colors } from "@/constants/Colors";
+import { Alert } from "react-native";
 
 const ChatMessage = memo(
   ({
@@ -43,7 +44,10 @@ const ChatMessage = memo(
       >
         <Markdown
           style={{
-            body: { color: textColor, fontSize: 16 },
+            body: {
+              color: role === "user" ? "white" : textColor,
+              fontSize: 16,
+            },
             link: { color: "#3B82F6" },
             strong: { fontWeight: "bold" },
           }}
@@ -75,28 +79,15 @@ export default function ChatScreen() {
   const { isDarkMode } = themeContext;
 
   // Set theme-based colors
-  const activeTintColor = isDarkMode
-    ? Colors.dark.tabIconSelected
-    : Colors.light.tabIconSelected;
-  const inactiveTintColor = isDarkMode
-    ? Colors.dark.tabIconDefault
-    : Colors.light.tabIconDefault;
+
   const backgroundColor = isDarkMode
     ? Colors.dark.background
     : Colors.light.background;
-  const headerBackgroundColor = isDarkMode
-    ? Colors.dark.headerBackground
-    : Colors.light.headerBackground;
-  const headerTextColor = isDarkMode
-    ? Colors.dark.headerText
-    : Colors.light.headerText;
+
   const textColor = isDarkMode ? Colors.dark.text : Colors.light.text;
   const userChatBgColor = isDarkMode ? Colors.dark.tint : Colors.light.tint;
 
-  const userMessageBg = isDarkMode ? "#1E40AF" : "#BFDBFE";
   const modelMessageBg = isDarkMode ? "#374151" : "#E5E7EB";
-
-  const inputBgColor = isDarkMode ? "#1F2937" : "#F9FAFB";
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -125,7 +116,18 @@ export default function ChatScreen() {
 
   const sendMessage = async () => {
     Keyboard.dismiss();
-    if (!input.trim()) return;
+    if (!input.trim()) {
+      Alert.alert("Error", "Please enter a message.");
+      return;
+    }
+
+    if (input.length < 3) {
+      Alert.alert(
+        "Error",
+        "Message is too short. Please enter at least 3 characters."
+      );
+      return;
+    }
 
     setMessages((prev) => [...prev, { role: "user", content: input }]);
     setLoading(true);
@@ -157,6 +159,7 @@ export default function ChatScreen() {
       console.error("Error sending message:", err);
     } finally {
       setLoading(false);
+      setInput("");
     }
   };
   //   useEffect for title
@@ -192,7 +195,7 @@ export default function ChatScreen() {
 
       {loading && (
         <View style={{ padding: 10, alignItems: "center" }}>
-          <ActivityIndicator size="small" color={textColor} />
+          <ActivityIndicator size="large" color={textColor} />
         </View>
       )}
 
