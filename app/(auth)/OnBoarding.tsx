@@ -84,7 +84,7 @@ const OnBoarding: React.FC = () => {
   }
 
   const pulse = useSharedValue(1);
-  pulse.value = withRepeat(withTiming(1.2 , { duration: 800 }), -1, true);
+  pulse.value = withRepeat(withTiming(1.2, { duration: 800 }), -1, true);
 
   const pulseStyle = useAnimatedStyle(() => ({
     transform: [{ scale: pulse.value }],
@@ -137,22 +137,33 @@ const OnBoarding: React.FC = () => {
             ]}
           />
         )}
-        NextButtonComponent={() => (
+        NextButtonComponent={({ ...props }) => (
           <Animated.View style={pulseStyle}>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity
+              style={styles.button}
+              {...props} // Pass press handler and accessibility
+            >
               <Text style={styles.buttonText}>Next →</Text>
             </TouchableOpacity>
           </Animated.View>
         )}
-        DoneButtonComponent={() => (
+        DoneButtonComponent={({ ...props }) => (
           <Animated.View style={pulseStyle}>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity
+              style={styles.button}
+              {...props}
+              onPress={handleComplete}
+            >
               <Text style={styles.buttonText}>Get Started</Text>
             </TouchableOpacity>
           </Animated.View>
         )}
-        SkipButtonComponent={() => (
-          <TouchableOpacity style={styles.skipButton}>
+        SkipButtonComponent={({ ...props }) => (
+          <TouchableOpacity
+            style={styles.skipButton}
+            {...props}
+            onPress={handleComplete}
+          >
             <Text style={styles.skipText}>Skip</Text>
           </TouchableOpacity>
         )}
@@ -207,8 +218,8 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#00c851",
-    paddingHorizontal: 24,
-    paddingVertical: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 5,
     borderRadius: 50,
     alignItems: "center",
     justifyContent: "center",
@@ -220,12 +231,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   skipButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
     marginLeft: 12,
+    backgroundColor: "gray",
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    borderRadius: 50,
+    alignItems: "center",
+    justifyContent: "center",
   },
   skipText: {
-    color: "#aaa",
+    color: "#eee",
     fontSize: 16,
   },
 });
