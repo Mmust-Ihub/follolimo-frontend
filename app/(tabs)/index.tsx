@@ -21,7 +21,6 @@ import { AuthContext } from "@/contexts/AuthContext";
 import { usePushNotificationToken } from "../../hooks/useNotification";
 import { Feather } from "@expo/vector-icons";
 
-
 export default function Index() {
   interface UserData {
     username: string;
@@ -135,6 +134,7 @@ export default function Index() {
               >
                 {userData?.username}
               </Text>
+              <Text>{expoPushToken}</Text>
             </View>
           </View>
 

@@ -1,120 +1,163 @@
-import React, { useContext, useEffect } from "react";
-import { SafeAreaView, Image, StyleSheet, Alert } from "react-native";
+import React, { useContext } from "react";
+import {
+  View,
+  ImageBackground,
+  Text,
+  StyleSheet,
+  StatusBar,
+  TouchableOpacity,
+} from "react-native";
 import Onboarding from "react-native-onboarding-swiper";
 import { OnboardingContext } from "@/contexts/OnBoardingContext";
 import { router } from "expo-router";
 import { AuthContext } from "@/contexts/AuthContext";
 import Login from "./Login";
+import { ThemeContext } from "@/contexts/ThemeContext";
+import { Colors } from "@/constants/Colors";
+import { BlurView } from "expo-blur";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+} from "react-native-reanimated";
 
-const OnBoarding = () => {
+interface PageData {
+  image: number;
+  title: string;
+  subtitle: string;
+}
+
+const pagesData: PageData[] = [
+  {
+    image: require("../../assets/img/harvest.jpg"),
+    title: "Welcome To FOLOLIMO",
+    subtitle:
+      "Empowering farmers with inventory, calendar, pest management, soil monitoring, and crop prediction.",
+  },
+  {
+    image: require("../../assets/img/inv.jpg"),
+    title: "Inventory & Calendar",
+    subtitle:
+      "Track your crops, progress, and activities seamlessly with our smart system.",
+  },
+  {
+    image: require("../../assets/img/bug.jpg"),
+    title: "Pest & Disease Management",
+    subtitle: "Detect pests and diseases instantly with AI vision.",
+  },
+  {
+    image: require("../../assets/img/iot.jpg"),
+    title: "Soil Property Monitoring",
+    subtitle: "Measure moisture, pH, and more using IoT sensors.",
+  },
+  {
+    image: require("../../assets/img/crop.jpg"),
+    title: "Crop Suitability Prediction",
+    subtitle: "Get data-driven crop recommendations based on your farm.",
+  },
+];
+
+const OnBoarding: React.FC = () => {
   const authContext = useContext(AuthContext);
   const onboardingContext = useContext(OnboardingContext);
+  const themeContext = useContext(ThemeContext);
 
-  if (!authContext || !onboardingContext) {
-    throw new Error(
-      "AuthContext and OnboardingContext must be used within their providers"
-    );
+  if (!authContext || !onboardingContext || !themeContext) {
+    throw new Error("All contexts must be provided");
   }
-  const { userToken, isLoading: isAuthLoading } = authContext;
+
+  const { userToken } = authContext;
   const { isOnboardingCompleted, completeOnboarding } = onboardingContext;
-
-  if (isOnboardingCompleted && !userToken) {
-    return <Login />;
-  }
 
   const handleComplete = async () => {
     await completeOnboarding();
     router.replace("/(auth)/Login");
   };
 
+  if (isOnboardingCompleted && !userToken) {
+    return <Login />;
+  }
+
   if (isOnboardingCompleted) {
     return null;
   }
 
+  const pulse = useSharedValue(1);
+  pulse.value = withRepeat(withTiming(1.2 , { duration: 800 }), -1, true);
+
+  const pulseStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pulse.value }],
+  }));
+
+  const themedPages = pagesData.map((page) => ({
+    backgroundColor: "#000",
+    image: (
+      <ImageBackground
+        source={page.image}
+        style={styles.bgImage}
+        imageStyle={styles.bgImageStyle}
+      >
+        <View style={styles.overlay} />
+        <BlurView intensity={70} tint="dark" style={styles.textContainer}>
+          <Text style={styles.title}>{page.title}</Text>
+          <Text style={styles.subtitle}>{page.subtitle}</Text>
+        </BlurView>
+      </ImageBackground>
+    ),
+    title: "",
+    subtitle: "",
+  }));
+
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
+      <StatusBar
+        barStyle="light-content"
+        translucent
+        backgroundColor="transparent"
+      />
       <Onboarding
         onSkip={handleComplete}
         onDone={handleComplete}
-        pages={[
-          {
-            backgroundColor: "rgba(197, 131, 67, 0.8)",
-            image: (
-              <Image
-                source={require("../../assets/img/harvest.jpg")}
-                style={styles.image}
-                resizeMode="cover"
-              />
-            ),
-            title: "Welcome To FOLOLIMO",
-            subtitle:
-              "FOLOLIMO is a comprehensive agricultural support platform designed to empower farmers by providing inventory and calender management, pest and disease management, soil property monitoring and crop suitability prediction to improve productivity and sustainability.",
-            titleStyles: styles.title,
-            subTitleStyles: styles.subtitle,
-          },
-          {
-            backgroundColor: "rgba(203, 203, 203, 0.7)",
-            image: (
-              <Image
-                source={require("../../assets/img/inv.jpg")}
-                style={styles.image}
-                resizeMode="cover"
-              />
-            ),
-            title: "Inventory Management and Farmer's Calendar",
-            subtitle:
-              "Keep track of your  farm, crops, and track progress with our inventory management system. Plan your farming activities with the farmer's calendar.",
-            titleStyles: styles.title,
-            subTitleStyles: styles.subtitle,
-          },
-          {
-            backgroundColor: "rgba(62, 104, 34, 0.9)",
-            image: (
-              <Image
-                source={require("../../assets/img/bug.jpg")}
-                style={styles.image}
-                resizeMode="cover"
-              />
-            ),
-            title: "Pest and Disease Management",
-            subtitle:
-              "Identify pests and diseases instantly with AI-powered image recognition.",
-            titleStyles: styles.title,
-            subTitleStyles: styles.subtitle,
-          },
-          {
-            backgroundColor: "rgba(203, 203, 203, 0.7)",
-            image: (
-              <Image
-                source={require("../../assets/img/iot.jpg")}
-                style={styles.image}
-                resizeMode="cover"
-              />
-            ),
-            title: "Soil Property Monitoring",
-            subtitle:
-              "Measure soil moisture, pH levels, and more with IoT devices for better crop management.",
-            titleStyles: styles.title,
-            subTitleStyles: styles.subtitle,
-          },
-          {
-            backgroundColor: "rgba(143, 200, 89, 0.8)",
-            image: (
-              <Image
-                source={require("../../assets/img/crop.jpg")}
-                style={styles.image}
-                resizeMode="cover"
-              />
-            ),
-            title: "Crop Suitability Prediction",
-            subtitle:
-              "Get recommendations on the best crops to grow based on your location and soil data.",
-            titleStyles: styles.title,
-            subTitleStyles: styles.subtitle,
-          },
-        ]}
+        pages={themedPages}
+        containerStyles={{ backgroundColor: "#000" }}
+        titleStyles={{ display: "none" }}
+        subTitleStyles={{ display: "none" }}
+        bottomBarHighlight={false}
+        imageContainerStyles={{ flex: 1, padding: 0, margin: 0 }}
+        controlStatusBar={false}
+        showNext
+        showDone
+        showSkip
+        DotComponent={({ selected }: { selected: boolean }) => (
+          <View
+            style={[
+              styles.dot,
+              { backgroundColor: selected ? "#fff" : "rgba(255,255,255,0.4)" },
+            ]}
+          />
+        )}
+        NextButtonComponent={() => (
+          <Animated.View style={pulseStyle}>
+            <TouchableOpacity style={styles.button}>
+              <Text style={styles.buttonText}>Next →</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+        DoneButtonComponent={() => (
+          <Animated.View style={pulseStyle}>
+            <TouchableOpacity style={styles.button}>
+              <Text style={styles.buttonText}>Get Started</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+        SkipButtonComponent={() => (
+          <TouchableOpacity style={styles.skipButton}>
+            <Text style={styles.skipText}>Skip</Text>
+          </TouchableOpacity>
+        )}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -122,24 +165,68 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  image: {
+  bgImage: {
+    flex: 1,
+    justifyContent: "flex-end",
+    alignItems: "center",
     width: "100%",
-    height: 300,
-    resizeMode: "contain",
+    height: "100%",
+  },
+  bgImageStyle: {
+    resizeMode: "cover",
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.4)",
+  },
+  textContainer: {
+    width: "90%",
+    marginBottom: 120,
+    padding: 16,
+    borderRadius: 20,
     overflow: "hidden",
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
   },
   title: {
-    fontWeight: "600",
-    color: "#000",
-    fontSize: 24,
+    fontSize: 26,
+    color: "#fff",
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 12,
   },
   subtitle: {
-    color: "#333",
     fontSize: 18,
+    color: "#fff",
     textAlign: "center",
-    paddingBottom: 10,
+    lineHeight: 26,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 4,
+  },
+  button: {
+    backgroundColor: "#00c851",
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    borderRadius: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 16,
+  },
+  skipButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    marginLeft: 12,
+  },
+  skipText: {
+    color: "#aaa",
+    fontSize: 16,
   },
 });
 

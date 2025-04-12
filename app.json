@@ -34,7 +34,10 @@
               "host": "com.wabunifu.fololimo"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ],
       "permissions": [
@@ -68,7 +71,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": ""
+        "projectId": "36f6232c-0c89-4b12-a024-56431f27e191"
       }
     }
   }
