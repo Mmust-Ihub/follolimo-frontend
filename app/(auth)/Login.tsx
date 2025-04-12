@@ -19,6 +19,7 @@ import Modal from "react-native-modal";
 import { router } from "expo-router";
 import { ThemeContext } from "@/contexts/ThemeContext"; // For theme management
 import { Colors } from "@/constants/Colors"; // Custom colors based on themes
+import SmoothHeaderCurve from "../components/SmoothHeaderCurve";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -82,16 +83,17 @@ export default function Login() {
   const textColor = isDarkMode ? Colors.dark.text : Colors.light.text;
   const inputBorderColor = isDarkMode ? Colors.dark.tint : Colors.light.tint;
   const iconColor = isDarkMode ? Colors.dark.icon : Colors.light.icon;
-  const headerBackgroundColor = isDarkMode
-    ? Colors.dark.headerBackground
-    : Colors.light.headerBackground;
 
   return (
-    <SafeAreaView style={{ backgroundColor }} className="flex-1">
+    <SafeAreaView
+      style={{ backgroundColor, position: "relative" }}
+      className="flex-1"
+    >
       <StatusBar
         barStyle={isDarkMode ? "light-content" : "dark-content"}
-        backgroundColor={headerBackgroundColor}
+        backgroundColor={"#22c55a"}
       />
+      <SmoothHeaderCurve />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex justify-center items-center h-screen px-4 space-y-2 w-screen"

@@ -31,9 +31,8 @@ expo-env.d.ts
 *.env.production
 *.env
  firebase.js
-application-91b1d-firebase-adminsdk-6a7nf-218701fc31.json
+application-91b1d-firebase-adminsdk-6a7nf-5f5f5b24db.json
 google-services.json
-disney-clone-9dc82-firebase-adminsdk-2yf9v-1e81f76571.json
 .json
 *.json
 t.json
