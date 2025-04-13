@@ -9,9 +9,10 @@ import { FetchProvider } from "@/contexts/usefetchData";
 import "../global.css";
 import { useEffect } from "react";
 
+SplashScreen.preventAutoHideAsync();
+
 export default function Layout() {
   const router = useRouter();
-  SplashScreen.preventAutoHideAsync();
 
   const navigateToFarm = (data: any) => {
     const { screen, farmId, farmName } = data;

@@ -63,7 +63,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         if (token && userDetails) {
           setUserToken(token);
-          console.log("details", userDetails);
 
           setUserDetails(userDetails);
           SplashScreen.hideAsync();

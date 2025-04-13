@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Tabs } from "expo-router";
+import { SplashScreen, Tabs } from "expo-router";
 import { View, ActivityIndicator, StatusBar, StyleSheet } from "react-native";
 import { AuthContext } from "@/contexts/AuthContext"; // For user authentication
 import { OnboardingContext } from "@/contexts/OnBoardingContext"; // For onboarding status
@@ -43,6 +43,7 @@ export default function TabLayout() {
   const headerTextColor = isDarkMode
     ? Colors.dark.headerText
     : Colors.light.headerText;
+
   if (isAuthLoading) {
     return (
       <View
@@ -57,6 +58,7 @@ export default function TabLayout() {
       </View>
     );
   }
+  
   if (!userToken && !isOnboardingCompleted) {
     return <OnBoarding />;
   }
@@ -64,6 +66,7 @@ export default function TabLayout() {
     return <Login />;
   }
 
+  SplashScreen.hideAsync();
   return (
     <>
       {/* StatusBar with dynamic theme */}

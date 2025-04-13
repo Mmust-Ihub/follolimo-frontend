@@ -20,6 +20,9 @@ import { useRouter } from "expo-router";
 import { AuthContext } from "@/contexts/AuthContext";
 import { usePushNotificationToken } from "../../hooks/useNotification";
 import { Feather } from "@expo/vector-icons";
+import { useFetch } from "@/contexts/usefetchData";
+import ShimmerPlaceholder from "react-native-shimmer-placeholder";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Index() {
   interface UserData {
@@ -40,10 +43,11 @@ export default function Index() {
   const isDarkMode = themeContext?.isDarkMode ?? false;
 
   const authContext = useContext(AuthContext);
-  const { userDetails } = authContext || {};
+  const { userDetails, isLoading } = authContext || {};
   const userData: UserData | null = userDetails || null;
 
   const router = useRouter();
+  const { fetchFarms } = useFetch();
 
   useEffect(() => {
     const getGreeting = () => {
@@ -63,7 +67,8 @@ export default function Index() {
 
       if (!isConnected && connected) {
         setJustReconnected(true);
-        setTimeout(() => setJustReconnected(false), 3000); //show banner briefly
+        fetchFarms(); // Re-fetch farms when reconnected
+        setTimeout(() => setJustReconnected(false), 3000);
       }
 
       setIsConnected(connected);
@@ -106,14 +111,26 @@ export default function Index() {
         <View style={styles.header}>
           <View style={styles.userInfo}>
             <View className="py-1">
-              <Image
-                source={{
-                  uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                    userData?.username || ""
-                  )}&background=9BA1A6&color=fff`,
-                }}
-                className="w-12 h-12 rounded-full"
-              />
+              {/* shimmer when loading */}
+              {isLoading ? (
+                <ShimmerPlaceholder
+                  style={{ width: 50, height: 50, borderRadius: 25 }}
+                  visible={false}
+                  shimmerStyle={{ backgroundColor: "#ccc" }}
+                  shimmerColors={["#ccc", "#ddd", "#eee"]}
+                  duration={1000}
+                  LinearGradient={LinearGradient}
+                />
+              ) : (
+                <Image
+                  source={{
+                    uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                      userData?.username || ""
+                    )}&background=9BA1A6&color=fff`,
+                  }}
+                  className="w-12 h-12 rounded-full"
+                />
+              )}
             </View>
 
             <View>
@@ -125,14 +142,27 @@ export default function Index() {
               >
                 {greetingType}👋,
               </Text>
-              <Text
-                style={[
-                  styles.usernameText,
-                  { color: isDarkMode ? Colors.dark.text : Colors.light.text },
-                ]}
-              >
-                {userData?.username}
-              </Text>
+              {isLoading ? (
+                <ShimmerPlaceholder
+                  style={{ width: 150, height: 20 }}
+                  visible={false}
+                  shimmerStyle={{ backgroundColor: "#ccc" }}
+                  shimmerColors={["#ccc", "#ddd", "#eee"]}
+                  duration={1000}
+                  LinearGradient={LinearGradient}
+                />
+              ) : (
+                <Text
+                  style={[
+                    styles.usernameText,
+                    {
+                      color: isDarkMode ? Colors.dark.text : Colors.light.text,
+                    },
+                  ]}
+                >
+                  {userData?.username}
+                </Text>
+              )}
             </View>
           </View>
 
@@ -225,7 +255,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   offlineText: {
-    color: "#333",
+    color: "#222",
     fontWeight: "bold",
   },
   onlineBanner: {
