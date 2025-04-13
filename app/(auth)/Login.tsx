@@ -20,6 +20,7 @@ import { router } from "expo-router";
 import { ThemeContext } from "@/contexts/ThemeContext"; // For theme management
 import { Colors } from "@/constants/Colors"; // Custom colors based on themes
 import SmoothHeaderCurve from "../components/SmoothHeaderCurve";
+import InputView from "../components/InputView";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -118,52 +119,23 @@ export default function Login() {
             </Text>
 
             {/* Username input with icon */}
-            <Text className="font-bold" style={{ color: textColor }}>
-              Username or Email
-            </Text>
-            <View
-              style={{ borderColor: inputBorderColor }}
-              className="border rounded-lg w-full flex flex-row items-center px-4 py-2"
-            >
-              <Ionicons name="person-outline" size={20} color={iconColor} />
-              <TextInput
-                onChange={(e) => setUsername(e.nativeEvent.text)}
-                className="ml-2 flex-1"
-                placeholder="Enter or Username..."
-                placeholderTextColor={iconColor}
-                style={{ color: textColor }}
-              />
-            </View>
+            <InputView
+              label="Username or Email"
+              placeholder="Enter Username or Email..."
+              iconName="person-outline"
+              value={username}
+              onChangeText={setUsername}
+            />
 
             {/* Password input with icon */}
-            <Text className="font-bold" style={{ color: textColor }}>
-              Password
-            </Text>
-            <View
-              style={{ borderColor: inputBorderColor }}
-              className="border rounded-lg w-full flex flex-row items-center px-4 py-2"
-            >
-              <Ionicons
-                name="lock-closed-outline"
-                size={20}
-                color={iconColor}
-              />
-              <TextInput
-                onChange={(e) => setPassword(e.nativeEvent.text)}
-                secureTextEntry={!isOpen}
-                className="ml-2 flex-1"
-                placeholder="Enter Password..."
-                placeholderTextColor={iconColor}
-                style={{ color: textColor }}
-              />
-              <TouchableOpacity onPress={handleOpen}>
-                <Feather
-                  name={isOpen ? "eye" : "eye-off"}
-                  size={24}
-                  color={iconColor}
-                />
-              </TouchableOpacity>
-            </View>
+            <InputView
+              label="Password"
+              placeholder="Enter Password..."
+              iconName="lock-closed-outline"
+              value={password}
+              onChangeText={setPassword}
+              secure
+            />
 
             {/* Forgot Password link */}
             {/* <View className="w-full">

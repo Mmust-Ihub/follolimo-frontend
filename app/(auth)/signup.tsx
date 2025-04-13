@@ -3,10 +3,8 @@ import {
   Text,
   SafeAreaView,
   KeyboardAvoidingView,
-  TextInput,
   TouchableOpacity,
   ActivityIndicator,
-  TouchableWithoutFeedback,
   Keyboard,
   Platform,
   StatusBar,
@@ -15,18 +13,17 @@ import {
 } from "react-native";
 import React, { useContext, useState, useRef } from "react";
 import Modal from "react-native-modal";
-import { Feather, Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { AuthContext } from "@/contexts/AuthContext";
 import { ThemeContext } from "@/contexts/ThemeContext";
 import { Colors } from "@/constants/Colors";
 import SmoothHeaderCurve from "../components/SmoothHeaderCurve";
 import { router } from "expo-router";
+import InputView from "../components/InputView";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function SignUp() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isCOpen, setIsCOpen] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -53,8 +50,6 @@ export default function SignUp() {
     ? Colors.dark.background
     : Colors.light.background;
   const textColor = isDarkMode ? Colors.dark.text : Colors.light.text;
-  const inputBorderColor = isDarkMode ? Colors.dark.tint : Colors.light.tint;
-  const iconColor = isDarkMode ? Colors.dark.icon : Colors.light.icon;
 
   const handleSubmit = () => {
     Keyboard.dismiss();
@@ -71,48 +66,6 @@ export default function SignUp() {
       return;
     }
 
-    if (firstName.trim().length < 3 || lastName.trim().length < 3) {
-      setModalMessage("Names must be at least 3 characters long");
-      setIsModalVisible(true);
-      return;
-    }
-
-    const nameTest = /^[a-zA-Z]+$/;
-    if (!nameTest.test(firstName.trim()) || !nameTest.test(lastName.trim())) {
-      setModalMessage("Names must not contain numbers or special characters");
-      setIsModalVisible(true);
-      return;
-    }
-
-    if (username.trim().length < 3) {
-      setModalMessage("Username must be at least 3 characters long");
-      setIsModalVisible(true);
-      return;
-    }
-
-    if (password.trim() !== confirmPassword.trim()) {
-      setModalMessage("Password does not match");
-      setIsModalVisible(true);
-      return;
-    }
-
-    const emailTest =
-      /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
-    if (!emailTest.test(email.trim())) {
-      setModalMessage("Invalid email address");
-      setIsModalVisible(true);
-      return;
-    }
-
-    const passwordTest = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
-    if (!passwordTest.test(password.trim())) {
-      setModalMessage(
-        "Password must contain at least 8 characters, one uppercase, one lowercase, and one number"
-      );
-      setIsModalVisible(true);
-      return;
-    }
-
     register(
       email.trim(),
       username.trim(),
@@ -122,13 +75,28 @@ export default function SignUp() {
     );
   };
 
-  const handleOpen = () => setIsOpen((prev) => !prev);
-  const handleCOpen = () => setIsCOpen((prev) => !prev);
-
   const goNext = () => {
     if (step === 1) {
       if (!firstName.trim() || !lastName.trim() || !username.trim()) {
         setModalMessage("All fields on Step 1 are required.");
+        setIsModalVisible(true);
+        return;
+      }
+      if (firstName.trim().length < 3 || lastName.trim().length < 3) {
+        setModalMessage("Names must be at least 3 characters long");
+        setIsModalVisible(true);
+        return;
+      }
+
+      const nameTest = /^[a-zA-Z]+$/;
+      if (!nameTest.test(firstName.trim()) || !nameTest.test(lastName.trim())) {
+        setModalMessage("Names must not contain numbers or special characters");
+        setIsModalVisible(true);
+        return;
+      }
+
+      if (username.trim().length < 3) {
+        setModalMessage("Username must be at least 3 characters long");
         setIsModalVisible(true);
         return;
       }
@@ -140,6 +108,30 @@ export default function SignUp() {
         setIsModalVisible(true);
         return;
       }
+      if (password.trim() !== confirmPassword.trim()) {
+        setModalMessage("Password does not match");
+        setIsModalVisible(true);
+        return;
+      }
+
+      const emailTest =
+        /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+      if (!emailTest.test(email.trim())) {
+        setModalMessage("Invalid email address");
+        setIsModalVisible(true);
+        return;
+      }
+
+      const passwordTest =
+        /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
+      if (!passwordTest.test(password.trim())) {
+        setModalMessage(
+          "Password must contain at least 8 characters, one uppercase, one lowercase, and one number"
+        );
+        setIsModalVisible(true);
+        return;
+      }
+
       handleSubmit();
     }
   };
@@ -196,87 +188,49 @@ export default function SignUp() {
           </View>
 
           {/* Firstname */}
-          <View className="w-full">
-            <Text style={{ color: textColor }} className="font-bold">
-              Firstname
-            </Text>
-            <View
-              style={{ borderColor: inputBorderColor }}
-              className="border rounded-lg flex-row items-center px-4 py-2"
-            >
-              <Ionicons name="person-outline" size={20} color={iconColor} />
-              <TextInput
-                placeholder="Firstname..."
-                placeholderTextColor={iconColor}
-                style={{ color: textColor }}
-                className="ml-2 flex-1"
-                value={firstName}
-                onChangeText={setFirstName}
-              />
-            </View>
-          </View>
+          <InputView
+            label="Firstname"
+            iconName="person-outline"
+            placeholder="Enter Firstname..."
+            value={firstName}
+            onChangeText={setFirstName}
+          />
 
           {/* Lastname */}
-          <View className="w-full">
-            <Text style={{ color: textColor }} className="font-bold">
-              Lastname
-            </Text>
-            <View
-              style={{ borderColor: inputBorderColor }}
-              className="border rounded-lg flex-row items-center px-4 py-2"
-            >
-              <Ionicons name="person-outline" size={20} color={iconColor} />
-              <TextInput
-                placeholder="Lastname..."
-                placeholderTextColor={iconColor}
-                style={{ color: textColor }}
-                className="ml-2 flex-1"
-                value={lastName}
-                onChangeText={setLastName}
-              />
-            </View>
-          </View>
+          <InputView
+            iconName="person-outline"
+            label="Lastname"
+            placeholder="Enter Lastname..."
+            value={lastName}
+            onChangeText={setLastName}
+          />
 
           {/* Username */}
-          <View className="w-full">
-            <Text style={{ color: textColor }} className="font-bold">
-              Username
-            </Text>
-            <View
-              style={{ borderColor: inputBorderColor }}
-              className="border rounded-lg flex-row items-center px-4 py-2"
-            >
-              <Ionicons
-                name="person-circle-outline"
-                size={20}
-                color={iconColor}
-              />
-              <TextInput
-                placeholder="Username..."
-                placeholderTextColor={iconColor}
-                style={{ color: textColor }}
-                className="ml-2 flex-1"
-                value={username}
-                onChangeText={setUsername}
-              />
-            </View>
-          </View>
+          <InputView
+            iconName="person-circle-outline"
+            label="Username"
+            placeholder="Enter Username..."
+            value={username}
+            onChangeText={setUsername}
+          />
 
-          <TouchableOpacity
-            className="bg-gray-500 px-8 py-3 rounded-xl flex-row items-center mt-4"
-            onPress={goNext}
-          >
-            <View className="text-white font-semibold text-center items-center justify-center flex-row">
-              <Text className="text-white font-semibold">Next</Text>
-              <Text>
-                <Ionicons
-                  name="chevron-forward-outline"
-                  size={20}
-                  color="#fff"
-                />
-              </Text>
-            </View>
-          </TouchableOpacity>
+          <View className="w-full flex justify-center items-end">
+            <TouchableOpacity
+              className="bg-green-500 px-8 py-3 rounded-xl flex-row items-center mt-4"
+              onPress={goNext}
+            >
+              <View className="text-white font-semibold text-center items-center justify-center flex-row">
+                <Text className="text-white font-semibold">Next</Text>
+                <Text>
+                  <Ionicons
+                    name="chevron-forward-outline"
+                    size={20}
+                    color="#fff"
+                  />
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
 
           <View className="w-full flex flex-row justify-center mt-2">
             <TouchableOpacity
@@ -322,92 +276,33 @@ export default function SignUp() {
             </Text>
           </View>
           {/* Email */}
-          <View className="w-full">
-            <Text style={{ color: textColor }} className="font-bold">
-              Email
-            </Text>
-            <View
-              style={{ borderColor: inputBorderColor }}
-              className="border rounded-lg flex-row items-center px-4 py-2"
-            >
-              <Ionicons name="mail-outline" size={20} color={iconColor} />
-              <TextInput
-                placeholder="Email..."
-                placeholderTextColor={iconColor}
-                style={{ color: textColor }}
-                className="ml-2 flex-1"
-                keyboardType="email-address"
-                value={email}
-                onChangeText={setEmail}
-              />
-            </View>
-          </View>
+          <InputView
+            iconName="mail-outline"
+            placeholder="Enter Email..."
+            label="Email"
+            value={email}
+            onChangeText={setEmail}
+          />
 
           {/* Password */}
-          <View className="w-full">
-            <Text style={{ color: textColor }} className="font-bold">
-              Password
-            </Text>
-            <View
-              style={{ borderColor: inputBorderColor }}
-              className="border rounded-lg flex-row items-center px-4 py-2"
-            >
-              <Ionicons
-                name="lock-closed-outline"
-                size={20}
-                color={iconColor}
-              />
-              <TextInput
-                placeholder="Password..."
-                placeholderTextColor={iconColor}
-                style={{ color: textColor }}
-                className="ml-2 flex-1"
-                secureTextEntry={!isOpen}
-                value={password}
-                onChangeText={setPassword}
-              />
-              <TouchableOpacity onPress={handleOpen}>
-                <Feather
-                  name={isOpen ? "eye" : "eye-off"}
-                  size={20}
-                  color={iconColor}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
+          <InputView
+            iconName="lock-closed-outline"
+            placeholder="Enter Password..."
+            label="Password"
+            secure={true}
+            value={password}
+            onChangeText={setPassword}
+          />
 
           {/* Confirm Password */}
-          <View className="w-full">
-            <Text style={{ color: textColor }} className="font-bold">
-              Confirm Password
-            </Text>
-            <View
-              style={{ borderColor: inputBorderColor }}
-              className="border rounded-lg flex-row items-center px-4 py-2"
-            >
-              <Ionicons
-                name="lock-closed-outline"
-                size={20}
-                color={iconColor}
-              />
-              <TextInput
-                placeholder="Confirm Password..."
-                placeholderTextColor={iconColor}
-                style={{ color: textColor }}
-                className="ml-2 flex-1"
-                secureTextEntry={!isCOpen}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-              />
-              <TouchableOpacity onPress={handleCOpen}>
-                <Feather
-                  name={isCOpen ? "eye" : "eye-off"}
-                  size={20}
-                  color={iconColor}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
+          <InputView
+            iconName="lock-closed-outline"
+            placeholder="Confirm Password..."
+            label="Confirm Password"
+            secure={true}
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+          />
 
           {/* Button Row */}
           <View className="flex-row space-x-4 mt-4 gap-4 w-full justify-between">

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Alert,
   Keyboard,
+  ActivityIndicator,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -40,6 +41,8 @@ interface Subcounty {
 export default function AddFarm() {
   const authContext = useContext(AuthContext);
   const themeContext = useContext(ThemeContext);
+
+  const [isRegistering, setIsRegistering] = useState(false);
 
   if (!authContext || !themeContext) {
     throw new Error("Contexts not found");
@@ -137,8 +140,28 @@ export default function AddFarm() {
 
   const handleRegister = async () => {
     Keyboard.dismiss();
+    setIsRegistering(true);
     if (!farmName || !farmSize || !selectedSubcounty) {
+      setIsRegistering(false);
       Alert.alert("Error", "Please fill in all fields.");
+      return;
+    }
+
+    if (farmSize <= 0) {
+      setIsRegistering(false);
+      Alert.alert("Error", "Farm size must be greater than 0.");
+      return;
+    }
+
+    if (!selectedSubcountyName) {
+      setIsRegistering(false);
+      Alert.alert("Error", "Please select a valid subcounty.");
+      return;
+    }
+
+    if (farmName.length < 3) {
+      setIsRegistering(false);
+      Alert.alert("Error", "Farm name must be at least 3 characters long.");
       return;
     }
 
@@ -161,6 +184,7 @@ export default function AddFarm() {
       );
       const createdFarm = await response.json();
       if (response.status === 201) {
+        setIsRegistering(false);
         Alert.alert(
           "Success",
           `Farm ${createdFarm?.farm?.name} registered successfully!`
@@ -175,12 +199,15 @@ export default function AddFarm() {
         setSelectedSubcounty("");
         setSelectedSubcountyName(null);
       } else {
+        setIsRegistering(false);
         Alert.alert("Error", "Farm registration failed. Please try again.");
       }
     } catch (error) {
+      setIsRegistering(false);
       console.error("Error registering farm:", error);
       Alert.alert("Error", "An error occurred while registering the farm.");
     } finally {
+      setIsRegistering(false);
       // Reset fields
       setFarmName("");
       setFarmSize(null);
@@ -367,8 +394,21 @@ export default function AddFarm() {
           <TouchableOpacity
             className="w-full rounded-lg bg-green-500 py-3 items-center"
             onPress={handleRegister}
+            disabled={isRegistering}
+            activeOpacity={0.7} // Add ripple effect on press
           >
-            <Text className="text-white font-semibold text-lg">Submit</Text>
+            {isRegistering ? (
+              <View className="flex flex-row justify-center items-center gap-2">
+                <ActivityIndicator size="small" color="white" />
+                <Text className="text-white text-center font-bold">
+                  Registering...
+                </Text>
+              </View>
+            ) : (
+              <Text className="text-white font-semibold text-lg">
+                Register farm
+              </Text>
+            )}
           </TouchableOpacity>
           <TouchableOpacity className="w-full  py-3 "></TouchableOpacity>
         </KeyboardAvoidingView>

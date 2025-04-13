@@ -29,8 +29,7 @@ export default function Index() {
     role: string;
   }
 
-  const { expoPushToken, errorMsg } = usePushNotificationToken();
-  console.log("expoPushToken", expoPushToken);
+  const { errorMsg } = usePushNotificationToken();
   console.log("errorMsg", errorMsg);
 
   const [greetingType, setGreetingType] = useState("Hello");
@@ -134,7 +133,6 @@ export default function Index() {
               >
                 {userData?.username}
               </Text>
-              <Text>{expoPushToken}</Text>
             </View>
           </View>
 
