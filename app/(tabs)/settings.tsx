@@ -102,6 +102,15 @@ export default function Settings() {
           <Ionicons name="chevron-forward" size={24} color="#ccc" />
         </TouchableOpacity>
 
+        {/* FAQs */}
+        <TouchableOpacity className="flex-row items-center py-4 border-b border-gray-200">
+          <MaterialIcons name="help-outline" size={24} color={iconColor} />
+          <Text style={{ color: textColor }} className="flex-1 ml-4 text-lg">
+           FAQs
+          </Text>
+          <Ionicons name="chevron-forward" size={24} color="#ccc" />
+        </TouchableOpacity>
+
         {/* Logout */}
         <TouchableOpacity
           className="flex-row items-center justify-center mt-8 bg-red-500 py-4 px-6 rounded-lg"
