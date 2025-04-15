@@ -71,7 +71,7 @@ export default function AddFarm() {
   const [farmName, setFarmName] = useState<string>("");
   const [farmSize, setFarmSize] = useState<number | null>(null);
 
-  const { fetchFarms } = useFetch();
+  const { fetchFarms, fetchFarmsData } = useFetch();
   // Fetch regions
   useEffect(() => {
     const fetchRegions = async () => {
@@ -190,8 +190,11 @@ export default function AddFarm() {
           `Farm ${createdFarm?.farm?.name} registered successfully!`
         );
         fetchFarms();
+        fetchFarmsData(); // Fetch updated farm data
         // Fetch weather for the new farm
         // Reset fields
+
+        
         setFarmName("");
         setFarmSize(null);
         setSelectedRegion("");

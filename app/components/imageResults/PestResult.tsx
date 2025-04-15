@@ -1,9 +1,11 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import React, { useContext } from "react";
 import Markdown from "react-native-markdown-display";
 import { PlantInfo } from "@/constants/Types";
 import { Colors } from "@/constants/Colors";
 import { ThemeContext } from "@/contexts/ThemeContext";
+import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function PestResult({ results }: { results: PlantInfo }) {
   const themeContext = useContext(ThemeContext);
@@ -57,6 +59,12 @@ export default function PestResult({ results }: { results: PlantInfo }) {
         </Text>
       </View>
 
+      {results?.notes && (
+        <Text style={[styles.resultsSubHeading, { color: themeColors.tint }]}>
+          {results?.notes}
+        </Text>
+      )}
+
       {results.affected_crops?.length ? (
         <View style={{ marginTop: 10 }}>
           <Text style={[styles.resultsSubHeading, { color: themeColors.tint }]}>
@@ -70,9 +78,46 @@ export default function PestResult({ results }: { results: PlantInfo }) {
           ))}
         </View>
       ) : (
-        <Text style={{ color: themeColors.text }}>
-          No affected crops listed
-        </Text>
+        <View>
+          <Text style={{ color: "tomato" }}>
+            Image uploaded contains no crop pest or disease.
+          </Text>
+
+          {/* go back button */}
+          <Text style={{ color: themeColors.text, marginTop: 10,fontWeight:"bold" }}>
+            Please upload an image of a crop pest or disease.
+          </Text>
+
+          <Pressable
+            onPress={() => {
+              // Navigate back to the previous screen
+
+              router.back();
+            }}
+            style={{
+              backgroundColor: themeColors.tint,
+              paddingVertical: 15,
+              paddingHorizontal: 5,
+              borderRadius: 5,
+              marginTop: 30,
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "row",
+              gap: 10,
+            }}
+          >
+            <Ionicons name="arrow-back" size={24} color="white" />
+            <Text
+              style={{
+                color: themeColors.text,
+
+                borderRadius: 5,
+              }}
+            >
+              Go Back
+            </Text>
+          </Pressable>
+        </View>
       )}
 
       {renderSection("Life Cycle", results.life_cycle)}

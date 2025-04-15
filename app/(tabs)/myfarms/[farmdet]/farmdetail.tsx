@@ -381,12 +381,12 @@ export default function Page() {
         <ActivityIndicator size="large" color={Colors.light.tint} />
       ) : farmData ? (
         <View style={styles.dataContainer}>
-          <View style={[styles.card, { backgroundColor: color.cardBg }]}>
+          {/* <View style={[styles.card, { backgroundColor: color.cardBg }]}>
             <Text style={[styles.title, { color: color.text }]}>Farm ID:</Text>
             <Text style={[styles.value, { color: color.text }]}>
               {farmData.farmdet}
             </Text>
-          </View>
+          </View> */}
 
           {/* crop suggestion */}
           <Text style={[styles.title, { color: color.text }]}>

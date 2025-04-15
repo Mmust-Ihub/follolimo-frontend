@@ -13,6 +13,7 @@ import { ThemeContext } from "@/contexts/ThemeContext";
 import { AuthContext } from "@/contexts/AuthContext";
 import { screenHeight, screenWidth } from "@/constants/AppDimensions";
 import { Link, useRouter } from "expo-router";
+import { useFetch } from "@/contexts/usefetchData";
 
 type Farm = {
   id: number;
@@ -27,37 +28,16 @@ type Farm = {
 };
 
 export default function Page() {
-  const [farmData, setFarmData] = useState<Array<Farm> | null>();
-  const [refreshing, setRefreshing] = useState(true);
   const authContext = useContext(AuthContext);
   if (!authContext) {
     throw new Error("AuthContext must be used within its provider");
   }
   const router = useRouter();
-  const { userToken } = authContext;
-
-  const fetchFarms = async () => {
-    try {
-      setRefreshing(true);
-      const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/farm/`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Token ${userToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
-      console.log("farm data", data);
-      setFarmData(data);
-    } catch (error) {
-      console.error("Error fetching farms:", error);
-    } finally {
-      setRefreshing(false);
-    }
-  };
+  const {
+    refreshing,
+    fetchFarmsData: fetchFarms,
+    farmTaskData: farmData,
+  } = useFetch();
 
   useEffect(() => {
     fetchFarms();

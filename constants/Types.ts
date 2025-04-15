@@ -1,4 +1,5 @@
 export type PlantInfo = {
+  notes: string;
   affected_crops: string[];
   common_name: string;
   companion_planting: string[];

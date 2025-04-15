@@ -61,6 +61,7 @@ export default function PhotoCamera() {
     setLoading(true);
     try {
       const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
+      console.log("Photo captured:", photo?.uri);
 
       if (photo && mediaLibraryPermission?.granted) {
         const asset = await MediaLibrary.createAssetAsync(photo.uri);

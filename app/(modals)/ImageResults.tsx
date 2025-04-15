@@ -40,6 +40,7 @@ const ImageResults = () => {
     });
 
     try {
+      console.log("Image analysis request body:", formData);
       setLoading(true);
       const res = await fetch(
         `${process.env.EXPO_PUBLIC_NODEAPI_URL}/ai/analyse`,
@@ -52,14 +53,21 @@ const ImageResults = () => {
           body: formData,
         }
       );
+      console.log("Image analysis response status:", res);
 
       const data = await res.json();
+      console.log("Image analysis response:", data);
 
-      setCropResults(data);
-      setError(null);
+      if (res.status === 200) {
+        setCropResults(data);
+        setError(null);
+      }
+      if (res.status === 401) {
+        setError("Unauthorized. Please log in again.");
+      }
     } catch (err) {
       console.error(err);
-      setError("Failed to analyze image. Please try again.");
+      setError("Image uploaded not a plant.Please try again.");
     } finally {
       setLoading(false);
     }

@@ -15,15 +15,29 @@ const BottomForm = ({
   handleSheetChanges,
   bottomSheetModalRef,
   farmId,
-    userToken,
-    refetchTransactions,
+  userToken,
+  refetchTransactions,
 }: bottomFormProps) => {
   const [description, setDescription] = useState("");
   const [transactionType, setTransactionType] = useState("expense");
   const [cost, setCost] = useState(0);
-  
+
   console.log("userToken", userToken, "farmid", farmId);
   const handleSubmit = async () => {
+    // if not cost,title,description, farmId, userToken
+    if (!cost || !description || !farmId || !userToken) {
+      Alert.alert("Error", "All fields are required");
+      return;
+    }
+    if (cost <= 0) {
+      Alert.alert("Error", "Cost must be greater than 0");
+      return;
+    }
+
+    if (description.length <= 4) {
+      Alert.alert("Error", "Description is too short");
+      return;
+    }
     try {
       const payload = {
         transactionType,

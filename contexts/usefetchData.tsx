@@ -1,9 +1,4 @@
-import React, {
-  createContext,
-  useState,
-  useContext,
-  ReactNode,
-} from "react";
+import React, { createContext, useState, useContext, ReactNode } from "react";
 import { AuthContext } from "./AuthContext";
 import { Alert } from "react-native";
 
@@ -11,7 +6,9 @@ import { Alert } from "react-native";
 interface FetchContextType {
   farmData: FarmData[];
   Activity: Activity[]; // Added pastActivities
-
+  refreshing: boolean;
+  farmTaskData: Array<Farm> | null;
+  fetchFarmsData: () => Promise<void>;
   loading: boolean;
 
   fetchFarms: () => Promise<void>;
@@ -58,9 +55,23 @@ interface FetchProviderProps {
   children: ReactNode;
 }
 
+type Farm = {
+  id: number;
+  name: string;
+  location: string;
+  city: number;
+  city_name: string;
+  size: number;
+  latitude?: number | null;
+  longitude?: number | null;
+  pk: number;
+};
 export const FetchProvider: React.FC<FetchProviderProps> = ({ children }) => {
   const [farmData, setFarmData] = useState<FarmData[]>([]);
   const [Activity, setActivity] = useState<Activity[]>([]); // Added tasks state
+
+  const [farmTaskData, setFarmTaskData] = useState<Array<Farm> | null>(null);
+  const [refreshing, setRefreshing] = useState(true);
 
   const [loading, setLoading] = useState<boolean>(true);
   const authContext = useContext(AuthContext);
@@ -105,6 +116,29 @@ export const FetchProvider: React.FC<FetchProviderProps> = ({ children }) => {
     }
   };
 
+  const fetchFarmsData = async () => {
+    try {
+      setRefreshing(true);
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/farm/`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Token ${userToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      console.log("farm data", data);
+      setFarmTaskData(data);
+    } catch (error) {
+      console.error("Error fetching farms:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   // Provide context values
   return (
     <FetchContext.Provider
@@ -113,6 +147,9 @@ export const FetchProvider: React.FC<FetchProviderProps> = ({ children }) => {
         Activity,
         loading,
         fetchFarms,
+        farmTaskData,
+        fetchFarmsData,
+        refreshing,
       }}
     >
       {children}
