@@ -79,7 +79,10 @@ const Layout = () => {
         options={{ title: "My Calendars" }}
         name="Calendar"
       /> */}
-      <MaterialTopTabs.Screen options={{ title: "My Tasks" }} name="Tasks" />
+      <MaterialTopTabs.Screen
+        options={{ title: "My Activities" }}
+        name="Tasks"
+      />
       <MaterialTopTabs.Screen
         options={{ title: "My Farms" }}
         name="farmdetail"

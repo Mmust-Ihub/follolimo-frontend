@@ -74,7 +74,7 @@ const ActivityItem = ({
     <TouchableOpacity
       onPress={() =>
         router.push({
-          pathname: `/(tabs)/myfarms/[farmdet]/farmdetail`,
+          pathname: `/(tabs)/myfarms/[farmdet]/Tasks`,
           params: { farmdet: farmId?._id, farmName: farmId?.name },
         })
       }

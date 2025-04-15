@@ -4,79 +4,87 @@ import {
   View,
   ScrollView,
   ActivityIndicator,
+  Alert,
+  RefreshControl,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
-import { useNavigation } from "expo-router";
+import { useGlobalSearchParams, useNavigation } from "expo-router";
 import { ThemeContext } from "@/contexts/ThemeContext";
 import { Colors } from "@/constants/Colors";
+import { AuthContext } from "@/contexts/AuthContext";
 
 export default function Page() {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
   const [iotData, setIotData] = useState<any>(null);
   const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   const themeContext = useContext(ThemeContext);
   const isDarkMode = themeContext?.isDarkMode ?? false;
   const color = isDarkMode ? Colors.dark : Colors.light;
 
-  useEffect(() => {
-    navigation.setOptions({ title: "Farm Suitability Report" });
+  const { farmdet } = useGlobalSearchParams();
+  const authContext = useContext(AuthContext);
+  const { userToken, logout } = authContext || {};
 
-    // Simulate data fetching
-    const fetchData = async () => {
-      try {
-        const response = {
-          data: {
-            suggestion: [
-              {
-                name: "Potatoes",
-                suitability: "Potatoes thrive in Nakuru's climate...",
-                suitabilityScore: 85,
-                additions:
-                  "Consider supplementing phosphorus levels in the soil for optimal yields.",
-              },
-              {
-                name: "Wheat",
-                suitability: "Wheat is well-suited to the soil conditions...",
-                suitabilityScore: 80,
-                additions:
-                  "Ensure adequate irrigation during dry spells to maintain consistent yields.",
-              },
-              // ... more crops
-            ],
+  const fetchData = async () => {
+    if (!farmdet) return;
+    try {
+      setRefreshing(true); // 👈 This triggers refresh indicator
+      const res = await fetch(
+        `${process.env.EXPO_PUBLIC_NODEAPI_URL}/iot/data/${farmdet}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userToken}`,
           },
-          iotData: {
-            moisture: 15,
-            nitrogen: 1.2,
-            phosphorus: 0.8,
-            potassium: 2.3,
-            ph: 6.5,
-          },
-        };
+        }
+      );
 
-        setSuggestions(response.data.suggestion);
-        setIotData(response.iotData);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching farm data", err);
-        setLoading(false);
+      if (res.ok) {
+        const data = await res.json();
+        console.log("Farm Data:", data);
+        setSuggestions(data?.data?.suggestion);
+        setIotData(data?.iotData);
+      } else if (res.status === 401) {
+        logout?.();
       }
-    };
+    } catch (error) {
+      console.error("Error fetching farm data:", error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false); // 👈 Stop the refresh indicator
+    }
+  };
 
-    fetchData();
-  }, []);
+  useEffect(() => {
+    navigation.setOptions({ title: "Farm Details" });
+
+    const interval = setInterval(() => {
+      fetchData();
+    }, 10000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [farmdet]);
 
   const renderProgressBar = (value: number) => (
     <View style={styles.progressBarContainer}>
       <View style={[styles.progressBar, { width: `${value}%` }]} />
-      <Text style={styles.progressBarText}>{value}%</Text>
     </View>
   );
 
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: color.background }]}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={fetchData}
+          tintColor={color.text}
+        />
+      }
     >
       {loading ? (
         <ActivityIndicator size="large" color={Colors.light.tint} />
@@ -86,24 +94,115 @@ export default function Page() {
           {iotData && (
             <View style={[styles.card, { backgroundColor: color.cardBg }]}>
               <Text style={[styles.title, { color: color.text }]}>
-                Soil IOT Data
+                Soil Data
               </Text>
+
+              {/* Moisture */}
               <Text style={[styles.label, { color: color.text }]}>
                 Moisture: <Text style={styles.value}>{iotData.moisture}%</Text>
               </Text>
+              <View style={styles.progressBarContainer}>
+                <View
+                  style={[
+                    styles.progressBar,
+                    {
+                      width: `${iotData.moisture}%`,
+                      backgroundColor: "#0ea5e9",
+                    },
+                  ]}
+                />
+              </View>
+
+              {/* pH with color-coded interpretation */}
               <Text style={[styles.label, { color: color.text }]}>
                 pH: <Text style={styles.value}>{iotData.ph}</Text>
               </Text>
+              <View style={styles.progressBarContainer}>
+                <View
+                  style={[
+                    styles.progressBar,
+                    {
+                      width: `${(iotData.ph / 14) * 100}%`,
+                      backgroundColor:
+                        iotData.ph < 6
+                          ? "#ef4444"
+                          : iotData.ph <= 7.5
+                          ? "#22c55e"
+                          : "#3b82f6",
+                    },
+                  ]}
+                />
+              </View>
+              <Text
+                style={[
+                  styles.value,
+                  {
+                    color:
+                      iotData.ph < 6
+                        ? "#ef4444"
+                        : iotData.ph <= 7.5
+                        ? "#22c55e"
+                        : "#3b82f6",
+                    fontStyle: "italic",
+                    marginBottom: 12,
+                  },
+                ]}
+              >
+                {iotData.ph < 6
+                  ? "Soil is acidic — consider lime."
+                  : iotData.ph <= 7.5
+                  ? "Soil is neutral — ideal for most crops."
+                  : "Soil is alkaline — add organic matter."}
+              </Text>
+
+              {/* Nitrogen */}
               <Text style={[styles.label, { color: color.text }]}>
                 Nitrogen: <Text style={styles.value}>{iotData.nitrogen}</Text>
               </Text>
+              <View style={styles.progressBarContainer}>
+                <View
+                  style={[
+                    styles.progressBar,
+                    {
+                      width: `${iotData.nitrogen}%`,
+                      backgroundColor: "#a855f7",
+                    },
+                  ]}
+                />
+              </View>
+
+              {/* Phosphorus */}
               <Text style={[styles.label, { color: color.text }]}>
                 Phosphorus:{" "}
                 <Text style={styles.value}>{iotData.phosphorus}</Text>
               </Text>
+              <View style={styles.progressBarContainer}>
+                <View
+                  style={[
+                    styles.progressBar,
+                    {
+                      width: `${iotData.phosphorus}%`,
+                      backgroundColor: "#facc15",
+                    },
+                  ]}
+                />
+              </View>
+
+              {/* Potassium */}
               <Text style={[styles.label, { color: color.text }]}>
                 Potassium: <Text style={styles.value}>{iotData.potassium}</Text>
               </Text>
+              <View style={styles.progressBarContainer}>
+                <View
+                  style={[
+                    styles.progressBar,
+                    {
+                      width: `${iotData.potassium}%`,
+                      backgroundColor: "#10b981",
+                    },
+                  ]}
+                />
+              </View>
             </View>
           )}
 
@@ -111,7 +210,7 @@ export default function Page() {
           <Text style={[styles.title, { color: color.text }]}>
             Crop Suggestions
           </Text>
-          {suggestions.map((crop, index) => (
+          {suggestions?.map((crop, index) => (
             <View
               key={index}
               style={[styles.card, { backgroundColor: color.cardBg }]}
@@ -120,7 +219,7 @@ export default function Page() {
                 Crop: {crop.name}
               </Text>
               <Text style={[styles.label, { color: color.text }]}>
-                Suitability Score:
+                Suitability Score: {crop.suitabilityScore}%
               </Text>
               {renderProgressBar(crop.suitabilityScore)}
               <Text style={[styles.label, { color: color.text, marginTop: 8 }]}>
@@ -165,12 +264,12 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: "700",
     marginBottom: 8,
   },
   label: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "700",
   },
   value: {
     fontSize: 16,
@@ -181,11 +280,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#ddd",
     borderRadius: 5,
     marginVertical: 8,
-    overflow: "hidden",
+
+    // overflow: "hidden",
   },
   progressBar: {
     height: "100%",
     backgroundColor: "#4CAF50",
+
+    borderRadius: 5,
   },
   progressBarText: {
     fontSize: 14,
