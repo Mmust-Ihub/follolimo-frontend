@@ -107,6 +107,8 @@ export default function ChatsListScreen() {
   };
 
   const groupByDate = (chatList: any[]) => {
+    if (!Array.isArray(chatList)) return [];
+
     const groups: Record<string, any[]> = {};
     chatList.forEach((chat) => {
       const date = dayjs(chat.createdAt);
@@ -183,7 +185,7 @@ export default function ChatsListScreen() {
         >
           <ActivityIndicator size="large" color={activeTintColor} />
         </View>
-      ) : (
+      ) : chats.length > 0 ? (
         <SectionList
           sections={groupByDate(chats)}
           keyExtractor={(item) => item.chatId}
@@ -237,6 +239,14 @@ export default function ChatsListScreen() {
             </TouchableOpacity>
           )}
         />
+      ) : (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Text style={{ color: textColor, fontSize: 16 }}>
+            No chats available yet. Start a new chat!
+          </Text>
+        </View>
       )}
     </SafeAreaView>
   );

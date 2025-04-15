@@ -194,10 +194,9 @@ const ActivityList = ({
                 className="text-lg font-bold text-center"
                 style={{
                   color: "white",
-                  textDecorationLine: "underline",
                 }}
               >
-                Create one
+                Add one
               </Text>
             </Pressable>
           )}

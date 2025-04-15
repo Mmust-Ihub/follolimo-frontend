@@ -187,13 +187,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const data = await response.json();
 
         setIsAutLoading(false);
-        Alert.alert("Login failed", "Invalid credentials"); // Handle failed login
+        Alert.alert("Login failed", "Invalid credentials, Wrong username/email or password"); // Handle failed login
       }
       if (response.status !== 200 && response.status !== 401) {
         const data = await response.json();
 
         setIsAutLoading(false);
-        Alert.alert("Login failed", "Invalid credentials");
+        Alert.alert("Login failed", "Wrong username/email or password");
       }
     } catch (error) {
       setIsAutLoading(false);

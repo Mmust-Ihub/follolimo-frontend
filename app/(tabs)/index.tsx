@@ -10,7 +10,7 @@ import {
   Platform,
 } from "react-native";
 import NetInfo from "@react-native-community/netinfo";
-import { screenHeight } from "@/constants/AppDimensions";
+import { screenHeight, screenWidth } from "@/constants/AppDimensions";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Colors } from "@/constants/Colors";
 import { ThemeContext } from "@/contexts/ThemeContext";
@@ -203,8 +203,7 @@ export default function Index() {
               duration={1000}
               LinearGradient={LinearGradient}
             />
-          ) : (
-            (transactionData ?? []).length > 0 &&
+          ) : (transactionData ?? []).length > 0 ? (
             transactionData?.map((item: any) => (
               <View
                 key={item._id}
@@ -243,6 +242,36 @@ export default function Index() {
                 </Text>
               </View>
             ))
+          ) : (
+            <View>
+              <Text
+                style={[
+                  styles.transactionLabel,
+                  { color: isDarkMode ? Colors.dark.text : Colors.light.text },
+                ]}
+              >
+                No transactions available
+              </Text>
+              <Pressable
+                onPress={() => router.replace("/(tabs)/myfarms")}
+                style={{
+                  backgroundColor: "#22c55e",
+                  padding: 10,
+                  borderRadius: 10,
+                  marginTop: 10,
+                  width: screenWidth * 0.8,
+                }}
+              >
+                <Text
+                  className="text-lg font-bold text-center"
+                  style={{
+                    color: "white",
+                  }}
+                >
+                  Add one
+                </Text>
+              </Pressable>
+            </View>
           )}
         </View>
 
@@ -360,6 +389,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 2,
     marginTop: 10,
+    height: 100,
   },
   transactionLabel: {
     fontSize: 14,

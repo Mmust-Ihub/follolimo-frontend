@@ -91,152 +91,171 @@ export default function Page() {
       ) : (
         <>
           {/* IoT Soil Data */}
-          {iotData && (
-            <View style={[styles.card, { backgroundColor: color.cardBg }]}>
-              <Text style={[styles.title, { color: color.text }]}>
-                Soil Data
-              </Text>
+          {iotData ? (
+            iotData && (
+              <View style={[styles.card, { backgroundColor: color.cardBg }]}>
+                <Text style={[styles.title, { color: color.text }]}>
+                  Soil Data
+                </Text>
 
-              {/* Moisture */}
-              <Text style={[styles.label, { color: color.text }]}>
-                Moisture: <Text style={styles.value}>{iotData.moisture}%</Text>
-              </Text>
-              <View style={styles.progressBarContainer}>
-                <View
-                  style={[
-                    styles.progressBar,
-                    {
-                      width: `${iotData.moisture}%`,
-                      backgroundColor: "#0ea5e9",
-                    },
-                  ]}
-                />
-              </View>
+                {/* Moisture */}
+                <Text style={[styles.label, { color: color.text }]}>
+                  Moisture:{" "}
+                  <Text style={styles.value}>{iotData.moisture}%</Text>
+                </Text>
+                <View style={styles.progressBarContainer}>
+                  <View
+                    style={[
+                      styles.progressBar,
+                      {
+                        width: `${iotData.moisture}%`,
+                        backgroundColor: "#0ea5e9",
+                      },
+                    ]}
+                  />
+                </View>
 
-              {/* pH with color-coded interpretation */}
-              <Text style={[styles.label, { color: color.text }]}>
-                pH: <Text style={styles.value}>{iotData.ph}</Text>
-              </Text>
-              <View style={styles.progressBarContainer}>
-                <View
+                {/* pH with color-coded interpretation */}
+                <Text style={[styles.label, { color: color.text }]}>
+                  pH: <Text style={styles.value}>{iotData.ph}</Text>
+                </Text>
+                <View style={styles.progressBarContainer}>
+                  <View
+                    style={[
+                      styles.progressBar,
+                      {
+                        width: `${(iotData.ph / 14) * 100}%`,
+                        backgroundColor:
+                          iotData.ph < 6
+                            ? "#ef4444"
+                            : iotData.ph <= 7.5
+                            ? "#22c55e"
+                            : "#3b82f6",
+                      },
+                    ]}
+                  />
+                </View>
+                <Text
                   style={[
-                    styles.progressBar,
+                    styles.value,
                     {
-                      width: `${(iotData.ph / 14) * 100}%`,
-                      backgroundColor:
+                      color:
                         iotData.ph < 6
                           ? "#ef4444"
                           : iotData.ph <= 7.5
                           ? "#22c55e"
                           : "#3b82f6",
+                      fontStyle: "italic",
+                      marginBottom: 12,
                     },
                   ]}
-                />
-              </View>
-              <Text
-                style={[
-                  styles.value,
-                  {
-                    color:
-                      iotData.ph < 6
-                        ? "#ef4444"
-                        : iotData.ph <= 7.5
-                        ? "#22c55e"
-                        : "#3b82f6",
-                    fontStyle: "italic",
-                    marginBottom: 12,
-                  },
-                ]}
-              >
-                {iotData.ph < 6
-                  ? "Soil is acidic — consider lime."
-                  : iotData.ph <= 7.5
-                  ? "Soil is neutral — ideal for most crops."
-                  : "Soil is alkaline — add organic matter."}
-              </Text>
+                >
+                  {iotData.ph < 6
+                    ? "Soil is acidic — consider lime."
+                    : iotData.ph <= 7.5
+                    ? "Soil is neutral — ideal for most crops."
+                    : "Soil is alkaline — add organic matter."}
+                </Text>
 
-              {/* Nitrogen */}
-              <Text style={[styles.label, { color: color.text }]}>
-                Nitrogen: <Text style={styles.value}>{iotData.nitrogen}</Text>
-              </Text>
-              <View style={styles.progressBarContainer}>
-                <View
-                  style={[
-                    styles.progressBar,
-                    {
-                      width: `${iotData.nitrogen}%`,
-                      backgroundColor: "#a855f7",
-                    },
-                  ]}
-                />
-              </View>
+                {/* Nitrogen */}
+                <Text style={[styles.label, { color: color.text }]}>
+                  Nitrogen: <Text style={styles.value}>{iotData.nitrogen}</Text>
+                </Text>
+                <View style={styles.progressBarContainer}>
+                  <View
+                    style={[
+                      styles.progressBar,
+                      {
+                        width: `${iotData.nitrogen}%`,
+                        backgroundColor: "#a855f7",
+                      },
+                    ]}
+                  />
+                </View>
 
-              {/* Phosphorus */}
-              <Text style={[styles.label, { color: color.text }]}>
-                Phosphorus:{" "}
-                <Text style={styles.value}>{iotData.phosphorus}</Text>
-              </Text>
-              <View style={styles.progressBarContainer}>
-                <View
-                  style={[
-                    styles.progressBar,
-                    {
-                      width: `${iotData.phosphorus}%`,
-                      backgroundColor: "#facc15",
-                    },
-                  ]}
-                />
-              </View>
+                {/* Phosphorus */}
+                <Text style={[styles.label, { color: color.text }]}>
+                  Phosphorus:{" "}
+                  <Text style={styles.value}>{iotData.phosphorus}</Text>
+                </Text>
+                <View style={styles.progressBarContainer}>
+                  <View
+                    style={[
+                      styles.progressBar,
+                      {
+                        width: `${iotData.phosphorus}%`,
+                        backgroundColor: "#facc15",
+                      },
+                    ]}
+                  />
+                </View>
 
-              {/* Potassium */}
-              <Text style={[styles.label, { color: color.text }]}>
-                Potassium: <Text style={styles.value}>{iotData.potassium}</Text>
-              </Text>
-              <View style={styles.progressBarContainer}>
-                <View
-                  style={[
-                    styles.progressBar,
-                    {
-                      width: `${iotData.potassium}%`,
-                      backgroundColor: "#10b981",
-                    },
-                  ]}
-                />
+                {/* Potassium */}
+                <Text style={[styles.label, { color: color.text }]}>
+                  Potassium:{" "}
+                  <Text style={styles.value}>{iotData.potassium}</Text>
+                </Text>
+                <View style={styles.progressBarContainer}>
+                  <View
+                    style={[
+                      styles.progressBar,
+                      {
+                        width: `${iotData.potassium}%`,
+                        backgroundColor: "#10b981",
+                      },
+                    ]}
+                  />
+                </View>
               </View>
-            </View>
+            )
+          ) : (
+            <Text style={[styles.value, { color: color.text }]}>
+              No Soil data available. Please install the Killimo Smart kit to
+              measure (pH, Moisture, Nitrogen, Potassium, Phosphorus)
+            </Text>
           )}
 
           {/* Crop Suitability Suggestions */}
           <Text style={[styles.title, { color: color.text }]}>
             Crop Suggestions
           </Text>
-          {suggestions?.map((crop, index) => (
-            <View
-              key={index}
-              style={[styles.card, { backgroundColor: color.cardBg }]}
-            >
-              <Text style={[styles.subtitle, { color: color.text }]}>
-                Crop: {crop.name}
-              </Text>
-              <Text style={[styles.label, { color: color.text }]}>
-                Suitability Score: {crop.suitabilityScore}%
-              </Text>
-              {renderProgressBar(crop.suitabilityScore)}
-              <Text style={[styles.label, { color: color.text, marginTop: 8 }]}>
-                Description:
-              </Text>
-              <Text style={[styles.value, { color: color.text }]}>
-                {crop.suitability}
-              </Text>
+          {suggestions?.length > 0 ? (
+            suggestions?.map((crop, index) => (
+              <View
+                key={index}
+                style={[styles.card, { backgroundColor: color.cardBg }]}
+              >
+                <Text style={[styles.subtitle, { color: color.text }]}>
+                  Crop: {crop.name}
+                </Text>
+                <Text style={[styles.label, { color: color.text }]}>
+                  Suitability Score: {crop.suitabilityScore}%
+                </Text>
+                {renderProgressBar(crop.suitabilityScore)}
+                <Text
+                  style={[styles.label, { color: color.text, marginTop: 8 }]}
+                >
+                  Description:
+                </Text>
+                <Text style={[styles.value, { color: color.text }]}>
+                  {crop.suitability}
+                </Text>
 
-              <Text style={[styles.label, { color: color.text, marginTop: 8 }]}>
-                Recommendations:
-              </Text>
-              <Text style={[styles.value, { color: color.text }]}>
-                {crop.additions}
-              </Text>
-            </View>
-          ))}
+                <Text
+                  style={[styles.label, { color: color.text, marginTop: 8 }]}
+                >
+                  Recommendations:
+                </Text>
+                <Text style={[styles.value, { color: color.text }]}>
+                  {crop.additions}
+                </Text>
+              </View>
+            ))
+          ) : (
+            <Text style={[styles.value, { color: color.text }]}>
+              No crop suggestions available.
+            </Text>
+          )}
         </>
       )}
     </ScrollView>

@@ -78,7 +78,6 @@ export default function WeatherInfo({ textColor }: MyweatherProps) {
             <Text
               style={{
                 color: "white",
-                textDecorationLine: "underline",
               }}
               className="text-lg font-bold text-center"
             >
