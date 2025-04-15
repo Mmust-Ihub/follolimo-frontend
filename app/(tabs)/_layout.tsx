@@ -58,7 +58,7 @@ export default function TabLayout() {
       </View>
     );
   }
-  
+
   if (!userToken && !isOnboardingCompleted) {
     return <OnBoarding />;
   }
@@ -82,6 +82,7 @@ export default function TabLayout() {
           headerStyle: { backgroundColor: headerBackgroundColor },
           headerTintColor: headerTextColor,
           tabBarLabelStyle: { fontSize: 12 },
+          tabBarHideOnKeyboard: true,
         }}
       >
         <Tabs.Screen

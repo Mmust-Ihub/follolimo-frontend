@@ -3,6 +3,7 @@ import { Colors } from "@/constants/Colors";
 import { InventoryTransaction } from "@/constants/Types";
 import { AuthContext } from "@/contexts/AuthContext";
 import { ThemeContext } from "@/contexts/ThemeContext";
+import { useFetch } from "@/contexts/usefetchData";
 import {
   BottomSheetModal,
   BottomSheetModalProvider,
@@ -12,6 +13,7 @@ import {
   Redirect,
   useGlobalSearchParams,
   useLocalSearchParams,
+  useNavigation,
 } from "expo-router";
 import React, {
   useCallback,
@@ -38,6 +40,8 @@ export default function Index() {
   const isDarkMode = themeContext?.isDarkMode ?? false;
   const color = isDarkMode ? Colors.dark : Colors.light;
 
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const [fetchedData, setFetchedData] = useState<InventoryTransaction[]>([]);
   const [loading, setLoading] = useState(false);
@@ -52,12 +56,23 @@ export default function Index() {
   }, []);
 
   const handleSheetChanges = useCallback((index: number) => {
+    setIsSheetOpen(index !== -1);
     console.log("Sheet changed to index:", index);
   }, []);
 
   useEffect(() => {
     fetchTransactions();
   }, [farmdet]);
+
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: isSheetOpen
+        ? { display: "none", position: "absolute", bottom: 0 }
+        : {},
+    });
+  }, [isSheetOpen]);
 
   const fetchTransactions = async () => {
     setLoading(true);
@@ -129,7 +144,19 @@ export default function Index() {
               <View key={index} style={styles.Tcontainer}>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.desc}>{item.description}</Text>
-                  <Text style={styles.typeText}>{item.transactionType}</Text>
+                  <Text
+                    style={[
+                      styles.typeText,
+                      {
+                        color:
+                          item.transactionType === "income"
+                            ? Colors.linearGreen
+                            : Colors.orange,
+                      },
+                    ]}
+                  >
+                    {item.transactionType}
+                  </Text>
                 </View>
                 <View style={styles.rightSection}>
                   <Text
@@ -161,6 +188,8 @@ export default function Index() {
           handleSheetChanges={handleSheetChanges}
           bottomSheetModalRef={bottomSheetModalRef}
           refetchTransactions={fetchTransactions}
+          isSheetOpen={isSheetOpen}
+          setIsSheetOpen={setIsSheetOpen}
         />
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
@@ -209,10 +238,9 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   typeText: {
-    fontWeight: "200",
+    fontWeight: "800",
     fontSize: 12,
     letterSpacing: 4,
-    color: Colors.light.textDisabled,
   },
   rightSection: {
     flexDirection: "column-reverse",

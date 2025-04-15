@@ -83,6 +83,20 @@ const Tasks = () => {
   const textColor = isDarkMode ? Colors.dark.text : Colors.light.text;
 
   const handleCreateActivity = async () => {
+    if (!title || !description || !startDate || !endDate) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    if (endDate < startDate) {
+      alert("End date cannot be before start date.");
+      return;
+    }
+
+    if (new Date(startDate) < new Date()) {
+      alert("Start date cannot be in the past.");
+      return;
+    }
     setCreating(true);
     try {
       const res = await fetch("https://fololimo.vercel.app/api/activity", {
@@ -220,14 +234,14 @@ const Tasks = () => {
               placeholder="Title"
               value={title}
               onChangeText={setTitle}
-              placeholderTextColor="#111"
+              placeholderTextColor="#333"
               style={styles.input}
             />
             <TextInput
               placeholder="Description"
               value={description}
               onChangeText={setDescription}
-              placeholderTextColor="#111"
+              placeholderTextColor="#333"
               style={[styles.input, { height: 80 }]}
               multiline
             />
@@ -236,7 +250,13 @@ const Tasks = () => {
               onPress={() => setStartPickerVisible(true)}
               style={styles.input}
             >
-              <Text>Select Start Date</Text>
+              <Text
+                style={{
+                  color: "#333",
+                }}
+              >
+                Select Start Date
+              </Text>
             </Pressable>
             <DateTimePicker
               isVisible={isStartPickerVisible}
@@ -252,7 +272,13 @@ const Tasks = () => {
               onPress={() => setEndPickerVisible(true)}
               style={styles.input}
             >
-              <Text>Select End Date</Text>
+              <Text
+                style={{
+                  color: "#333",
+                }}
+              >
+                Select End Date
+              </Text>
             </Pressable>
             <DateTimePicker
               isVisible={isEndPickerVisible}

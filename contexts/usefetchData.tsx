@@ -7,6 +7,7 @@ interface FetchContextType {
   farmData: FarmData[];
   Activity: Activity[]; // Added pastActivities
   refreshing: boolean;
+  transactionData: Array<InventoryTransaction> | null;
   farmTaskData: Array<Farm> | null;
   fetchFarmsData: () => Promise<void>;
   loading: boolean;
@@ -37,6 +38,12 @@ interface Activity {
   endDate: string;
   status: string;
 }
+
+type InventoryTransaction = {
+  _id: TransactionType;
+  total: number;
+};
+type TransactionType = "income" | "expense";
 
 // Create FetchContext with a default value of undefined
 const FetchContext = createContext<FetchContextType | undefined>(undefined);
@@ -73,6 +80,11 @@ export const FetchProvider: React.FC<FetchProviderProps> = ({ children }) => {
   const [farmTaskData, setFarmTaskData] = useState<Array<Farm> | null>(null);
   const [refreshing, setRefreshing] = useState(true);
 
+  // trnsaction[{"_id": "income", "total": 2000}, {"_id": "expense", "total": 36}]
+
+  const [transactionData, setTransactionData] =
+    useState<Array<InventoryTransaction> | null>(null);
+
   const [loading, setLoading] = useState<boolean>(true);
   const authContext = useContext(AuthContext);
   if (!authContext) {
@@ -95,11 +107,12 @@ export const FetchProvider: React.FC<FetchProviderProps> = ({ children }) => {
         }
       );
       const data = await response.json();
-      // console.log("Fetched data:", data.weather);
+      console.log("Fetched data:", data);
       if (response.status === 200) {
         setFarmData(data?.weather);
         // setWeatherData(data?.weather);
         setActivity(data?.activities);
+        setTransactionData(data?.transactions);
       }
       if (
         response.status === 401 ||
@@ -150,6 +163,7 @@ export const FetchProvider: React.FC<FetchProviderProps> = ({ children }) => {
         farmTaskData,
         fetchFarmsData,
         refreshing,
+        transactionData,
       }}
     >
       {children}

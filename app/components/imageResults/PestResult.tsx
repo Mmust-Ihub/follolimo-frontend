@@ -98,7 +98,7 @@ export default function PestResult({ results }: { results: PlantInfo }) {
               backgroundColor: themeColors.tint,
               paddingVertical: 15,
               paddingHorizontal: 5,
-              borderRadius: 5,
+              borderRadius: 10,
               marginTop: 30,
               justifyContent: "center",
               alignItems: "center",

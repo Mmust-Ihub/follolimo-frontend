@@ -179,26 +179,28 @@ const ActivityList = ({
           >
             {emptyMessage}
           </Text>
-          <Pressable
-            onPress={() => router.replace("/(tabs)/myfarms")}
-            style={{
-              backgroundColor: "#22c55e",
-              padding: 10,
-              borderRadius: 10,
-              marginTop: 10,
-              width: screenWidth * 0.8,
-            }}
-          >
-            <Text
-              className="text-lg font-bold text-center"
+          {emptyMessage !== "You have no past activities..." && (
+            <Pressable
+              onPress={() => router.replace("/(tabs)/myfarms")}
               style={{
-                color: "white",
-                textDecorationLine: "underline",
+                backgroundColor: "#22c55e",
+                padding: 10,
+                borderRadius: 10,
+                marginTop: 10,
+                width: screenWidth * 0.8,
               }}
             >
-              Create one
-            </Text>
-          </Pressable>
+              <Text
+                className="text-lg font-bold text-center"
+                style={{
+                  color: "white",
+                  textDecorationLine: "underline",
+                }}
+              >
+                Create one
+              </Text>
+            </Pressable>
+          )}
         </View>
       )}
     </View>

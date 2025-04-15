@@ -23,6 +23,7 @@ import { Feather } from "@expo/vector-icons";
 import { useFetch } from "@/contexts/usefetchData";
 import ShimmerPlaceholder from "react-native-shimmer-placeholder";
 import { LinearGradient } from "expo-linear-gradient";
+import { it } from "node:test";
 
 export default function Index() {
   interface UserData {
@@ -47,7 +48,8 @@ export default function Index() {
   const userData: UserData | null = userDetails || null;
 
   const router = useRouter();
-  const { fetchFarms } = useFetch();
+  const { fetchFarms, transactionData, loading } = useFetch();
+  console.log("TransactionData", transactionData);
 
   useEffect(() => {
     const getGreeting = () => {
@@ -176,6 +178,74 @@ export default function Index() {
         <WeatherInfo
           textColor={isDarkMode ? Colors.dark.text : Colors.light.text}
         />
+
+        <Text
+          style={[
+            styles.greetingText,
+            {
+              fontSize: 18,
+              fontWeight: "700",
+              marginTop: 5,
+              color: isDarkMode ? Colors.dark.text : Colors.light.text,
+            },
+          ]}
+        >
+          My spending
+        </Text>
+
+        <View style={styles.transactionSummary}>
+          {loading ? (
+            <ShimmerPlaceholder
+              style={styles.transactionCard}
+              visible={false}
+              shimmerStyle={{ backgroundColor: "#ccc", borderRadius: 10 }}
+              shimmerColors={["#ccc", "#ddd", "#eee"]}
+              duration={1000}
+              LinearGradient={LinearGradient}
+            />
+          ) : (
+            (transactionData ?? []).length > 0 &&
+            transactionData?.map((item: any) => (
+              <View
+                key={item._id}
+                style={[
+                  styles.transactionCard,
+                  {
+                    backgroundColor: isDarkMode
+                      ? Colors.dark.cardBg
+                      : Colors.light.cardBg,
+                    shadowColor: isDarkMode ? "#000" : "#ccc",
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.transactionLabel,
+                    {
+                      color: isDarkMode ? Colors.dark.text : Colors.light.text,
+                    },
+                  ]}
+                >
+                  {item._id === "income" ? "Total Income" : "Total Expense"}
+                </Text>
+                <Text
+                  style={[
+                    styles.transactionAmount,
+                    {
+                      color:
+                        item._id === "income"
+                          ? Colors.linearGreen
+                          : Colors.orange,
+                    },
+                  ]}
+                >
+                  {item._id === "income" ? "+ KES " : "- KES "} {item.total}
+                </Text>
+              </View>
+            ))
+          )}
+        </View>
+
         <MyTasks
           textColor={isDarkMode ? Colors.dark.text : Colors.light.text}
         />
@@ -271,5 +341,35 @@ const styles = StyleSheet.create({
   onlineText: {
     color: "white",
     fontWeight: "bold",
+  },
+  transactionSummary: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 10,
+    marginBottom: 0,
+    marginTop: 5,
+  },
+  transactionCard: {
+    flex: 1,
+    padding: 15,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+    marginTop: 10,
+  },
+  transactionLabel: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#666",
+  },
+  transactionAmount: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginTop: 5,
+    color: "#111",
   },
 });
