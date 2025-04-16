@@ -104,14 +104,14 @@ const BottomForm = ({
 
   return (
     <BottomSheetModal
-      snapPoints={["100%", "100%"]}
+      snapPoints={["50%", "100%"]}
       index={0}
       ref={bottomSheetModalRef}
       onChange={handleSheetChanges}
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={Platform.OS === "ios" ? -50 : 0} // tweak this
+        // keyboardVerticalOffset={Platform.OS === "ios" ? -50 : 0} // tweak this
         style={{ flex: 1 }}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

@@ -116,7 +116,7 @@ export const FetchProvider: React.FC<FetchProviderProps> = ({ children }) => {
       }
       if (
         response.status === 401 ||
-        data.message === "Invalid or expired token"
+        data?.message === "Invalid or expired token"
       ) {
         Alert.alert("Unauthorized", "Invalid or expired token");
         logout(); // Call the logout function from AuthContext

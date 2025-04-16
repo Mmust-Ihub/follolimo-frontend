@@ -64,7 +64,7 @@ export default function Page() {
         }
       >
         <View>
-          {farmData && farmData?.length > 0 ? (
+          {(farmData ?? []).length > 0 ? (
             farmData?.map((farm: Farm, index) => (
               <View
                 key={index}

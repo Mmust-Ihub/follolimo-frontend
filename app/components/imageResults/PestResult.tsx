@@ -65,7 +65,7 @@ export default function PestResult({ results }: { results: PlantInfo }) {
         </Text>
       )}
 
-      {results.affected_crops?.length ? (
+      {results?.affected_crops?.length ? (
         <View style={{ marginTop: 10 }}>
           <Text style={[styles.resultsSubHeading, { color: themeColors.tint }]}>
             Affected Crops
@@ -79,9 +79,9 @@ export default function PestResult({ results }: { results: PlantInfo }) {
         </View>
       ) : (
         <View>
-          <Text style={{ color: "tomato" }}>
+          {/* <Text style={{ color: "tomato" }}>
             Image uploaded contains no crop pest or disease.
-          </Text>
+          </Text> */}
 
           {/* go back button */}
           <Text style={{ color: themeColors.text, marginTop: 10,fontWeight:"bold" }}>

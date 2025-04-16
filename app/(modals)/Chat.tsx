@@ -185,7 +185,7 @@ export default function ChatsListScreen() {
         >
           <ActivityIndicator size="large" color={activeTintColor} />
         </View>
-      ) : chats.length > 0 ? (
+      ) : chats?.length > 0 ? (
         <SectionList
           sections={groupByDate(chats)}
           keyExtractor={(item) => item.chatId}
