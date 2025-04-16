@@ -97,7 +97,7 @@ export default function Page() {
                     onPress={() => {
                       router.push({
                         pathname: "/(tabs)/myfarms/[farmdet]",
-                        params: { farmdet: farm.id, farmName: farm.name },
+                        params: { farmdet: farm?.id, farmName: farm?.name },
                       });
                     }}
                     style={{

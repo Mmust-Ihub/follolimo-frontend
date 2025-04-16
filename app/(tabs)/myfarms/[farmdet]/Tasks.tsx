@@ -74,7 +74,7 @@ const Tasks = () => {
 
   useEffect(() => {
     if (activeTab === "All") fetchActivities();
-    else fetchActivities(activeTab.toLowerCase());
+    else fetchActivities(activeTab?.toLowerCase());
   }, [activeTab]);
 
   const backgroundColor = isDarkMode

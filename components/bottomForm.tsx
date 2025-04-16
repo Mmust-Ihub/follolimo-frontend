@@ -22,8 +22,8 @@ type bottomFormProps = {
   farmId: string;
   userToken: string | null;
   refetchTransactions: () => Promise<void>;
-  isSheetOpen: boolean;
-  setIsSheetOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  // isSheetOpen: boolean;
+  // setIsSheetOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const BottomForm = ({
@@ -32,8 +32,8 @@ const BottomForm = ({
   farmId,
   userToken,
   refetchTransactions,
-  isSheetOpen,
-  setIsSheetOpen,
+  // isSheetOpen,
+  // setIsSheetOpen,
 }: bottomFormProps) => {
   const [description, setDescription] = useState("");
   const [transactionType, setTransactionType] = useState("expense");
@@ -92,15 +92,15 @@ const BottomForm = ({
     }
   };
 
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
 
-  useEffect(() => {
-    navigation.getParent()?.setOptions({
-      tabBarStyle: isSheetOpen
-        ? { display: "none", position: "absolute", bottom: 0 }
-        : {},
-    });
-  }, [isSheetOpen]);
+  // useEffect(() => {
+  //   navigation.getParent()?.setOptions({
+  //     tabBarStyle: isSheetOpen
+  //       ? { display: "none", position: "absolute", bottom: 0 }
+  //       : {},
+  //   });
+  // }, [isSheetOpen]);
 
   return (
     <BottomSheetModal

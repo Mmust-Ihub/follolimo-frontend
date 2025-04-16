@@ -40,7 +40,7 @@ export default function Index() {
   const isDarkMode = themeContext?.isDarkMode ?? false;
   const color = isDarkMode ? Colors.dark : Colors.light;
 
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  // const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const [fetchedData, setFetchedData] = useState<InventoryTransaction[]>([]);
@@ -58,7 +58,7 @@ export default function Index() {
   }, []);
 
   const handleSheetChanges = useCallback((index: number) => {
-    setIsSheetOpen(index !== -1);
+    // setIsSheetOpen(index !== -1);
     console.log("Sheet changed to index:", index);
   }, []);
 
@@ -66,15 +66,15 @@ export default function Index() {
     fetchTransactions();
   }, [farmdet]);
 
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
 
-  useEffect(() => {
-    navigation.getParent()?.setOptions({
-      tabBarStyle: isSheetOpen
-        ? { display: "none", position: "absolute", bottom: 0 }
-        : {},
-    });
-  }, [isSheetOpen]);
+  // useEffect(() => {
+  //   navigation.getParent()?.setOptions({
+  //     tabBarStyle: isSheetOpen
+  //       ? { display: "none", position: "absolute", bottom: 0 }
+  //       : {},
+  //   });
+  // }, [isSheetOpen]);
 
   const fetchTransactions = async () => {
     setLoading(true);
@@ -190,8 +190,8 @@ export default function Index() {
           handleSheetChanges={handleSheetChanges}
           bottomSheetModalRef={bottomSheetModalRef}
           refetchTransactions={fetchTransactions}
-          isSheetOpen={isSheetOpen}
-          setIsSheetOpen={setIsSheetOpen}
+          // isSheetOpen={isSheetOpen}
+          // setIsSheetOpen={setIsSheetOpen}
         />
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
