@@ -150,7 +150,7 @@ export default function Page() {
                     },
                   ]}
                 >
-                  {iotData.ph < 6
+                  {iotData?.ph < 6
                     ? "Soil is acidic — consider lime."
                     : iotData?.ph <= 7.5
                     ? "Soil is neutral — ideal for most crops."
@@ -159,7 +159,8 @@ export default function Page() {
 
                 {/* Nitrogen */}
                 <Text style={[styles.label, { color: color.text }]}>
-                  Nitrogen: <Text style={styles.value}>{iotData?.nitrogen}</Text>
+                  Nitrogen:{" "}
+                  <Text style={styles.value}>{iotData?.nitrogen}</Text>
                 </Text>
                 <View style={styles.progressBarContainer}>
                   <View
@@ -219,43 +220,33 @@ export default function Page() {
           <Text style={[styles.title, { color: color.text }]}>
             Crop Suggestions
           </Text>
-          {suggestions?.length > 0 ? (
-            suggestions?.map((crop, index) => (
-              <View
-                key={index}
-                style={[styles.card, { backgroundColor: color.cardBg }]}
-              >
-                <Text style={[styles.subtitle, { color: color.text }]}>
-                  Crop: {crop.name}
-                </Text>
-                <Text style={[styles.label, { color: color.text }]}>
-                  Suitability Score: {crop.suitabilityScore}%
-                </Text>
-                {renderProgressBar(crop.suitabilityScore)}
-                <Text
-                  style={[styles.label, { color: color.text, marginTop: 8 }]}
-                >
-                  Description:
-                </Text>
-                <Text style={[styles.value, { color: color.text }]}>
-                  {crop.suitability}
-                </Text>
+          {suggestions?.map((crop, index) => (
+            <View
+              key={index}
+              style={[styles.card, { backgroundColor: color.cardBg }]}
+            >
+              <Text style={[styles.subtitle, { color: color.text }]}>
+                Crop: {crop.name}
+              </Text>
+              <Text style={[styles.label, { color: color.text }]}>
+                Suitability Score: {crop.suitabilityScore}%
+              </Text>
+              {renderProgressBar(crop.suitabilityScore)}
+              <Text style={[styles.label, { color: color.text, marginTop: 8 }]}>
+                Description:
+              </Text>
+              <Text style={[styles.value, { color: color.text }]}>
+                {crop.suitability}
+              </Text>
 
-                <Text
-                  style={[styles.label, { color: color.text, marginTop: 8 }]}
-                >
-                  Recommendations:
-                </Text>
-                <Text style={[styles.value, { color: color.text }]}>
-                  {crop.additions}
-                </Text>
-              </View>
-            ))
-          ) : (
-            <Text style={[styles.value, { color: color.text }]}>
-              No crop suggestions available.
-            </Text>
-          )}
+              <Text style={[styles.label, { color: color.text, marginTop: 8 }]}>
+                Recommendations:
+              </Text>
+              <Text style={[styles.value, { color: color.text }]}>
+                {crop.additions}
+              </Text>
+            </View>
+          ))}
         </>
       )}
     </ScrollView>

@@ -36,7 +36,7 @@ export default function ChatsListScreen() {
 
   const { userToken } = authContext;
   const { isDarkMode } = themeContext;
-  // Set theme-based colors
+
   const activeTintColor = isDarkMode
     ? Colors.dark.tabIconSelected
     : Colors.light.tabIconSelected;
@@ -66,10 +66,17 @@ export default function ChatsListScreen() {
         }
       );
       const data = await res.json();
-      setChats(data);
+
+      if (Array.isArray(data)) {
+        setChats(data);
+      } else {
+        console.warn("Fetched chats is not an array:", data);
+        setChats([]);
+      }
     } catch (error) {
       console.error(error);
       Alert.alert("Error", "Failed to load chats.");
+      setChats([]);
     } finally {
       setLoading(false);
     }
@@ -92,7 +99,7 @@ export default function ChatsListScreen() {
         }
       );
       const data = await res.json();
-      console.log("New chat created:", data);
+
       setChats((prev) => [data, ...prev]);
       router.push({
         pathname: "/(modals)/[chatid]",
@@ -107,9 +114,13 @@ export default function ChatsListScreen() {
   };
 
   const groupByDate = (chatList: any[]) => {
-    if (!Array.isArray(chatList)) return [];
-
     const groups: Record<string, any[]> = {};
+
+    if (!Array.isArray(chatList)) {
+      console.warn("chatList is not an array:", chatList);
+      return [{ title: "No Chats", data: [] }];
+    }
+
     chatList.forEach((chat) => {
       const date = dayjs(chat.createdAt);
       let label = date.format("DD MMM YYYY");
@@ -120,10 +131,12 @@ export default function ChatsListScreen() {
       groups[label].push(chat);
     });
 
-    return Object.entries(groups).map(([title, data]) => ({
+    const grouped = Object.entries(groups).map(([title, data]) => ({
       title,
       data,
     }));
+
+    return grouped.length > 0 ? grouped : [{ title: "No Chats", data: [] }];
   };
 
   useEffect(() => {
@@ -154,10 +167,7 @@ export default function ChatsListScreen() {
             backgroundColor: activeTintColor,
             borderRadius: 9999,
             shadowColor: "#000",
-            shadowOffset: {
-              width: 0,
-              height: 1,
-            },
+            shadowOffset: { width: 0, height: 1 },
             shadowOpacity: 0.2,
             shadowRadius: 1.41,
             elevation: 2,
@@ -185,7 +195,7 @@ export default function ChatsListScreen() {
         >
           <ActivityIndicator size="large" color={activeTintColor} />
         </View>
-      ) : chats?.length > 0 ? (
+      ) : (
         <SectionList
           sections={groupByDate(chats)}
           keyExtractor={(item) => item.chatId}
@@ -222,7 +232,7 @@ export default function ChatsListScreen() {
               <Text
                 style={{ fontSize: 18, fontWeight: "bold", color: textColor }}
               >
-                Chat #{item.chatId.slice(-4)}
+                Chat #{item.chatId?.slice(-4)}
               </Text>
               <Text style={{ color: inactiveTintColor }}>
                 {item.lastMsg?.slice(0, 60)}...
@@ -238,15 +248,14 @@ export default function ChatsListScreen() {
               </Text>
             </TouchableOpacity>
           )}
+          ListEmptyComponent={
+            <View style={{ padding: 20, alignItems: "center" }}>
+              <Text style={{ color: inactiveTintColor }}>
+                No chats available yet.
+              </Text>
+            </View>
+          }
         />
-      ) : (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <Text style={{ color: textColor, fontSize: 16 }}>
-            No chats available yet. Start a new chat!
-          </Text>
-        </View>
       )}
     </SafeAreaView>
   );
