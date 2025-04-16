@@ -108,7 +108,7 @@ export default function Page() {
                     style={[
                       styles.progressBar,
                       {
-                        width: `${iotData.moisture}%`,
+                        width: `${iotData?.moisture}%`,
                         backgroundColor: "#0ea5e9",
                       },
                     ]}
@@ -117,18 +117,18 @@ export default function Page() {
 
                 {/* pH with color-coded interpretation */}
                 <Text style={[styles.label, { color: color.text }]}>
-                  pH: <Text style={styles.value}>{iotData.ph}</Text>
+                  pH: <Text style={styles.value}>{iotData?.ph}</Text>
                 </Text>
                 <View style={styles.progressBarContainer}>
                   <View
                     style={[
                       styles.progressBar,
                       {
-                        width: `${(iotData.ph / 14) * 100}%`,
+                        width: `${(iotData?.ph / 14) * 100}%`,
                         backgroundColor:
-                          iotData.ph < 6
+                          iotData?.ph < 6
                             ? "#ef4444"
-                            : iotData.ph <= 7.5
+                            : iotData?.ph <= 7.5
                             ? "#22c55e"
                             : "#3b82f6",
                       },
@@ -140,9 +140,9 @@ export default function Page() {
                     styles.value,
                     {
                       color:
-                        iotData.ph < 6
+                        iotData?.ph < 6
                           ? "#ef4444"
-                          : iotData.ph <= 7.5
+                          : iotData?.ph <= 7.5
                           ? "#22c55e"
                           : "#3b82f6",
                       fontStyle: "italic",
@@ -152,21 +152,21 @@ export default function Page() {
                 >
                   {iotData.ph < 6
                     ? "Soil is acidic — consider lime."
-                    : iotData.ph <= 7.5
+                    : iotData?.ph <= 7.5
                     ? "Soil is neutral — ideal for most crops."
                     : "Soil is alkaline — add organic matter."}
                 </Text>
 
                 {/* Nitrogen */}
                 <Text style={[styles.label, { color: color.text }]}>
-                  Nitrogen: <Text style={styles.value}>{iotData.nitrogen}</Text>
+                  Nitrogen: <Text style={styles.value}>{iotData?.nitrogen}</Text>
                 </Text>
                 <View style={styles.progressBarContainer}>
                   <View
                     style={[
                       styles.progressBar,
                       {
-                        width: `${iotData.nitrogen}%`,
+                        width: `${iotData?.nitrogen}%`,
                         backgroundColor: "#a855f7",
                       },
                     ]}
@@ -176,14 +176,14 @@ export default function Page() {
                 {/* Phosphorus */}
                 <Text style={[styles.label, { color: color.text }]}>
                   Phosphorus:{" "}
-                  <Text style={styles.value}>{iotData.phosphorus}</Text>
+                  <Text style={styles.value}>{iotData?.phosphorus}</Text>
                 </Text>
                 <View style={styles.progressBarContainer}>
                   <View
                     style={[
                       styles.progressBar,
                       {
-                        width: `${iotData.phosphorus}%`,
+                        width: `${iotData?.phosphorus}%`,
                         backgroundColor: "#facc15",
                       },
                     ]}
@@ -193,14 +193,14 @@ export default function Page() {
                 {/* Potassium */}
                 <Text style={[styles.label, { color: color.text }]}>
                   Potassium:{" "}
-                  <Text style={styles.value}>{iotData.potassium}</Text>
+                  <Text style={styles.value}>{iotData?.potassium}</Text>
                 </Text>
                 <View style={styles.progressBarContainer}>
                   <View
                     style={[
                       styles.progressBar,
                       {
-                        width: `${iotData.potassium}%`,
+                        width: `${iotData?.potassium}%`,
                         backgroundColor: "#10b981",
                       },
                     ]}

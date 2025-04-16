@@ -84,7 +84,7 @@ const BottomForm = ({
         fetchFarms();
       } else {
         const errorData = await response.json();
-        alert(`Error: ${errorData.message || "An error occurred"}`);
+        alert(`Error: ${errorData?.message || "An error occurred"}`);
       }
     } catch (error) {
       console.error(error);

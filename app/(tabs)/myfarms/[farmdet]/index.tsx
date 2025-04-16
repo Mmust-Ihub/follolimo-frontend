@@ -48,11 +48,13 @@ export default function Index() {
   const [error, setError] = useState<string | null>(null);
 
   const authContext = useContext(AuthContext);
-  if (!authContext) return <Redirect href="/(auth)/Login" />;
+  if (!authContext) {
+    throw new Error("AuthContext must be used within its provider");
+  }
   const { userToken } = authContext;
 
   const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
+    bottomSheetModalRef?.current?.present();
   }, []);
 
   const handleSheetChanges = useCallback((index: number) => {
@@ -130,7 +132,7 @@ export default function Index() {
           <View style={styles.centeredView}>
             <Text style={{ color: "red" }}>{error}</Text>
           </View>
-        ) : fetchedData.length === 0 ? (
+        ) : fetchedData?.length === 0 ? (
           <View style={styles.centeredView}>
             <Text style={{ color: color.text }}>No transactions yet.</Text>
           </View>
@@ -140,7 +142,7 @@ export default function Index() {
             contentContainerStyle={styles.scrollContainer}
             showsVerticalScrollIndicator={false}
           >
-            {fetchedData.map((item, index) => (
+            {fetchedData?.map((item, index) => (
               <View key={index} style={styles.Tcontainer}>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.desc}>{item.description}</Text>

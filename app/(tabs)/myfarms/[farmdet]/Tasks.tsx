@@ -64,7 +64,7 @@ const Tasks = () => {
         },
       });
       const data = await res.json();
-      setActivities(data.activities || []);
+      setActivities(data?.activities || []);
     } catch (error) {
       console.error("Error fetching activities:", error);
     } finally {
@@ -132,7 +132,7 @@ const Tasks = () => {
     <View style={{ flex: 1, backgroundColor, padding: 16 }}>
       {/* Tabs */}
       <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-        {Tabs.map((tab) => (
+        {Tabs?.map((tab) => (
           <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)}>
             <Text
               style={{
@@ -178,7 +178,7 @@ const Tasks = () => {
       ) : (
         <FlatList
           data={activities}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item?.id}
           renderItem={({ item }) => (
             <View
               style={{
