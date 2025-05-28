@@ -58,7 +58,7 @@ const InputView = ({
         {secure && (
           <TouchableOpacity
             onPress={() => setIsPasswordVisible((prev) => !prev)}
-            style={{ padding: 10 }}
+            style={{ padding: 4 }}
           >
             <Feather
               name={isPasswordVisible ? "eye" : "eye-off"}

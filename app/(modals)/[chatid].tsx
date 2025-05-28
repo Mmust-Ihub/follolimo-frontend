@@ -6,16 +6,16 @@ import {
   Platform,
   Pressable,
   Keyboard,
+  Alert,
 } from "react-native";
 import { useContext, useEffect, useRef, useState, memo } from "react";
 import { AuthContext } from "@/contexts/AuthContext";
 import { ThemeContext } from "@/contexts/ThemeContext";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useGlobalSearchParams, useLocalSearchParams, useNavigation } from "expo-router";
 import Markdown from "react-native-markdown-display";
 import { Ionicons } from "@expo/vector-icons";
 import { FlashList } from "@shopify/flash-list";
 import { Colors } from "@/constants/Colors";
-import { Alert } from "react-native";
 
 const ChatMessage = memo(
   ({
@@ -58,9 +58,14 @@ const ChatMessage = memo(
     );
   }
 );
+ 
+
 
 export default function ChatScreen() {
-  const { chatid: chatId } = useLocalSearchParams();
+  const { chatid } = useGlobalSearchParams();
+  const chatId = typeof chatid === "string" ? chatid : "";
+  console.log("Chat ID:", chatId);
+
   const [messages, setMessages] = useState<{ role: string; content: string }[]>(
     []
   );
@@ -78,44 +83,51 @@ export default function ChatScreen() {
   const { userToken } = authContext;
   const { isDarkMode } = themeContext;
 
-  // Set theme-based colors
-
   const backgroundColor = isDarkMode
     ? Colors.dark.background
     : Colors.light.background;
 
   const textColor = isDarkMode ? Colors.dark.text : Colors.light.text;
   const userChatBgColor = isDarkMode ? Colors.dark.tint : Colors.light.tint;
-
   const modelMessageBg = isDarkMode ? "#374151" : "#E5E7EB";
 
-  useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.EXPO_PUBLIC_NODEAPI_URL}/ai/chat/${chatId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${userToken}`,
-            },
-          }
-        );
-        const data = await res.json();
-        const parsedMessages = data?.history?.map((msg: any) => ({
-          role: msg?.role === "model" ? "assistant" : msg.role,
-          content: msg?.parts[0]?.text ?? "",
-        }));
-        setMessages(parsedMessages);
-      } catch (error) {
-        console.error("Error fetching messages:", error);
-      }
-    };
+  const fetchMessages = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.EXPO_PUBLIC_NODEAPI_URL}/ai/chat/${chatId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
 
-    fetchMessages();
+      const data = await res.json();
+      const history = data?.history ?? [];
+
+      const parsedMessages = Array.isArray(history)
+        ? history.map((msg: any) => ({
+            role: msg?.role === "model" ? "assistant" : msg?.role ?? "unknown",
+            content: msg?.parts?.[0]?.text ?? "",
+          }))
+        : [];
+
+      setMessages(parsedMessages);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+      setMessages([]);
+    }
+  };
+
+  useEffect(() => {
+    if (chatId && userToken) {
+      fetchMessages();
+    }
   }, [chatId]);
 
   const sendMessage = async () => {
     Keyboard.dismiss();
+
     if (!input.trim()) {
       Alert.alert("Error", "Please enter a message.");
       return;
@@ -134,7 +146,7 @@ export default function ChatScreen() {
 
     try {
       const res = await fetch(
-        `${process.env.EXPO_PUBLIC_NODEAPI_URL}/ai/chat/`,
+        `${process.env.EXPO_PUBLIC_NODEAPI_URL}/ai/chat`,
         {
           method: "POST",
           headers: {
@@ -146,10 +158,14 @@ export default function ChatScreen() {
       );
 
       const newMessage = await res.json();
+      console.log("New Message:", newMessage);
+      const modelMessage = newMessage?.modelMessage ?? "No response";
+
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: newMessage.modelMessage },
+        { role: "assistant", content: modelMessage },
       ]);
+
       setTimeout(
         () => flatListRef.current?.scrollToEnd({ animated: true }),
         200
@@ -159,15 +175,22 @@ export default function ChatScreen() {
       console.error("Error sending message:", err);
     } finally {
       setLoading(false);
-      setInput("");
     }
   };
-  //   useEffect for title
+
   const navigation = useNavigation();
+
   useEffect(() => {
-    const title =
-      messages?.length > 0 ? messages[messages?.length - 1]?.content : "Chat";
-    navigation.setOptions({ title });
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage?.content) {
+        navigation.setOptions({
+          title: lastMessage.content.slice(0, 30) + "...",
+        });
+      }
+    } else {
+      navigation.setOptions({ title: "Chat" });
+    }
   }, [messages, navigation]);
 
   return (

@@ -66,6 +66,7 @@ export default function ChatsListScreen() {
         }
       );
       const data = await res.json();
+      console.log("Fetched Chats:", data);
 
       if (Array.isArray(data)) {
         setChats(data);
@@ -81,6 +82,8 @@ export default function ChatsListScreen() {
       setLoading(false);
     }
   };
+
+  console.log("Fetched Chats:", chats);
 
   const createNewChat = async () => {
     try {
@@ -99,12 +102,13 @@ export default function ChatsListScreen() {
         }
       );
       const data = await res.json();
+      console.log("Created Chat:", data);
 
       setChats((prev) => [data, ...prev]);
-      router.push({
-        pathname: "/(modals)/[chatid]",
-        params: { chatid: data.chatId },
-      });
+      // router.push({
+      //   pathname: "/(modals)/[chatid]",
+      //   params: { chatid: data?.chatId },
+      // });
     } catch (error) {
       console.error(error);
       Alert.alert("Error", "Failed to create chat.");
@@ -198,7 +202,7 @@ export default function ChatsListScreen() {
       ) : (
         <SectionList
           sections={groupByDate(chats)}
-          keyExtractor={(item) => item.chatId}
+          keyExtractor={(item) => item?.chatId}
           contentContainerStyle={{ paddingBottom: 20 }}
           renderSectionHeader={({ section: { title } }) => (
             <Text
@@ -219,7 +223,7 @@ export default function ChatsListScreen() {
               onPress={() =>
                 router.push({
                   pathname: "/(modals)/[chatid]",
-                  params: { chatid: item.chatId },
+                  params: { chatid: item?.chatId },
                 })
               }
               style={{
